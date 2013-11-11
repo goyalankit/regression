@@ -11,3 +11,14 @@
 *.lai
 *.la
 *.a
+
+#Cmake files
+CMakeCache.txt
+CMakeFiles/
+CPackConfig.cmake
+CPackSourceConfig.cmake
+Doxyfile
+include/
+inputs/
+scripts/
+tools/
