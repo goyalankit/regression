@@ -23,7 +23,7 @@ struct comp {
 
 struct node {
 	map<int, int > samples;
-	int w;
+	double w;
 };
 
 int main(int argc, char* argv[]) {
@@ -73,16 +73,33 @@ int main(int argc, char* argv[]) {
 		}
 		cout << endl;
         }
-	int error;
-	while (error > 1e-6) {
+	double error,val,w_next;
+	//while (error > 1e-6) {
 		for (int j=0;j<n;j++) {
-			
+			error =0;
+			val = 0 - Y[j];
 			for (i=0;i<Graph.size();i++) {
-				Graph[i].w = Graph[i].w - neta * 
-			//calculate
+				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
+					val = val + (Graph[i].w * Graph[i].samples[j]);
+					//cout << "found" << endl;
+				}
+				//cout << "val=" << val << endl;
 			}
-			
+			for (i=0;i<Graph.size();i++) {
+				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
+					w_next = Graph[i].w - neta * 2 * Graph[i].samples[j] * val;
+					error = error + w_next - Graph[i].w;
+					Graph[i].w = w_next; 
+					//cout << "w_next=" << w_next << endl; 
+				}
+			}
+		if (error < 1e-6) break; 
         	}
-	}
+	//}
+	cout << "SGD Completed" << endl;
+	for (i=0;i<Graph.size();i++) {
+		cout << Graph[i].w << endl;
+        }
+	
   	return 0;
 }
