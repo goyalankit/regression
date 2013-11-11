@@ -22,3 +22,7 @@ include/
 inputs/
 scripts/
 tools/
+CTestTestfile.cmake
+Makefile
+cmake_install.cmake
+regression
