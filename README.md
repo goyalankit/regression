@@ -19,5 +19,6 @@ add_subdirectory(regression)
 ```
 module load cmake 
 export BOOST_ROOT=$TACC_BOOST_DIR
-cmake -DCMAKE_CXX_COMPILER=icpc -DCMAKE_C_COMPILER=icc ../../ 
+cd ../../
+cmake -DCMAKE_CXX_COMPILER=icpc -DCMAKE_C_COMPILER=icc .
 ```
