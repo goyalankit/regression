@@ -57,25 +57,25 @@ vector<int > Y;
 vector<node > Graph;
 
 struct Process {
-	Process() { }
+	int sn;
+	Process(int l) { sn = l; }
 	template<typename Context>
 		void operator()(node& source, Context& ctx) {
 			int i = 0;
 			double error, val, w_next;
 
-			for (int j=0;j<n;j++) {
 				error =0;
-				val = 0 - Y[j];
+				val = 0 - Y[sn];
 				for (i=0;i<Graph.size();i++) {
-					if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
-						val = val + (Graph[i].w * Graph[i].samples[j]);
+					if  (Graph[i].samples.find(sn) != Graph[i].samples.end()) {
+						val = val + (Graph[i].w * Graph[i].samples[sn]);
 						cout << "found" << endl;
 					}
 					cout << "val=" << val << endl;
 				}
 				for (i=0;i<Graph.size();i++) {
-					if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
-						w_next = Graph[i].w - neta * 2 * Graph[i].samples[j] * val;
+					if  (Graph[i].samples.find(sn) != Graph[i].samples.end()) {
+						w_next = Graph[i].w - neta * 2 * Graph[i].samples[sn] * val;
 						error = error + w_next - Graph[i].w;
 						Graph[i].w = w_next;
 						cout << "w_next=" << w_next << endl;
@@ -83,7 +83,6 @@ struct Process {
 				}
 				errorf = AtomicInteger(error);
 //				if (errorf < AtomicInteger(1e-6)) break;
-			}
 		}
 };
 
@@ -143,8 +142,10 @@ int main(int argc, char* argv[]) {
 
 	errorf = 100;
 
-	while (errorf > AtomicInteger(1e-6))) {
-		Galois::for_each(Graph.begin(), Graph.end(), Process());
+	while (errorf > AtomicInteger(1e-6)) {
+		for (int j=0;j<n;j++) {
+			Galois::for_each(Graph.begin(), Graph.end(), Process(j));
+		}
 	}
 
 	cout << "SGD Completed" << endl;
