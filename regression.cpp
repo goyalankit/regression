@@ -33,7 +33,9 @@ using namespace std;
 #define pair_int pair< int, int >
 #define neta 0.1
 
-double errorf,val,w_next;
+typedef Galois::GAtomicPadded<double> AtomicInteger;
+AtomicInteger errorf;
+double val,w_next;
 int n,d,src,dest,weight;
 
 
@@ -67,20 +69,20 @@ struct Process {
 				for (i=0;i<Graph.size();i++) {
 					if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
 						val = val + (Graph[i].w * Graph[i].samples[j]);
-						//cout << "found" << endl;
+						cout << "found" << endl;
 					}
-					//cout << "val=" << val << endl;
+					cout << "val=" << val << endl;
 				}
 				for (i=0;i<Graph.size();i++) {
 					if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
 						w_next = Graph[i].w - neta * 2 * Graph[i].samples[j] * val;
 						error = error + w_next - Graph[i].w;
 						Graph[i].w = w_next;
-						//cout << "w_next=" << w_next << endl;
+						cout << "w_next=" << w_next << endl;
 					}
 				}
-				errorf = error;
-				if (errorf < 1e-6) break;
+				errorf = AtomicInteger(error);
+//				if (errorf < AtomicInteger(1e-6)) break;
 			}
 		}
 };
@@ -114,7 +116,7 @@ int main(int argc, char* argv[]) {
 			//inFile >> Graph[i][j];
 			int k;
 			inFile >> k; 
-			if (k!=0) Graph[i].samples[j] = k;
+			if (k!=0) Graph[j].samples[i] = k;
 			Graph[i].w=0;
 		}
 		i++;
@@ -141,7 +143,7 @@ int main(int argc, char* argv[]) {
 
 	errorf = 100;
 
-	while (errorf > 1e-6) {
+	while (errorf > AtomicInteger(1e-6))) {
 		Galois::for_each(Graph.begin(), Graph.end(), Process());
 	}
 
