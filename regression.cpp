@@ -35,7 +35,8 @@ using namespace std;
 
 typedef Galois::GAtomicPadded<double> AtomicInteger;
 AtomicInteger errorf;
-double val,w_next;
+double outerror;
+double w_next;
 int n,d,src,dest,weight;
 
 
@@ -48,6 +49,7 @@ struct comp {
 struct node {
 	map<int, int > samples;
 	double w;
+	int id;
 };
 
 
@@ -55,35 +57,24 @@ struct node {
 
 vector<int > Y;
 vector<node > Graph;
-
 struct Process {
-	Process() { }
+	int sn;
+	double val;
+	Process(int l, double v) { sn = l; val = v;}
 	template<typename Context>
 		void operator()(node& source, Context& ctx) {
-			int i = 0;
-			double error, val, w_next;
-
-			for (int j=0;j<n;j++) {
-				error =0;
-				val = 0 - Y[j];
-				for (i=0;i<Graph.size();i++) {
-					if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
-						val = val + (Graph[i].w * Graph[i].samples[j]);
-						cout << "found" << endl;
-					}
-					cout << "val=" << val << endl;
-				}
-				for (i=0;i<Graph.size();i++) {
-					if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
-						w_next = Graph[i].w - neta * 2 * Graph[i].samples[j] * val;
-						error = error + w_next - Graph[i].w;
-						Graph[i].w = w_next;
-						cout << "w_next=" << w_next << endl;
-					}
-				}
-				errorf = AtomicInteger(error);
-//				if (errorf < AtomicInteger(1e-6)) break;
+			double error, w_next;
+			error =0;
+			if  (source.samples.find(sn) != source.samples.end()) {
+				w_next = source.w - neta * 2 * source.samples[sn] * val;
+				error = w_next - source.w;
+				Graph[source.id].w = w_next;
+				cout << "w_next=" << w_next << endl;
+				cout << "sourceid " << source.id << w_next << endl;
 			}
+			outerror = outerror + error;
+	//		errorf = errorf + AtomicInteger(error);
+			//if (errorf < AtomicInteger(1e-6)) break;
 		}
 };
 
@@ -92,7 +83,7 @@ int main(int argc, char* argv[]) {
 	ifstream inFile;
 	std::string line;
 
-	Galois::setActiveThreads(16);
+	Galois::setActiveThreads(1);
 	int file = atoi(argv[1]);
 	if (file == 0) 	inFile.open("/scratch/01011/xinsui/graphdata/USA-road-d.USA.w_edgelist", ifstream::in); 
 	else if (file == 1) inFile.open("/scratch/01011/xinsui/graphdata/rmat8-2e24.w_edgelist_clean", ifstream::in);
@@ -118,9 +109,11 @@ int main(int argc, char* argv[]) {
 			inFile >> k; 
 			if (k!=0) Graph[j].samples[i] = k;
 			Graph[i].w=0;
+			Graph[j].id = j;
 		}
 		i++;
 	}
+
 
 	if (i != n) {
 		cout << "File input error" << endl; return 0;
@@ -141,10 +134,28 @@ int main(int argc, char* argv[]) {
 	}
 
 
-	errorf = 100;
+	outerror = 100;
 
-	while (errorf > AtomicInteger(1e-6))) {
-		Galois::for_each(Graph.begin(), Graph.end(), Process());
+	double val = 0;
+
+	cout << "first node pointer value " << &Graph[0] << endl;
+	while (outerror > 1e-6) {
+		for (int j=0;j<n;j++) {
+			outerror= 0;
+				val = 0 - Y[j];
+				for (i=0;i<Graph.size();i++) {
+					if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
+						val = val + (Graph[i].w * Graph[i].samples[j]);
+						cout << i <<" w"<< Graph[i].w << endl;
+
+					}
+					cout << "val=" << val << endl;
+				}
+			
+			Galois::for_each(Graph.begin(), Graph.end(), Process(j, val));
+			cout << "error" << outerror << endl;
+			if (outerror < 1e-6) break;
+		}
 	}
 
 	cout << "SGD Completed" << endl;

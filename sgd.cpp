@@ -13,7 +13,7 @@
 
 using namespace std;
 #define pair_int pair< int, int >
-#define neta 1
+#define neta 0.1
 
 struct comp {
     bool operator() (const pair_int &a, const pair_int &b) {
@@ -26,8 +26,6 @@ struct node {
 	double w;
 };
 
-
-
 int main(int argc, char* argv[]) {
 	ifstream inFile;
 	std::string line;
@@ -37,7 +35,7 @@ int main(int argc, char* argv[]) {
 	else if (file == 1) inFile.open("/scratch/01011/xinsui/graphdata/rmat8-2e24.w_edgelist_clean", ifstream::in);
 	else if (file == 2) inFile.open("/scratch/01011/xinsui/graphdata/random4-25.w_edgelist",ifstream::in);
 	else if (file == 3) inFile.open("USA-road-d.NY.gr",ifstream::in);
-	else inFile.open("inputfile", ifstream::in); 
+	else inFile.open("madelon", ifstream::in); 
         if(!inFile.is_open())
         {
 		cout << "Unable to open file graph.txt. \nProgram terminating...\n";
@@ -59,19 +57,14 @@ int main(int argc, char* argv[]) {
 			//inFile >> Graph[i][j];
 			int k;
 			inFile >> k; 
-//			if (k!=0) 
-                            Graph[j].samples[i] = k;
-//                        if (i == 0) cout<<Graph[j].samples[i]<<"::";
-			Graph[j].w=initial_w;
+			Graph[j].samples[i] = k;
+			Graph[i].w=initial_w;
 		}
 		i++;
-//                if(i == 0)
-//                    for (int j = 0; j < d; j++)
-//                        cout<<Graph[j].samples[0]<<"--";
 	}
 	if (i != n) {
 		cout << "File input error" << endl; return 0;
-	}
+	}	
 	inFile.close();
 	cout << "No .of samples=" << n << " No of features=" << d << endl;
 //	for (i=0;i<Y.size();i++) cout << Y[i] << "|" ;
@@ -95,12 +88,9 @@ int main(int argc, char* argv[]) {
                         double sum_w = 0.0;
 			for (i=0;i<Graph.size();i++) {
 				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
-//                                    cout<<"Weight "<<i<<" : "<<Graph[i].w;
 					w_next = Graph[i].w - (double)neta * 2.0 * Graph[i].samples[j] * val;
-//					error = error + w_next - Graph[i].w;
-//                                        cout<<"Error: "<<error<<(double)neta<<"i:"<<i<<"j:"<<j<<"-"<<Graph[i].samples[j]<<"-"<<val<<endl;
 					Graph[i].w = w_next; 
-                                        sum_w += Graph[i].w;
+                    sum_w += Graph[i].w;
 				}
 			}
                         //normalize w
