@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
 	else if (file == 1) inFile.open("/scratch/01011/xinsui/graphdata/rmat8-2e24.w_edgelist_clean", ifstream::in);
 	else if (file == 2) inFile.open("/scratch/01011/xinsui/graphdata/random4-25.w_edgelist",ifstream::in);
 	else if (file == 3) inFile.open("USA-road-d.NY.gr",ifstream::in);
-	else inFile.open("madelon", ifstream::in); 
+	else inFile.open("inputfile", ifstream::in); 
         if(!inFile.is_open())
         {
 		cout << "Unable to open file graph.txt. \nProgram terminating...\n";
@@ -83,9 +83,9 @@ int main(int argc, char* argv[]) {
 			for (i=0;i<Graph.size();i++) {
 				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
 					val = val + (Graph[i].w * Graph[i].samples[j]);
-					//cout << "found" << endl;
+					cout << i <<" w"<<Graph[i].w << endl;
 				}
-//				cout << "val=" << val << endl;
+				cout << "val=" << val << endl;
 			}
 			for (i=0;i<Graph.size();i++) {
 				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
