@@ -13,7 +13,8 @@
 
 using namespace std;
 #define pair_int pair< int, int >
-#define neta 0.01
+#define neta .001
+#define iter 1000
 
 struct comp {
     bool operator() (const pair_int &a, const pair_int &b) {
@@ -80,13 +81,16 @@ int main(int argc, char* argv[]) {
 	inFile.close();
 	cout << "No .of samples=" << n << " No of features=" << d << endl;
 	double val,w_next;
-	while (true) {
-		for (int j=0;j<n;j++) {
+        int k = 0;
+	while (k < iter) {
+            k++;
+            int j = 0;
+		for (;j<n;j++) {
 			val = 0 - Y[j];
 			for (i=0;i<Graph.size();i++) {
-				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
+//				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
 					val = val + (Graph[i].w * Graph[i].samples[j]);
-				}
+//				}
 			}
 //                        double sum_w = 0.0;
 			for (i=0;i<Graph.size();i++) {
@@ -99,6 +103,8 @@ int main(int argc, char* argv[]) {
                         //normalize w
 //                        for (i=0;i<Graph.size();i++) Graph[i].w /= sum_w;
                         //error calculation
+                        cout<<k<<endl;
+                        if(k== iter && (j > (n-5))) {
                         double error = 0.0;
                         for (int j1 = 0; j1 < n; j1++) {
                             double partError = 0.0 - Y[j1];
@@ -110,6 +116,7 @@ int main(int argc, char* argv[]) {
                         error = sqrt(error);
                         cout<<"\nError : "<<error<<endl;
                         if (error < 1e-6) break; 
+                        }
         	}
 	}
 	cout << "SGD Completed" << endl;
