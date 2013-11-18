@@ -89,9 +89,9 @@ int main(int argc, char* argv[]) {
         int k = 0;
         int start_s = clock();
 	while (k < iter) {
-            k++;
-            int j = 0;
-		for (;j<n;j++) {
+                k++;
+//                #pragma omp parallel for num_threads(threads)             
+		for (int j = 0; j<n; j++) {
 			val = 0 - Y[j];
 			for (i=0;i<Graph.size();i++) {
 				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
