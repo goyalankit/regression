@@ -83,6 +83,7 @@ int main(int argc, char* argv[]) {
         cout << "Neta : "<< neta << " Iterations : "<< iter << endl;
 	double val,w_next;
         int k = 0;
+        int start_s = clock();
 	while (k < iter) {
             k++;
             int j = 0;
@@ -119,6 +120,7 @@ int main(int argc, char* argv[]) {
         	}
 	}
 	cout << "SGD Completed" << endl;
+        cout << "Time taken: " << (clock()-start_s)/double(CLOCKS_PER_SEC)*1000 << " ms." << endl;
 //	for (i=0;i<Graph.size();i++) {
 //		cout << Graph[i].w << endl;
 //        }
