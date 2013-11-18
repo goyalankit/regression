@@ -13,8 +13,8 @@
 
 using namespace std;
 #define pair_int pair< int, int >
-#define neta .001
-#define iter 1000
+#define neta_default .0001
+#define iter_default 10
 
 struct comp {
     bool operator() (const pair_int &a, const pair_int &b) {
@@ -31,12 +31,14 @@ int main(int argc, char* argv[]) {
 	ifstream inFile;
 	std::string line;
 	int n,d,src,dest,weight;
-	int file = atoi(argv[1]);
-	if (file == 0) 	inFile.open("/scratch/01011/xinsui/graphdata/USA-road-d.USA.w_edgelist", ifstream::in); 
-	else if (file == 1) inFile.open("/scratch/01011/xinsui/graphdata/rmat8-2e24.w_edgelist_clean", ifstream::in);
-	else if (file == 2) inFile.open("/scratch/01011/xinsui/graphdata/random4-25.w_edgelist",ifstream::in);
-	else if (file == 3) inFile.open("USA-road-d.NY.gr",ifstream::in);
-	else inFile.open("madelon", ifstream::in); 
+        float neta = neta_default; 
+        int iter = iter_default;
+	inFile.open("madelon", ifstream::in);
+        
+        if(argc > 2) {
+            neta = atof(argv[1]);
+            iter = atoi(argv[2]);
+        }
         if(!inFile.is_open())
         {
 		cout << "Unable to open file graph.txt. \nProgram terminating...\n";
@@ -52,25 +54,23 @@ int main(int argc, char* argv[]) {
         maxX.assign(d,0);
         double initial_w = 0;
 	int i=0; 
-	while (inFile >> Y[i])
+	while (i < n)
 	{
+                inFile >> Y[i];
 		for (int j=0; j<d; j++) {
-                    if(j == 0){Graph[j].samples[i] = 0; Graph[j].w=initial_w;continue;}
+			if(i == 0) Graph[j].w = initial_w;
+                        if(j == 0){Graph[j].samples[i] = 0; continue;}
 			int k;
 			inFile >> k; 
 			Graph[j].samples[i] = k;
-//                        cout<<k<<"--"<< maxX[j]<<":";
                         if(k > maxX[j]) maxX[j] = k;
-			Graph[i].w=initial_w;
 		}
 		i++;
 	}
         //Normalize
         for(int i = 0; i< d; i++) {
-//            cout<<maxX[i]<<":";
             for(int j = 0; j < n; j++) {
                 Graph[i].samples[j] /= maxX[i];
-//                cout << Graph[i].samples[j]<<" ";
                 if(i == 0) Graph[i].samples[j] = 0;
             }
         }
@@ -80,6 +80,7 @@ int main(int argc, char* argv[]) {
 	}	
 	inFile.close();
 	cout << "No .of samples=" << n << " No of features=" << d << endl;
+        cout << "Neta : "<< neta << " Iterations : "<< iter << endl;
 	double val,w_next;
         int k = 0;
 	while (k < iter) {
@@ -88,23 +89,21 @@ int main(int argc, char* argv[]) {
 		for (;j<n;j++) {
 			val = 0 - Y[j];
 			for (i=0;i<Graph.size();i++) {
-//				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
+				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
 					val = val + (Graph[i].w * Graph[i].samples[j]);
-//				}
+				}
 			}
 //                        double sum_w = 0.0;
 			for (i=0;i<Graph.size();i++) {
 				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
 					Graph[i].w = Graph[i].w - (double)neta * 2.0 * Graph[i].samples[j] * val;
-//                                        cout<<Graph[i].w<<" ";
 //                    sum_w += Graph[i].w;
 				}
 			}
                         //normalize w
-//                        for (i=0;i<Graph.size();i++) Graph[i].w /= sum_w;
+//                      for (i=0;i<Graph.size();i++) Graph[i].w /= sum_w;
                         //error calculation
-                        cout<<k<<endl;
-                        if(k== iter && (j > (n-5))) {
+                        if(k== iter && (j > (n-6))) {
                         double error = 0.0;
                         for (int j1 = 0; j1 < n; j1++) {
                             double partError = 0.0 - Y[j1];
@@ -114,15 +113,15 @@ int main(int argc, char* argv[]) {
                             error = error + partError * partError;
                         }
                         error = sqrt(error);
-                        cout<<"\nError : "<<error<<endl;
+                        cout<<"Error : "<<error<<endl;
                         if (error < 1e-6) break; 
                         }
         	}
 	}
 	cout << "SGD Completed" << endl;
-	for (i=0;i<Graph.size();i++) {
-		cout << Graph[i].w << endl;
-        }
+//	for (i=0;i<Graph.size();i++) {
+//		cout << Graph[i].w << endl;
+//        }
 	
   	return 0;
 }
