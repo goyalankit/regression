@@ -31,13 +31,15 @@
 
 using namespace std;
 #define pair_int pair< int, int >
-#define neta 0.1
+#define neta_default .0001
+#define iter_default 10
 
 typedef Galois::GAtomicPadded<double> AtomicInteger;
 AtomicInteger errorf;
 double outerror;
 double w_next;
 int n,d,src,dest,weight;
+float neta;
 
 
 struct comp {
@@ -63,18 +65,9 @@ struct Process {
 	Process(int l, double v) { sn = l; val = v;}
 	template<typename Context>
 		void operator()(node& source, Context& ctx) {
-			double error, w_next;
-			error =0;
 			if  (source.samples.find(sn) != source.samples.end()) {
-				w_next = source.w - neta * 2 * source.samples[sn] * val;
-				error = w_next - source.w;
-				Graph[source.id].w = w_next;
-				cout << "w_next=" << w_next << endl;
-				cout << "sourceid " << source.id << w_next << endl;
+				Graph[source.id].w = source.w - (double)neta * 2.0 * source.samples[sn] * val;
 			}
-			outerror = outerror + error;
-	//		errorf = errorf + AtomicInteger(error);
-			//if (errorf < AtomicInteger(1e-6)) break;
 		}
 };
 
@@ -82,83 +75,88 @@ int main(int argc, char* argv[]) {
 	Galois::StatManager statManager;
 	ifstream inFile;
 	std::string line;
-
 	Galois::setActiveThreads(1);
-	int file = atoi(argv[1]);
-	if (file == 0) 	inFile.open("/scratch/01011/xinsui/graphdata/USA-road-d.USA.w_edgelist", ifstream::in); 
-	else if (file == 1) inFile.open("/scratch/01011/xinsui/graphdata/rmat8-2e24.w_edgelist_clean", ifstream::in);
-	else if (file == 2) inFile.open("/scratch/01011/xinsui/graphdata/random4-25.w_edgelist",ifstream::in);
-	else if (file == 3) inFile.open("USA-road-d.NY.gr",ifstream::in);
-	else inFile.open("inputfile", ifstream::in); 
+        neta = neta_default; 
+        int iter = iter_default;
+	inFile.open("madelon", ifstream::in);
+        
+        if(argc > 2) {
+            neta = atof(argv[1]);
+            iter = atoi(argv[2]);
+        }
 	if(!inFile.is_open())
 	{
 		cout << "Unable to open file graph.txt. \nProgram terminating...\n";
 		return 0;
 	}
 	inFile>>n>>d;
-
+	d++;
+        vector<double> maxX;
+        maxX.assign(d,0);
 	Y.resize(n);
 	Graph.resize(d);
+        double initial_w = 0;
 	int i=0;
-
-	while (inFile >> Y[i])
+	while (i < n)
 	{
+                inFile >> Y[i];
 		for (int j=0; j<d; j++) {
-			//inFile >> Graph[i][j];
+			if(i == 0) Graph[j].w = initial_w;
+                        if(j == 0){Graph[j].samples[i] = 0; continue;}
 			int k;
 			inFile >> k; 
-			if (k!=0) Graph[j].samples[i] = k;
-			Graph[i].w=0;
+			Graph[j].samples[i] = k;
 			Graph[j].id = j;
+                        if(k > maxX[j]) maxX[j] = k;
 		}
 		i++;
 	}
-
-
-	if (i != n) {
-		cout << "File input error" << endl; return 0;
-	}	
 	inFile.close();
-
+        //Normalize
+        for(int i = 0; i< d; i++) {
+            for(int j = 0; j < n; j++) {
+                Graph[i].samples[j] /= maxX[i];
+                if(i == 0) Graph[i].samples[j] = 0;
+            }
+        }
+	cout << "check" << endl;
 	cout << "No .of samples=" << n << " No of features=" << d << endl;
-
 	for (i=0;i<Y.size();i++) cout << Y[i] << "|" ;
 	cout << endl;
+        cout << "Neta : "<< neta << " Iterations : "<< iter << endl;
 
-	for (i=0;i<Graph.size();i++) {
-		cout << "Node =" << i << " ||||| ";
-		for (std::map<int, int>::iterator it=Graph[i].samples.begin(); it!=Graph[i].samples.end(); ++it) {
-			std::cout << it->first << " has " << it->second << " | ";
-		}
-		cout << endl;
-	}
-
-
-	outerror = 100;
-
-	double val = 0;
-
-	cout << "first node pointer value " << &Graph[0] << endl;
-	while (outerror > 1e-6) {
-		for (int j=0;j<n;j++) {
-			outerror= 0;
-				val = 0 - Y[j];
-				for (i=0;i<Graph.size();i++) {
-					if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
-						val = val + (Graph[i].w * Graph[i].samples[j]);
-						cout << i <<" w"<< Graph[i].w << endl;
-
-					}
-					cout << "val=" << val << endl;
+	double val,w_next;
+        int k = 0;
+        int start_s = clock();
+	while (k < iter) {
+            k++;
+            int j = 0;
+		for (;j<n;j++) {
+			val = 0 - Y[j];
+			for (i=0;i<Graph.size();i++) {
+				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
+					val = val + (Graph[i].w * Graph[i].samples[j]);
 				}
-			
+			}
 			Galois::for_each(Graph.begin(), Graph.end(), Process(j, val));
-			cout << "error" << outerror << endl;
-			if (outerror < 1e-6) break;
-		}
+                        //error calculation
+                        if(k== iter && (j > (n-6))) {
+                        	double error = 0.0;
+                        	for (int j1 = 0; j1 < n; j1++) {
+                            		double partError = 0.0 - Y[j1];
+                            		for(int i1 = 0; i1 < d; i1++) {
+                                		partError = partError + Graph[i1].samples[j1]*Graph[i1].w;
+                            		}
+                            		error = error + partError * partError;
+                        	}
+                        	error = sqrt(error);
+                        	cout<<"Error : "<<error<<endl;
+                        	if (error < 1e-6) break; 
+                       }
+        	}
 	}
-
 	cout << "SGD Completed" << endl;
+	cout << "Time taken: " << (clock()-start_s)/double(CLOCKS_PER_SEC)*1000 << " ms." << endl;
 
 	for (i=0;i<Graph.size();i++) {
 		cout << Graph[i].w << endl;
