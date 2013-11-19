@@ -15,7 +15,7 @@
 using namespace std;
 #define pair_int pair< int, int >
 #define lambda_default .0001
-#define iter_default 100
+#define iter_default 10
 #define thread_default 10
 typedef std::map<pair_int, double>::iterator it_type;
 
@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
     std::vector< node > Graph;
     int threads = thread_default;
     int iter = iter_default;
-    inFile.open("inputfile", ifstream::in);
+    inFile.open("inputfile2", ifstream::in);
 
     if(argc > 3) {
         lambda = atof(argv[1]);
@@ -91,8 +91,8 @@ int main(int argc, char* argv[]) {
             int k;
             inFile >> k;
 
-            X_cols[j].add(i,k);
-//            X_rows[i].add(j,k);
+            X_cols[j].add(i,k); //Needs optimization. Adding all values for now
+//          X_rows[i].add(j,k);
             Graph[j].w = initial_w; //could be removed outside the loop
             Graph[j].id = j;       //""
             if(k > maxX[j]) maxX[j] = k;
@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) {
         i++;
     }
 
-    //calculate the \X^T * \X
+    //calculate the \X^T * \X. This approach may not work for large matrices
     for(int i=0; i< d ; i++){
         for(int j=0; j< d; j++){
             for (int k = 0; k < n; k++) {
@@ -108,6 +108,7 @@ int main(int argc, char* argv[]) {
             }
         }
     }
+
 
     //calculating the yx for each node
     for (int ii = 0; ii < d; ii++) {
@@ -117,7 +118,6 @@ int main(int argc, char* argv[]) {
         }
         Graph[ii].yx = temp;
     }
-
 
     int k=0;
     while(k<iter){
@@ -132,9 +132,9 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    for (i=0;i<Graph.size();i++) {
-//        cout << Graph[i].w << endl;
-    }
+    //for (i=0;i<Graph.size();i++) {
+        //cout << Graph[i].w << endl;
+    //}
 
 
     /*
