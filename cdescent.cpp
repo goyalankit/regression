@@ -104,12 +104,16 @@ int main(int argc, char* argv[]) {
     for(int i=0; i< d ; i++){
         for(int j=0; j< d; j++){
             for (int k = 0; k < n; k++) {
-                H[make_pair(i,j)] = H[make_pair(i,j)] + X_cols[i].values[X_cols[i].idxs[k]] * X_cols[j].values[X_cols[j].idxs[k]];
+                 double tmp = X_cols[i].values[X_cols[i].idxs[k]] * X_cols[j].values[X_cols[j].idxs[k]];
+                 if(tmp>0){
+                     std::cout << "adding pair "<<i<<", "<<j << std::endl;
+                     H[make_pair(i,j)] += tmp;
+                 }
             }
         }
     }
 
-
+//    std::cout << "size of H "<< H.size() << std::endl;
     //calculating the yx for each node
     for (int ii = 0; ii < d; ii++) {
         double temp = 0;
@@ -123,7 +127,7 @@ int main(int argc, char* argv[]) {
     while(k<iter){
         k++;
         for (int i = 0; i < d; i++) {
-            double val = 0;
+            double val = 0.0;
             for (int m = 0; m < d; m++) {
                 val = val + Graph[m].w * H[make_pair(m,i)];
             }
@@ -132,9 +136,9 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    //for (i=0;i<Graph.size();i++) {
-        //cout << Graph[i].w << endl;
-    //}
+    for (i=0;i<Graph.size();i++) {
+        cout << Graph[i].w << endl;
+    }
 
 
     /*
