@@ -14,8 +14,8 @@
 
 using namespace std;
 #define pair_int pair< int, int >
-#define neta_default .0001
-#define iter_default 10
+#define lambda_default .0001
+#define iter_default 100
 #define thread_default 10
 typedef std::map<pair_int, double>::iterator it_type;
 
@@ -26,8 +26,9 @@ struct comp {
 };
 
 struct node {
-    map<int, double > samples;
+    int id;
     double w;
+    double yx;
 };
 
 struct sparse_array {
@@ -43,21 +44,23 @@ struct sparse_array {
     }
 };
 
+
+
 int main(int argc, char* argv[]) {
     ifstream inFile;
     std::string line;
     int n,d,src,dest,weight;
-    float neta = neta_default;
-    //std::map<pair_int, double> XT; //transpose of X
+    float lambda = lambda_default;
     std::vector<sparse_array>  X_cols,  X_rows;
     std::map<pair_int, double> XT; //transpose of X
-    std::map<pair_int, double> H; //transpose of XXt
+    std::map<pair_int, double> H; //transpose of X^TX
+    std::vector< node > Graph;
     int threads = thread_default;
     int iter = iter_default;
     inFile.open("inputfile", ifstream::in);
 
     if(argc > 3) {
-        neta = atof(argv[1]);
+        lambda = atof(argv[1]);
         iter = atoi(argv[2]);
         threads = atoi(argv[3]);
     }
@@ -74,6 +77,7 @@ int main(int argc, char* argv[]) {
     Y.resize(n);
     X_cols.resize(d);
     X_rows.resize(n);
+    Graph.resize(d);
 
 
     maxX.assign(d,0);
@@ -82,39 +86,61 @@ int main(int argc, char* argv[]) {
     while (i < n)
     {
         inFile >> Y[i];
-        for (int j=0; j<d; j++) {
+        int j=0;
+        for (;j<d; j++) {
             int k;
             inFile >> k;
 
             X_cols[j].add(i,k);
-            X_rows[i].add(j,k);
-
-            //			X[make_pair(i,j)] = k;
-            //			XT[make_pair(j,i)] = k;
+//            X_rows[i].add(j,k);
+            Graph[j].w = initial_w; //could be removed outside the loop
+            Graph[j].id = j;       //""
+            if(k > maxX[j]) maxX[j] = k;
         }
         i++;
     }
 
-
-    for(int i=0; i< n ; i++){
-        for(int j=0; j< n; j++){
-            for (int k = 0; k < d; k++) {
-                H[make_pair(i,j)] = H[make_pair(i,j)] + X_rows[i].values[X_rows[i].idxs[k]] * X_rows[j].values[X_rows[j].idxs[k]];
+    //calculate the \X^T * \X
+    for(int i=0; i< d ; i++){
+        for(int j=0; j< d; j++){
+            for (int k = 0; k < n; k++) {
+                H[make_pair(i,j)] = H[make_pair(i,j)] + X_cols[i].values[X_cols[i].idxs[k]] * X_cols[j].values[X_cols[j].idxs[k]];
             }
         }
     }
 
-
-    	for(it_type iterator = H.begin(); iterator != H.end(); iterator++) {
-            cout << iterator->first.first << ", " << iterator->first.second << " " << iterator->second << endl;
+    //calculating the yx for each node
+    for (int ii = 0; ii < d; ii++) {
+        double temp = 0;
+        for(int k=0; k<n; k++){
+            temp += Y[k] * X_cols[ii].values[X_cols[ii].idxs[k]];
         }
-
-    //	cout << "The vertex 2,3 "<< X[make_pair(4,3)] << " in transpose " << XT[make_pair(3,4)] << endl;
-    //	for(it_type iterator = X.begin(); iterator != X.end(); iterator++) {
-    //		H[make_pair(iterator->first.first,iterator->first.second)] = X[make_pair(iterator->first.first, iterator->first.second)] * XT[make_pair(iterator->first.first, iterator->first.second)];
-    //	}
+        Graph[ii].yx = temp;
+    }
 
 
+    int k=0;
+    while(k<iter){
+        k++;
+        for (int i = 0; i < d; i++) {
+            double val = 0;
+            for (int m = 0; m < d; m++) {
+                val = val + Graph[m].w * H[make_pair(m,i)];
+            }
+            Graph[i].w = (Graph[i].yx - val)/(H[make_pair(i,i)]);
+            cout << "weight for "<< i <<" node" << Graph[i].w << endl;
+        }
+    }
 
+    for (i=0;i<Graph.size();i++) {
+//        cout << Graph[i].w << endl;
+    }
+
+
+    /*
+       for(it_type iterator = H.begin(); iterator != H.end(); iterator++) {
+       cout << iterator->first.first << ", " << iterator->first.second << " " << iterator->second << endl;
+       }
+    */
     return 0;
 }
