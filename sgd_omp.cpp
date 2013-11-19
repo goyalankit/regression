@@ -57,29 +57,32 @@ int main(int argc, char* argv[]) {
 	Graph.resize(d);
         maxX.assign(d,0);
         double initial_w = 0;
-	int i=0; 
-	while (i < n)
+	int j=0; 
+	while (j < n)
 	{
-                inFile >> Y[i];
-		for (int j=0; j<d; j++) {
-			if(i == 0) Graph[j].w = initial_w;
-                        if(j == 0){Graph[j].samples[i] = 0; continue;}
-			int k;
-			inFile >> k; 
-			Graph[j].samples[i] = k;
-                        if(k > maxX[j]) maxX[j] = k;
+                inFile >> Y[j];
+		for (int i=0; i<d; i++) {
+			if(j == 0) Graph[i].w = initial_w;
+                        int k = 1;
+                        if(i == 0) 
+                            Graph[i].samples[j] = 1;
+                        else {
+                            inFile >> k; 
+                            Graph[i].samples[j] = k;
+                        }
+                        if(k > maxX[i]) maxX[i] = k;
 		}
-		i++;
+		j++;
 	}
         //Normalize
         for(int i = 0; i< d; i++) {
             for(int j = 0; j < n; j++) {
                 Graph[i].samples[j] /= maxX[i];
-                if(i == 0) Graph[i].samples[j] = 0;
+//                if(i == 0) Graph[i].samples[j] = 0;
             }
         }
         
-	if (i != n) {
+	if (j != n) {
 		cout << "File input error" << endl; return 0;
 	}	
 	inFile.close();
@@ -93,14 +96,14 @@ int main(int argc, char* argv[]) {
 //                #pragma omp parallel for num_threads(threads)             
 		for (int j = 0; j<n; j++) {
 			val = 0 - Y[j];
-			for (i=0;i<Graph.size();i++) {
+			for (int i=0;i<Graph.size();i++) {
 				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
 					val = val + (Graph[i].w * Graph[i].samples[j]);
 				}
 			}
 //                        double sum_w = 0.0;
                         #pragma omp parallel for num_threads(threads) 
-			for (i=0;i<Graph.size();i++) {
+			for (int i=0;i<Graph.size();i++) {
 				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
 					Graph[i].w = Graph[i].w - (double)neta * 2.0 * Graph[i].samples[j] * val;
 //                    sum_w += Graph[i].w;
