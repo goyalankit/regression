@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
 	int n,d,src,dest,weight;
         float neta = neta_default;
 	//std::map<pair_int, double> XT; //transpose of X
-	std::vector<sparse_array> * X_cols, * X_rows;
+	std::vector<sparse_array>  X_cols,  X_rows;
 	std::map<pair_int, double> XT; //transpose of X
 	std::map<pair_int, double> H; //transpose of XXt
         int threads = thread_default;
@@ -65,13 +65,17 @@ int main(int argc, char* argv[]) {
         {
 		cout << "Unable to open file graph.txt. \nProgram terminating...\n";
                 return 0;
-        }
+        }i
 	inFile>>n>>d;
 	cout << "number of nodes " << n << " and featured " << d <<endl;
 
 	vector<int > Y;
         vector<int> maxX;
 	Y.resize(n);
+	X_cols.resize(d);
+	X_rows.resize(n);
+	
+
         maxX.assign(d,0);
         double initial_w = 0;
 	int i=0; 
@@ -81,9 +85,11 @@ int main(int argc, char* argv[]) {
 		for (int j=0; j<d; j++) {
 			int k;
 			inFile >> k; 
-
-			X_cols[j].add(i, k);
-			X_rows[i].add(j, k);
+			
+			X_cols[j].add(i,k);			
+			
+			
+//			X_rows[i].add(j,k);
 
 //			X[make_pair(i,j)] = k;
 //			XT[make_pair(j,i)] = k;
@@ -91,6 +97,11 @@ int main(int argc, char* argv[]) {
 		i++;
 	}
 
+
+	for(int i=0; i<X_cols.size ; i++){
+		for(int j=0; j<X_cols.idxs; j++)
+			H[make_pair(i,j)] = X_cols.idA[X_cols[i]]
+	}
 	
 	
 //	cout << "The vertex 2,3 "<< X[make_pair(4,3)] << " in transpose " << XT[make_pair(3,4)] << endl;
