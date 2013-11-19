@@ -15,7 +15,7 @@
 using namespace std;
 #define pair_int pair< int, int >
 #define lambda_default .0001
-#define iter_default 10
+#define iter_default 100
 #define thread_default 10
 typedef std::map<pair_int, double>::iterator it_type;
 
@@ -31,29 +31,12 @@ struct node {
     double yx;
 };
 
-struct sparse_array {
-    std::vector<unsigned int> idxs;
-    std::vector<double> values;
-
-    int length() {
-        return idxs.size();
-    }
-    void add(unsigned int _idx, double value) {
-        idxs.push_back(_idx);
-        values.push_back(value);
-    }
-};
-
-
-
 int main(int argc, char* argv[]) {
     ifstream inFile;
     std::string line;
     int n,d,src,dest,weight;
     float lambda = lambda_default;
-//    std::vector<sparse_array>  X_cols,  X_rows;
     std::map<pair_int, double> X; //transpose of X
-    std::map<pair_int, double> XT; //transpose of X
     std::map<pair_int, double> H; //transpose of X^TX
     std::vector< node > Graph;
     int threads = thread_default;
@@ -107,7 +90,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-//    std::cout << "size of H "<< H.size() << std::endl;
+    //    std::cout << "size of H "<< H.size() << std::endl;
     //calculating the yx for each node
     for (int ii = 0; ii < d; ii++) {
         double temp = 0;
@@ -121,12 +104,25 @@ int main(int argc, char* argv[]) {
     while(k<iter){
         k++;
         for (int i = 0; i < d; i++) {
-            double val = 0.0;
+            double val = 2.0;
             for (int m = 0; m < d; m++) {
                 val = val + Graph[m].w * H[make_pair(m,i)];
             }
             if(H[make_pair(i,i)]!=0) Graph[i].w = (Graph[i].yx - val)/(H[make_pair(i,i)]);
-        //    cout << "weight for "<< i <<" node" << Graph[i].w << endl;
+            //    cout << "weight for "<< i <<" node" << Graph[i].w << endl;
+            if(k== iter && i>d-2){
+                double error = 0.0;
+                for(int j1=0; j1<n ; j1++){
+                    double part_error = 0.0 - Y[j1];
+                    for (int i1 = 0; i1 < d; i1++) {
+                        part_error = part_error + (Graph[i1].w * X[make_pair(i1,j1)]);
+                    }
+                    error = error + part_error * part_error;
+                }
+                error = sqrt(error);
+                std::cout << "Error: "<< error << std::endl;
+                if(error<1e-6) break;
+            }
         }
     }
 
@@ -134,9 +130,9 @@ int main(int argc, char* argv[]) {
         cout << Graph[i].w << endl;
     }
 
-      /*  for(it_type iterator = H.begin(); iterator != H.end(); iterator++) {
-           cout << iterator->first.first << ", " << iterator->first.second << " " << iterator->second << endl;
-       }
+    /*  for(it_type iterator = H.begin(); iterator != H.end(); iterator++) {
+        cout << iterator->first.first << ", " << iterator->first.second << " " << iterator->second << endl;
+        }
 
- */    return 0;
+*/    return 0;
 }
