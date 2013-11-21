@@ -15,7 +15,7 @@
 using namespace std;
 #define pair_int pair< int, int >
 #define lambda_default .0001
-#define iter_default 100
+#define iter_default 10
 #define thread_default 10
 typedef std::map<pair_int, double>::iterator it_type;
 
@@ -82,7 +82,7 @@ int main(int argc, char* argv[]) {
 
     for (int i = 0; i < d; i++) {
         for (int j = 0; j < n; j++) {
-           X[make_pair(i,j)] /= maxX[j];
+           if(maxX[j]!=0) X[make_pair(i,j)] /= maxX[j];
         }
     }
 
