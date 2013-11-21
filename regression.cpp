@@ -78,7 +78,8 @@ int main(int argc, char* argv[]) {
 	Galois::setActiveThreads(1);
         neta = neta_default; 
         int iter = iter_default;
-	inFile.open("madelon", ifstream::in);
+	//inFile.open("madelon", ifstream::in);
+	inFile.open("inputfile", ifstream::in);
         
         if(argc > 2) {
             neta = atof(argv[1]);
@@ -125,6 +126,7 @@ int main(int argc, char* argv[]) {
 	cout << endl;
         cout << "Neta : "<< neta << " Iterations : "<< iter << endl;
 
+	typedef GaloisRuntime::WorkList::LIFO<> WL;
 	double val,w_next;
         int k = 0;
         int start_s = clock();
@@ -138,7 +140,9 @@ int main(int argc, char* argv[]) {
 					val = val + (Graph[i].w * Graph[i].samples[j]);
 				}
 			}
-			Galois::for_each(Graph.begin(), Graph.end(), Process(j, val));
+			cout << "val=" << val << endl;
+			Galois::for_each<WL>(Graph.begin(), Graph.end(), Process(j, val));
+			for (i=0;i<Graph.size();i++) cout << "i=" << i << " w=" << Graph[i].w << endl;
                         //error calculation
                         if(k== iter && (j > (n-6))) {
                         	double error = 0.0;
