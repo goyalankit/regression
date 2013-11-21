@@ -80,6 +80,13 @@ int main(int argc, char* argv[]) {
         i++;
     }
 
+    for (int i = 0; i < d; i++) {
+        for (int j = 0; j < n; j++) {
+//            X[make_pair(i,j)] /= maxX[j];
+        }
+    }
+
+
     //calculate the \X^T * \X. This approach may not work for large matrices
     for(int i=0; i< n ; i++){
         for(int j=0; j< n; j++){
