@@ -10,7 +10,7 @@
 #include <map>
 #include <queue>
 #include <sys/time.h>
-//#include <omp.h>
+#include "omp.h"
 
 using namespace std;
 #define pair_int pair< int, int >
@@ -110,6 +110,7 @@ int main(int argc, char* argv[]) {
     int k=0;
     while(k<iter){
         k++;
+#pragma omp parallel for num_threads(threads)
         for (int i = 0; i < d; i++) {
             double val = 2.0;
             for (int m = 0; m < d; m++) {
@@ -128,7 +129,7 @@ int main(int argc, char* argv[]) {
                 }
                 error = sqrt(error);
                 std::cout << "Error: "<< error << std::endl;
-                if(error<1e-6) break;
+   //             if(error<1e-6) break;
             }
         }
     }
