@@ -49,7 +49,7 @@ struct comp {
 };
 
 struct node {
-	map<int, int > samples;
+	map<int, double> samples;
 	double w;
 	int id;
 };
@@ -65,6 +65,7 @@ struct Process {
 	Process(int l, double v) { sn = l; val = v;}
 	template<typename Context>
 		void operator()(node& source, Context& ctx) {
+	//		cout << "RUNNING FOR  " << source.id << " val " << val  << " j " << sn << " source " << source.samples[sn] << endl;
 			if  (source.samples.find(sn) != source.samples.end()) {
 				Graph[source.id].w = source.w - (double)neta * 2.0 * source.samples[sn] * val;
 			}
@@ -75,11 +76,10 @@ int main(int argc, char* argv[]) {
 	Galois::StatManager statManager;
 	ifstream inFile;
 	std::string line;
-	Galois::setActiveThreads(1);
+	Galois::setActiveThreads(16);
         neta = neta_default; 
         int iter = iter_default;
-	//inFile.open("madelon", ifstream::in);
-	inFile.open("inputfile", ifstream::in);
+	inFile.open("madelon", ifstream::in);
         
         if(argc > 2) {
             neta = atof(argv[1]);
@@ -139,6 +139,7 @@ int main(int argc, char* argv[]) {
 				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
 					val = val + (Graph[i].w * Graph[i].samples[j]);
 				}
+//			cout << "Graph weight i " << i << " " << Graph[i].w << endl;
 			}
 			cout << "val=" << val << endl;
 			Galois::for_each<WL>(Graph.begin(), Graph.end(), Process(j, val));
