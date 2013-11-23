@@ -14,7 +14,7 @@
 using namespace std;
 #define pair_int pair< int, int >
 #define neta_default .0001
-#define iter_default 1
+#define iter_default 10
 
 struct comp {
     bool operator() (const pair_int &a, const pair_int &b) {
@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
 	int n,d,src,dest,weight;
         float neta = neta_default; 
         int iter = iter_default;
-	inFile.open("inputfile", ifstream::in);
+	inFile.open("madelon", ifstream::in);
         
         if(argc > 2) {
             neta = atof(argv[1]);
@@ -94,11 +94,9 @@ int main(int argc, char* argv[]) {
 					val = val + (Graph[i].w * Graph[i].samples[j]);
 				}
 
-	//			cout << "Graph weight i " << i << " " << Graph[i].w << endl;
 			}
 //                        double sum_w = 0.0;
 			for (i=0;i<Graph.size();i++) {
-	//			cout << "RUNNING FOR " << i  << "val " << val << " j " << j << " source" << Graph[i].samples[j]  << endl;
 				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
 					Graph[i].w = Graph[i].w - (double)neta * 2.0 * Graph[i].samples[j] * val;
 //                    sum_w += Graph[i].w;
@@ -124,9 +122,9 @@ int main(int argc, char* argv[]) {
 	}
 	cout << "SGD Completed" << endl;
         cout << "Time taken: " << (clock()-start_s)/double(CLOCKS_PER_SEC)*1000 << " ms." << endl;
-	for (i=0;i<Graph.size();i++) {
-		cout << Graph[i].w << endl;
-        }
+//	for (i=0;i<Graph.size();i++) {
+//		cout << Graph[i].w << endl;
+  //      }
 	
   	return 0;
 }
