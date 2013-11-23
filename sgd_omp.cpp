@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
                 return 0;
         }
 	inFile>>n>>d;
-        d++; //Increment d for an empty x (noise)
+        // d++; //Increment d for an empty x (noise)
 	vector<int > Y;
 	vector<node > Graph;
         vector<int> maxX;
@@ -64,9 +64,10 @@ int main(int argc, char* argv[]) {
 		for (int i=0; i<d; i++) {
 			if(j == 0) Graph[i].w = initial_w;
                         int k = 1;
-                        if(i == 0) 
-                            Graph[i].samples[j] = 1;
-                        else {
+                        // if(i == 0) 
+                        //     Graph[i].samples[j] = 1;
+                        // else 
+                        {
                             inFile >> k; 
                             Graph[i].samples[j] = k;
                         }
@@ -75,12 +76,12 @@ int main(int argc, char* argv[]) {
 		j++;
 	}
         //Normalize
-        for(int i = 0; i< d; i++) {
-            for(int j = 0; j < n; j++) {
-                Graph[i].samples[j] /= maxX[i];
-//                if(i == 0) Graph[i].samples[j] = 0;
-            }
-        }
+//         for(int i = 0; i< d; i++) {
+//             for(int j = 0; j < n; j++) {
+//                 Graph[i].samples[j] /= maxX[i];
+// //                if(i == 0) Graph[i].samples[j] = 0;
+//             }
+//         }
         
 	if (j != n) {
 		cout << "File input error" << endl; return 0;
@@ -102,7 +103,7 @@ int main(int argc, char* argv[]) {
 				}
 			}
 //                        double sum_w = 0.0;
-                        #pragma omp parallel for num_threads(threads) 
+            #pragma omp parallel for num_threads(threads) 
 			for (int i=0;i<Graph.size();i++) {
 				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
 					Graph[i].w = Graph[i].w - (double)neta * Graph[i].samples[j] * val / n;
