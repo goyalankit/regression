@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
         float neta = neta_default;
         int threads = thread_default;
         int iter = iter_default;
-	inFile.open("madelon", ifstream::in);
+	inFile.open("inputfile", ifstream::in);
         
         if(argc > 3) {
             neta = atof(argv[1]);
@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
                         #pragma omp parallel for num_threads(threads) 
 			for (int i=0;i<Graph.size();i++) {
 				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
-					Graph[i].w = Graph[i].w - (double)neta * 2.0 * Graph[i].samples[j] * val;
+					Graph[i].w = Graph[i].w - (double)neta * Graph[i].samples[j] * val / n;
 //                    sum_w += Graph[i].w;
 				}
 			}
@@ -129,9 +129,9 @@ int main(int argc, char* argv[]) {
 	}
 	cout << "SGD Completed" << endl;
         cout << "Time taken: " << (clock()-start_s)/double(CLOCKS_PER_SEC)*1000 << " ms." << endl;
-//	for (i=0;i<Graph.size();i++) {
-//		cout << Graph[i].w << endl;
-//        }
+	for (int i=0;i<Graph.size();i++) {
+		cout << Graph[i].w << endl;
+       }
 	
   	return 0;
 }

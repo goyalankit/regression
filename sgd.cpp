@@ -13,8 +13,8 @@
 
 using namespace std;
 #define pair_int pair< int, int >
-#define neta_default .0001
-#define iter_default 10
+#define neta_default .09
+#define iter_default 10000
 
 struct comp {
     bool operator() (const pair_int &a, const pair_int &b) {
@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
 	int n,d,src,dest,weight;
         float neta = neta_default; 
         int iter = iter_default;
-	inFile.open("madelon", ifstream::in);
+	inFile.open("inputfile", ifstream::in);
         
         if(argc > 2) {
             neta = atof(argv[1]);
