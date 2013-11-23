@@ -41,9 +41,10 @@ int main(int argc, char* argv[]) {
     std::vector< node > Graph;
     int threads = thread_default;
     int iter = iter_default;
-    inFile.open("madelon", ifstream::in);
+    //inFile.open("madelon", ifstream::in);
+    inFile.open("inputfile", ifstream::in);
 
-    if(argc > 3) {
+    if(argc > 2) {
         lambda = atof(argv[1]);
         iter = atoi(argv[2]);
         threads = atoi(argv[3]);
@@ -80,11 +81,11 @@ int main(int argc, char* argv[]) {
         i++;
     }
 
-    for (int i = 0; i < d; i++) {
-        for (int j = 0; j < n; j++) {
-		if(maxX[j]!=0) X[make_pair(i,j)] /= maxX[j];
-        }
-    }
+    //for (int i = 0; i < d; i++) {
+    //    for (int j = 0; j < n; j++) {
+    //    	if(maxX[j]!=0) X[make_pair(i,j)] /= maxX[j];
+    //    }
+    //}
 
 
     //calculate the \X^T * \X. This approach may not work for large matrices
@@ -102,18 +103,19 @@ int main(int argc, char* argv[]) {
     for (int ii = 0; ii < d; ii++) {
         double temp = 0;
         for(int k=0; k<n; k++){
-            temp += Y[k] *  X[make_pair(ii,k)];
+            temp += Y[k] *  X[make_pair(k,ii)];
         }
         Graph[ii].yx = temp;
+	cout << temp << endl;
     }
 
     int k=0;
     while(k<iter){
         k++;
         for (int i = 0; i < d; i++) {
-            double val = 2.0;
+            double val = 0.0;
             for (int m = 0; m < d; m++) {
-                val = val + Graph[m].w * H[make_pair(m,i)];
+		if (m != i) val = val + Graph[m].w * H[make_pair(m,i)];
             }
             if(H[make_pair(i,i)]!=0) Graph[i].w = (Graph[i].yx - val)/(H[make_pair(i,i)]);
             //    cout << "weight for "<< i <<" node" << Graph[i].w << endl;
@@ -128,7 +130,7 @@ int main(int argc, char* argv[]) {
                 }
                 error = sqrt(error);
                 std::cout << "Error: "<< error << std::endl;
-                if(error<1e-6) break;
+                if(error<1e-9) break;
             }
         }
     }
@@ -137,9 +139,9 @@ int main(int argc, char* argv[]) {
         cout << Graph[i].w << endl;
     }
 
-    /*  for(it_type iterator = H.begin(); iterator != H.end(); iterator++) {
-        cout << iterator->first.first << ", " << iterator->first.second << " " << iterator->second << endl;
-        }
+ //     for(it_type iterator = H.begin(); iterator != H.end(); iterator++) {
+ //       cout << iterator->first.first << ", " << iterator->first.second << " " << iterator->second << endl;
+ //       }
 
-*/    return 0;
+  return 0;
 }
