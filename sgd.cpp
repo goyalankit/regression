@@ -98,7 +98,7 @@ int main(int argc, char* argv[]) {
 //                        double sum_w = 0.0;
 			for (i=0;i<Graph.size();i++) {
 				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
-					Graph[i].w = Graph[i].w - (double)neta * 2.0 * Graph[i].samples[j] * val;
+					Graph[i].w = Graph[i].w - (double)neta * Graph[i].samples[j] * val / n;
 //                    sum_w += Graph[i].w;
 				}
 			}
