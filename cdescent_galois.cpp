@@ -33,7 +33,7 @@
 using namespace std;
 #define pair_int pair< int, int >
 #define lambda_default .0001
-#define iter_default 10
+#define iter_default 1000
 #define thread_default 10
 typedef std::map<pair_int, float>::iterator it_type;
 
@@ -59,22 +59,23 @@ vector<int > Y;
 
 struct process {
 	template<typename ContextTy>
-	void operator()(GNode& src, ContextTy& lwl) {
-		double hii = 0;
-		double val = 0.0;
-		for (Graph::edge_iterator jj = graph.edge_begin(src), ej = graph.edge_end(src); jj != ej; ++jj) {
-			if(graph.getEdgeDst(jj) != src)
-				val = val + graph.getData(src).w * graph.getEdgeData(jj);
-			else
-				hii = graph.getEdgeData(jj);
-		}	
+		void operator()(GNode& src, ContextTy& lwl) {
+			double hii = 0;
+			double val = 0.0;
+			for (Graph::edge_iterator jj = graph.edge_begin(src), ej = graph.edge_end(src); jj != ej; ++jj) {
+				if(graph.getEdgeDst(jj) != src){
+					val = val + graph.getData(graph.getEdgeDst(jj)).w * graph.getEdgeData(jj);
+				}
+				else{
+					hii = graph.getEdgeData(jj);
+				}
+			}	
 
-		//if(H[make_pair(i,i)]!=0) Graph[i].w = (Graph[i].yx - val)/(H[make_pair(i,i)]);
-		//    cout << "weight for "<< i <<" node" << Graph[i].w << endl;
+			if(hii != 0){
+				graph.getData(src).w = (graph.getData(src).yx - val)/hii;
+			}
 
-		graph.getData(src).w = (graph.getData(src).yx - val)/hii;
-
-	}
+		}
 };
 
 
@@ -86,7 +87,7 @@ void print_edges_in_graph(){
 		for (Graph::edge_iterator jj = graph.edge_begin(src), ej = graph.edge_end(src); jj != ej; ++jj) {
 			Graph::GraphNode dst = graph.getEdgeDst(jj);
 			double weight = graph.getEdgeData(jj);	
-//			std::cout << "Edge: " << src << " " << dst  << " data "<< weight << std::endl;
+			//			std::cout << "Edge: " << src << " " << dst  << " data "<< weight << std::endl;
 		}
 	}
 }
@@ -179,6 +180,6 @@ int main(int argc, char* argv[]) {
 	for (Graph::iterator ii = graph.begin(), ei = graph.end(); ii != ei; ++ii) {
 		GNode src = *ii;
 		cout <<  "i= " << src <<  " w= " << graph.getData(src).w << endl;
-}
+	}
 	return 0;
 }
