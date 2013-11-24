@@ -38,7 +38,8 @@ int main(int argc, char* argv[]) {
     float neta = neta_default;
     int threads = thread_default;
     int iter = iter_default;
-	inFile.open("inputfile", ifstream::in);
+    // inFile.open("inputfile", ifstream::in);
+    inFile.open("madelon", ifstream::in);
         
         if(argc > 3) {
             neta = atof(argv[1]);
@@ -51,12 +52,12 @@ int main(int argc, char* argv[]) {
                 return 0;
         }
 	inFile>>n>>d;
-	vector<int > Y;
+	vector<float > Y;
 	vector<node > Graph;
-        vector<int> maxX;
+    int maxX = 0;
 	Y.resize(n);
 	Graph.resize(d);
-        maxX.assign(d,0);
+        // maxX.assign(d,0);
         double initial_w = 0;
 	int j=0; 
 	while (j < n)
@@ -67,17 +68,19 @@ int main(int argc, char* argv[]) {
                         int k = 1;
                         inFile >> k; 
                         Graph[i].samples[j] = k;
-                        if(k > maxX[i]) maxX[i] = k;
+                        if(abs(k) > maxX) maxX = abs(k);
 		}
 		j++;
 	}
         //Normalize
-//         for(int i = 0; i< d; i++) {
-//             for(int j = 0; j < n; j++) {
-//                 Graph[i].samples[j] /= maxX[i];
-// //                if(i == 0) Graph[i].samples[j] = 0;
-//             }
-//         }
+    if(maxX != 0) {
+        for(int j = 0; j < n; j++) {
+            for(int i = 0; i< d; i++) 
+                Graph[i].samples[j] /= maxX;
+            Y[j] /= maxX;
+        }
+        cout<< "Factor :" << maxX << endl;
+    }
         
 	if (j != n) {
 		cout << "File input error" << endl; return 0;
@@ -86,34 +89,31 @@ int main(int argc, char* argv[]) {
 	cout << "No .of samples=" << n << " No of features=" << d << endl;
         cout << "Neta : "<< neta << " Iterations : "<< iter << " Threads :"<< threads << endl;
 	double val,w_next;
-    int k = 0;
     int start_s = clock();
-	while (k < iter) {
-                k++;
-//                #pragma omp parallel for num_threads(threads)             
+	for (int k = 0; k < iter; k++) {
+        // #pragma omp parallel for num_threads(threads)             
 		for (int j = 0; j<n; j++) {
 			val = intercept - Y[j];
+            #pragma omp parallel for reduction(+ : val) num_threads(threads)
 			for (int i=0;i<Graph.size();i++) {
-				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
+				// if  (Graph[i].samples.find(j) != Graph[i].samples.end()) 
 					val = val + (Graph[i].w * Graph[i].samples[j]);
-				}
 			}
             if(is_intercept) intercept = intercept - (double)neta * val / n;
-            float max_w = 0.0;
+            // float max_w = 0.0;
             #pragma omp parallel for num_threads(threads) 
-			for (int i=0;i<Graph.size();i++) {
-				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
+			for (int i=0; i < Graph.size(); i++) {
+				// if  (Graph[i].samples.find(j) != Graph[i].samples.end())
 					Graph[i].w = Graph[i].w - (double)neta * Graph[i].samples[j] * val / n;
-                    if(Graph[i].w > max_w) max_w = Graph[i].w;
-				}
+                    // if(Graph[i].w > max_w) max_w = Graph[i].w;
 			}
                         //normalize w
-                    if(max_w > 10000) {
-                     if(j == 0) cout << "Factor: "<< max_w;
-                     for (int i=0;i<Graph.size();i++) Graph[i].w /= max_w;
-                 }
+                 //    if(max_w > 10000) {
+                 //     if(j == 0) cout << "Factor: "<< max_w;
+                 //     for (int i=0;i<Graph.size();i++) Graph[i].w /= max_w;
+                 // }
                         //error calculation
-                        if(k== iter && (j > (n-6))) {
+                        if(k == iter-1 && (j > (n-6))) {
                         double error = 0.0;
                         for (int j1 = 0; j1 < n; j1++) {
                             double partError = intercept - Y[j1];
@@ -122,9 +122,9 @@ int main(int argc, char* argv[]) {
                             }
                             error = error + partError * partError;
                         }
-                        error = sqrt(error);
+                        error = error * maxX * maxX / n;
                         cout<<"Error : "<<error<<endl;
-                        if (error < 1e-6) break; 
+                        // if (error < 1e-6) break; 
                         }
         	}
 	}
