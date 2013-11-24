@@ -37,157 +37,144 @@ using namespace std;
 #define thread_default 10
 typedef std::map<pair_int, float>::iterator it_type;
 
+typedef GaloisRuntime::WorkList::dChunkedFIFO<256> WL;
+
 struct comp {
-    bool operator() (const pair_int &a, const pair_int &b) {
-        return a.second > b.second;
-    }
+	bool operator() (const pair_int &a, const pair_int &b) {
+		return a.second > b.second;
+	}
 };
 
 struct node {
-    int id;
-    double w;
-    double yx;
+	int id;
+	double w;
+	double yx;
 };
 
 typedef Galois::Graph::LC_CSR_Graph<node,float> Graph;
 typedef Graph::GraphNode GNode;
 Graph graph;
+vector<int > Y;
+
+
+struct Process {
+	void operator()(GNode& src) {
+		double hii = 0;
+		double val = 0.0;
+		for (Graph::edge_iterator jj = graph.edge_begin(src), ej = graph.edge_end(src); jj != ej; ++jj) {
+			if(graph.getEdgeDst(jj) != src)
+				val = val + graph.getData(src).w * graph.getEdgeData(jj);
+			else
+				hii = graph.getEdgeData(jj);
+		}	
+
+		//if(H[make_pair(i,i)]!=0) Graph[i].w = (Graph[i].yx - val)/(H[make_pair(i,i)]);
+		//    cout << "weight for "<< i <<" node" << Graph[i].w << endl;
+
+		graph.getData(src).w = (graph.getData(src).yx - val)/hii;
+
+	}
+};
+
 
 /*Extremely slow for large graphs*/
 void print_edges_in_graph(){
-        for (Graph::iterator ii = graph.begin(), ei = graph.end(); ii != ei; ++ii) {
-                Graph::GraphNode src = *ii;
+	for (Graph::iterator ii = graph.begin(), ei = graph.end(); ii != ei; ++ii) {
+		Graph::GraphNode src = *ii;
 
-                for (Graph::edge_iterator jj = graph.edge_begin(src), ej = graph.edge_end(src); jj != ej; ++jj) {
-                        Graph::GraphNode dst = graph.getEdgeDst(jj);
+		for (Graph::edge_iterator jj = graph.edge_begin(src), ej = graph.edge_end(src); jj != ej; ++jj) {
+			Graph::GraphNode dst = graph.getEdgeDst(jj);
 			double weight = graph.getEdgeData(jj);	
-                        std::cout << "Edge: " << src << " " << dst  << " data "<< weight << std::endl;
-                }
-        }
+			std::cout << "Edge: " << src << " " << dst  << " data "<< weight << std::endl;
+		}
+	}
 }
 
 
 int main(int argc, char* argv[]) {
-    ifstream inFile;
-    std::string line;
-    int n,d,src,dest,weight;
-    float lambda = lambda_default;
-    std::map<pair_int, float> X; //transpose of X
-    std::map<pair_int, float> H; //transpose of X^TX
-    std::vector< node > Graph;
-    int threads = thread_default;
-    int iter = iter_default;
-    //inFile.open("madelon", ifstream::in);
-    inFile.open("inputfile", ifstream::in);
+	ifstream inFile;
+	std::string line;
+	int n,d,src,dest,weight;
+	float lambda = lambda_default;
+	std::map<pair_int, float> X; //transpose of X
+	std::map<pair_int, float> H; //transpose of X^TX
+	std::vector< node > Graph;
+	int threads = thread_default;
+	int iter = iter_default;
+	//inFile.open("madelon", ifstream::in);
+	inFile.open("inputfile", ifstream::in);
 
-    if(argc > 2) {
-        lambda = atof(argv[1]);
-        iter = atoi(argv[2]);
-        threads = atoi(argv[3]);
-    }
-    if(!inFile.is_open())
-    {
-        cout << "Unable to open file graph.txt. \nProgram terminating...\n";
-        return 0;
-    }
-    inFile>>n>>d;
-    cout << "number of nodes " << n << " and featured " << d <<endl;
+	if(argc > 2) {
+		lambda = atof(argv[1]);
+		iter = atoi(argv[2]);
+		threads = atoi(argv[3]);
+	}
+	if(!inFile.is_open())
+	{
+		cout << "Unable to open file graph.txt. \nProgram terminating...\n";
+		return 0;
+	}
+	inFile>>n>>d;
+	cout << "number of nodes " << n << " and featured " << d <<endl;
 
-    vector<int > Y;
-    vector<int> maxX;
-    Y.resize(n);
-    Graph.resize(d);
-
-
-    maxX.assign(d,0);
-    double initial_w = 0;
-    int i=0;
-    while (i < n)
-    {
-        inFile >> Y[i];
-        int j=0;
-        for (;j<d; j++) {
-            int k;
-            inFile >> k;
-            if(k!=0) X[make_pair(i,j)] = k;
-            Graph[j].w = initial_w; //could be removed outside the loop
-            Graph[j].id = j;       //""
-            if(k > maxX[j]) maxX[j] = k;
-        }
-        i++;
-    }
-
-    //for (int i = 0; i < d; i++) {
-    //    for (int j = 0; j < n; j++) {
-    //    	if(maxX[j]!=0) X[make_pair(i,j)] /= maxX[j];
-    //    }
-    //}
+	vector<int> maxX;
+	Y.resize(n);
+	Graph.resize(d);
 
 
-    //calculate the \X^T * \X. This approach may not work for large matrices
-    for(int i=0; i< n ; i++){
-        for(int j=0; j< n; j++){
-            for(int k=0; k<d; k++) {
-                float tmp = X[make_pair(k,i)] * X[make_pair(k,j)];
-                if(tmp!=0) H[make_pair(i,j)] += tmp;
-            }
-        }
-    }
+	maxX.assign(d,0);
+	double initial_w = 0;
+	int i=0;
+	while (i < n)
+	{
+		inFile >> Y[i];
+		int j=0;
+		for (;j<d; j++) {
+			int k;
+			inFile >> k;
+			if(k!=0) X[make_pair(i,j)] = k;
+			if(k > maxX[j]) maxX[j] = k;
+		}
+		i++;
+	}
 
-    ofstream myfile;
-    myfile.open ("graph_input");
-    for(it_type iterator = H.begin(); iterator != H.end(); iterator++) {
-	    myfile << iterator->first.first << " " << iterator->first.second << " " << iterator->second << endl;
-    }
-    myfile.close();
+	//calculate the \X^T * \X. This approach may not work for large matrices
+	for(int i=0; i< n ; i++){
+		for(int j=0; j< n; j++){
+			for(int k=0; k<d; k++) {
+				float tmp = X[make_pair(k,i)] * X[make_pair(k,j)];
+				if(tmp!=0) H[make_pair(i,j)] += tmp;
+			}
+		}
+	}
 
-    system("../../tools/graph-convert/graph-convert -floatedgelist2gr graph_input graph_output.gr");
-    graph.structureFromFile("graph_output.gr");
-    print_edges_in_graph();
+	ofstream myfile;
+	myfile.open ("graph_input");
+	for(it_type iterator = H.begin(); iterator != H.end(); iterator++) {
+		myfile << iterator->first.first << " " << iterator->first.second << " " << iterator->second << endl;
+	}
+	myfile.close();
 
-    //calculating the yx for each node
-    for (int ii = 0; ii < d; ii++) {
-        double temp = 0;
-        for(int k=0; k<n; k++){
-            temp += Y[k] *  X[make_pair(k,ii)];
-        }
-        Graph[ii].yx = temp;
-	cout << temp << endl;
-    }
+	system("../../tools/graph-convert/graph-convert -floatedgelist2gr graph_input graph_output.gr");
+	graph.structureFromFile("graph_output.gr");
+	print_edges_in_graph();
 
-    int k=0;
-    while(k<iter){
-        k++;
-        for (int i = 0; i < d; i++) {
-            double val = 0.0;
-            for (int m = 0; m < d; m++) {
-		if (m != i) val = val + Graph[m].w * H[make_pair(m,i)];
-            }
-            if(H[make_pair(i,i)]!=0) Graph[i].w = (Graph[i].yx - val)/(H[make_pair(i,i)]);
-            //    cout << "weight for "<< i <<" node" << Graph[i].w << endl;
-            if(k== iter && i>d-2){
-                double error = 0.0;
-                for(int j1=0; j1<n ; j1++){
-                    double part_error = 0.0 - Y[j1];
-                    for (int i1 = 0; i1 < d; i1++) {
-                        part_error = part_error + (Graph[i1].w * X[make_pair(i1,j1)]);
-                    }
-                    error = error + part_error * part_error;
-                }
-                error = sqrt(error);
-                std::cout << "Error: "<< error << std::endl;
-                if(error<1e-9) break;
-            }
-        }
-    }
 
-    for (i=0;i<Graph.size();i++) {
-        cout << Graph[i].w << endl;
-    }
+	for (Graph::iterator ii = graph.begin(), ei = graph.end(); ii != ei; ++ii) {
+		GNode src = *ii;
+		double temp = 0;
+		for(int k=0; k<n; k++){
+			temp += Y[k] *  X[make_pair(k,ii)];
+		}
+		graph.getData(src, Galois::NONE).yx = temp;
+	}
 
-      for(it_type iterator = H.begin(); iterator != H.end(); iterator++) {
-        cout << iterator->first.first << ", " << iterator->first.second << " " << iterator->second << endl;
-        }
+	int k=0;
+	while(k<iter){
+		k++;
+		//Galois::for_each<WL>(graph.begin(), graph.end(), Process<>());
+		Galois::for_each<WL>(graph.begin(), graph.end(), Process<>());
+	}
 
-  return 0;
+	return 0;
 }
