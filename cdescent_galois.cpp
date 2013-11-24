@@ -57,8 +57,9 @@ Graph graph;
 vector<int > Y;
 
 
-struct Process {
-	void operator()(GNode& src) {
+struct process {
+	template<typename ContextTy>
+	void operator()(GNode& src, ContextTy& lwl) {
 		double hii = 0;
 		double val = 0.0;
 		for (Graph::edge_iterator jj = graph.edge_begin(src), ej = graph.edge_end(src); jj != ej; ++jj) {
@@ -85,7 +86,7 @@ void print_edges_in_graph(){
 		for (Graph::edge_iterator jj = graph.edge_begin(src), ej = graph.edge_end(src); jj != ej; ++jj) {
 			Graph::GraphNode dst = graph.getEdgeDst(jj);
 			double weight = graph.getEdgeData(jj);	
-			std::cout << "Edge: " << src << " " << dst  << " data "<< weight << std::endl;
+//			std::cout << "Edge: " << src << " " << dst  << " data "<< weight << std::endl;
 		}
 	}
 }
@@ -164,7 +165,7 @@ int main(int argc, char* argv[]) {
 		GNode src = *ii;
 		double temp = 0;
 		for(int k=0; k<n; k++){
-			temp += Y[k] *  X[make_pair(k,ii)];
+			temp += Y[k] *  X[make_pair(k,src)];
 		}
 		graph.getData(src, Galois::NONE).yx = temp;
 	}
@@ -172,9 +173,12 @@ int main(int argc, char* argv[]) {
 	int k=0;
 	while(k<iter){
 		k++;
-		//Galois::for_each<WL>(graph.begin(), graph.end(), Process<>());
-		Galois::for_each<WL>(graph.begin(), graph.end(), Process<>());
+		Galois::for_each<WL>(graph.begin(), graph.end(), process());
 	}
 
+	for (Graph::iterator ii = graph.begin(), ei = graph.end(); ii != ei; ++ii) {
+		GNode src = *ii;
+		cout <<  "i= " << src <<  " w= " << graph.getData(src).w << endl;
+}
 	return 0;
 }
