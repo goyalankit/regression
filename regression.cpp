@@ -49,7 +49,7 @@ struct comp {
 };
 
 struct node {
-	map<int, double> samples;
+	map<int, double > samples;
 	double w;
 	int id;
 };
@@ -65,9 +65,9 @@ struct Process {
 	Process(int l, double v) { sn = l; val = v;}
 	template<typename Context>
 		void operator()(node& source, Context& ctx) {
-	//		cout << "RUNNING FOR  " << source.id << " val " << val  << " j " << sn << " source " << source.samples[sn] << endl;
 			if  (source.samples.find(sn) != source.samples.end()) {
 				Graph[source.id].w = source.w - (double)neta * 2.0 * source.samples[sn] * val;
+				//cout << "hi" << endl;
 			}
 		}
 };
@@ -76,10 +76,11 @@ int main(int argc, char* argv[]) {
 	Galois::StatManager statManager;
 	ifstream inFile;
 	std::string line;
-	Galois::setActiveThreads(16);
+	Galois::setActiveThreads(1);
         neta = neta_default; 
         int iter = iter_default;
 	inFile.open("madelon", ifstream::in);
+	//inFile.open("inputfile", ifstream::in);
         
         if(argc > 2) {
             neta = atof(argv[1]);
@@ -114,12 +115,12 @@ int main(int argc, char* argv[]) {
 	}
 	inFile.close();
         //Normalize
-        for(int i = 0; i< d; i++) {
-            for(int j = 0; j < n; j++) {
-                Graph[i].samples[j] /= maxX[i];
-                if(i == 0) Graph[i].samples[j] = 0;
-            }
-        }
+        //for(int i = 0; i< d; i++) {
+        //    for(int j = 0; j < n; j++) {
+        //        Graph[i].samples[j] /= maxX[i];
+        //        if(i == 0) Graph[i].samples[j] = 0;
+        //    }
+        //}
 	cout << "check" << endl;
 	cout << "No .of samples=" << n << " No of features=" << d << endl;
 	for (i=0;i<Y.size();i++) cout << Y[i] << "|" ;
@@ -132,21 +133,20 @@ int main(int argc, char* argv[]) {
         int start_s = clock();
 	while (k < iter) {
             k++;
-            int j = 0;
-		for (;j<n;j++) {
+            int j = (k-1)%n;
+		//for (;j<n;j++) {
 			val = 0 - Y[j];
 			for (i=0;i<Graph.size();i++) {
 				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) {
 					val = val + (Graph[i].w * Graph[i].samples[j]);
 				}
-//			cout << "Graph weight i " << i << " " << Graph[i].w << endl;
 			}
-			cout << "val=" << val << endl;
+			//cout << "val=" << val << endl;
 			Galois::for_each<WL>(Graph.begin(), Graph.end(), Process(j, val));
-			for (i=0;i<Graph.size();i++) cout << "i=" << i << " w=" << Graph[i].w << endl;
+			//for (i=0;i<Graph.size();i++) cout << "i=" << i << " w=" << Graph[i].w << endl;
                         //error calculation
                         if(k== iter && (j > (n-6))) {
-                        	double error = 0.0;
+                	double error = 0.0;
                         	for (int j1 = 0; j1 < n; j1++) {
                             		double partError = 0.0 - Y[j1];
                             		for(int i1 = 0; i1 < d; i1++) {
@@ -155,10 +155,11 @@ int main(int argc, char* argv[]) {
                             		error = error + partError * partError;
                         	}
                         	error = sqrt(error);
-                        	cout<<"Error : "<<error<<endl;
-                        	if (error < 1e-6) break; 
+                		cout<<"Error : "<<error<<endl;
+                        	//if (error < 1e-6) break; 
                        }
-        	}
+        	//}
+		cout << "Iteration no = " << k << endl; 
 	}
 	cout << "SGD Completed" << endl;
 	cout << "Time taken: " << (clock()-start_s)/double(CLOCKS_PER_SEC)*1000 << " ms." << endl;
