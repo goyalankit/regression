@@ -100,33 +100,26 @@ int main(int argc, char* argv[]) {
 					val = val + (Graph[i].w * Graph[i].samples[j]);
 			}
             if(is_intercept) intercept = intercept - (double)neta * val / n;
-            // float max_w = 0.0;
             #pragma omp parallel for num_threads(threads) 
 			for (int i=0; i < Graph.size(); i++) {
 				// if  (Graph[i].samples.find(j) != Graph[i].samples.end())
 					Graph[i].w = Graph[i].w - (double)neta * Graph[i].samples[j] * val / n;
-                    // if(Graph[i].w > max_w) max_w = Graph[i].w;
 			}
-                        //normalize w
-                 //    if(max_w > 10000) {
-                 //     if(j == 0) cout << "Factor: "<< max_w;
-                 //     for (int i=0;i<Graph.size();i++) Graph[i].w /= max_w;
-                 // }
-                        //error calculation
-                        if(k == iter-1 && (j > (n-6))) {
-                        double error = 0.0;
-                        for (int j1 = 0; j1 < n; j1++) {
-                            double partError = intercept - Y[j1];
-                            for(int i1 = 0; i1 < d; i1++) {
-                                partError = partError + Graph[i1].samples[j1]*Graph[i1].w;
-                            }
-                            error = error + partError * partError;
-                        }
-                        error = error * maxX * maxX / n;
-                        cout<<"Error : "<<error<<endl;
-                        // if (error < 1e-6) break; 
-                        }
-        	}
+            //error calculation
+            if(k == iter-1 && (j > (n-6))) {
+            double error = 0.0;
+            for (int j1 = 0; j1 < n; j1++) {
+                double partError = intercept - Y[j1];
+                for(int i1 = 0; i1 < d; i1++) {
+                    partError = partError + Graph[i1].samples[j1]*Graph[i1].w;
+                }
+                error = error + partError * partError;
+            }
+            error = error * maxX * maxX / n;
+            cout<<"Error : "<<error<<endl;
+            // if (error < 1e-6) break; 
+            }
+    	}
 	}
 	cout << "SGD Completed" << endl;
         cout << "Time taken: " << (clock()-start_s)/double(CLOCKS_PER_SEC)*1000 << " ms." << endl;
