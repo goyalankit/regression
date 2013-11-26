@@ -93,6 +93,7 @@ int main(int argc, char* argv[]) {
 	for (int k = 0; k < iter; k++) {
         // #pragma omp parallel for num_threads(threads)             
 		for (int j = 0; j<n; j++) {
+        // j = k % n; {
 			val = intercept - Y[j];
             #pragma omp parallel for reduction(+ : val) num_threads(threads)
 			for (int i=0;i<Graph.size();i++) {
