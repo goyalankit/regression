@@ -89,7 +89,8 @@ int main(int argc, char* argv[]) {
 	cout << "No .of samples=" << n << " No of features=" << d << endl;
         cout << "Neta : "<< neta << " Iterations : "<< iter << " Threads :"<< threads << endl;
 	double w_next;
-    int start_s = clock();
+    time_t start, end;
+    time (&start);
     double** weights = (double **)malloc(sizeof(double *)*threads);
     for(int y =0 ; y < threads; y++) weights[y] = (double *)malloc(sizeof(double)*d);
         int chunk_size = n/threads;
@@ -108,12 +109,10 @@ int main(int argc, char* argv[]) {
 				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) 
 					val[j1] = val[j1] + (weights[chunk][i] * Graph[i].samples[j]);
 			}
-            // cout<<j<<endl;
-        } for(int j = chunk*chunk_size; j < (chunk+1)*chunk_size; j++) {
-            int j1 = j - chunk*chunk_size;
-            // if(is_intercept) intercept = intercept - (double)neta * val;
-            
-            // #pragma omp parallel for num_threads(threads) 
+        /*BELOW TWO LINES ARE COMMENTED - else Error varies with no. of threads */
+        // } for(int j = chunk*chunk_size; j < (chunk+1)*chunk_size; j++) {
+        //     int j1 = j - chunk*chunk_size;
+
 			for (int i=0; i < Graph.size(); i++) {
 				if  (Graph[i].samples.find(j) != Graph[i].samples.end())
 					weights[chunk][i] -= (double)neta * Graph[i].samples[j] * val[j1];
@@ -142,8 +141,9 @@ int main(int argc, char* argv[]) {
     error = error * maxX * maxX / n;
     cout<<"Error : "<<error<<endl;    
 }
+    time (&end);
 	cout << "SGD Completed" << endl;
-        cout << "Time taken: " << (clock()-start_s)/double(CLOCKS_PER_SEC)*1000 << " ms." << endl;
+    printf ("Elasped time is %.2lf seconds.\n", difftime (end,start) );
     // if(is_intercept) cout << intercept << endl;
 	// for (int i=0;i<Graph.size();i++) {
 	// 	cout << Graph[i].w << endl;
