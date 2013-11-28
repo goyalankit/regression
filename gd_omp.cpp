@@ -86,6 +86,7 @@ int main(int argc, char* argv[]) {
 		cout << "File input error" << endl; return 0;
 	}	
 	inFile.close();
+    //converging values: MADELON "0.000001 50 1", "0.0001 50 32"
 	cout << "No .of samples=" << n << " No of features=" << d << endl;
         cout << "Neta : "<< neta << " Iterations : "<< iter << " Threads :"<< threads << endl;
 	double w_next;
@@ -107,7 +108,7 @@ int main(int argc, char* argv[]) {
 			for (int i=0; i<Graph.size(); i++) {
                 // cout<<val[j1]<<" "<<weights[chunk][i]<<" "<<Graph[i].samples[j]<<endl;
 				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) 
-					val[j1] = val[j1] + (weights[chunk][i] * Graph[i].samples[j]);
+					val[j1] = val[j1] + (Graph[i].w * Graph[i].samples[j]);
 			}
         /*BELOW TWO LINES ARE COMMENTED - else Error varies with no. of threads */
         // } for(int j = chunk*chunk_size; j < (chunk+1)*chunk_size; j++) {
