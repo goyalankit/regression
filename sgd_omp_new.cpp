@@ -19,21 +19,15 @@ using namespace std;
 #define thread_default 10
 #define is_intercept false
 
-struct comp {
-    bool operator() (const pair_int &a, const pair_int &b) {
-        return a.second > b.second;
-    }
-};
-
-struct node {
-	map<int, double > samples;
-	double w;
-};
+// struct node {
+//  map<int, double > features;
+//  double w;
+// };
 
 int main(int argc, char* argv[]) {
-	ifstream inFile;
-	std::string line;
-	int n,d,src,dest,weight;
+    ifstream inFile;
+    std::string line;
+    int n,d,src,dest,weight;
     float intercept = 0.0;
     float neta = neta_default;
     int threads = thread_default;
@@ -48,99 +42,90 @@ int main(int argc, char* argv[]) {
         }
         if(!inFile.is_open())
         {
-		cout << "Unable to open file graph.txt. \nProgram terminating...\n";
+        cout << "Unable to open file graph.txt. \nProgram terminating...\n";
                 return 0;
         }
-	inFile>>n>>d;
-	vector<float > Y;
-	vector<node > Graph;
+    inFile>>n>>d;
+    vector<double> Y;
+    vector<map<int, double> > X;
+    vector<double> w;
+
     int maxX = 0;
-	Y.resize(n);
-	Graph.resize(d);
+    Y.resize(n);
+    X.resize(n);
+    w.resize(d);
         // maxX.assign(d,0);
-        double initial_w = 0;
-	int j=0; 
-	while (j < n)
-	{
-                inFile >> Y[j];
-		for (int i=0; i<d; i++) {
-			if(j == 0) Graph[i].w = initial_w;
-                        int k = 1;
-                        inFile >> k; 
-                        Graph[i].samples[j] = k;
-                        if(abs(k) > maxX) maxX = abs(k);
-		}
-		j++;
-	}
-        //Normalize
+    double initial_w = 0;
+    int j=0; 
+    //j -> feature, i -> feature
+    while (j < n)
+    {
+        inFile >> Y[j];
+        for (int i=0; i<d; i++) {
+            if(j == 0) w[i] = initial_w;
+            int k = 1;
+            inFile >> k; 
+            X[j][i] = k;
+            if(abs(k) > maxX) maxX = abs(k);
+        }
+        j++;
+    }
+
+    if (j != n) {
+        cout << "File input error" << endl; return 0;
+    }   
+
+    //Normalize
     if(maxX != 0) {
         for(int j = 0; j < n; j++) {
             for(int i = 0; i< d; i++) 
-                Graph[i].samples[j] /= maxX;
+                X[j][i] /= maxX;
             Y[j] /= maxX;
         }
         cout<< "Factor :" << maxX << endl;
     }
         
-	if (j != n) {
-		cout << "File input error" << endl; return 0;
-	}	
-	inFile.close();
-	cout << "No .of samples=" << n << " No of features=" << d << endl;
-        cout << "Neta : "<< neta << " Iterations : "<< iter << " Threads :"<< threads << endl;
-	double w_next;
+    inFile.close();
+    //converging values: MADELON "***"
+    cout << "No .of samples=" << n << " No of features=" << d << endl;
+    cout << "Neta : "<< neta << " Iterations : "<< iter << " Threads :"<< threads << endl;
+
+    double w_next;
     time_t start, end;
     time (&start);
-    // double** weights = (double **)malloc(sizeof(double *)*threads);
-    // for(int y =0 ; y < threads; y++) weights[y] = (double *)malloc(sizeof(double)*d);
-        // int chunk_size = n/threads;
-	for (int k = 0; k < iter; k++) {
-        #pragma omp parallel for num_threads(threads)             
-		for (int chunk = 0; chunk < threads; chunk++) {
-        // j = k % n; {
-            // for(int y = 0; y< d; y++) weights[chunk][y] = Graph[y].w;
-            // double *val = (double *)malloc(sizeof(double) * chunk_size);
-            // for(int j = chunk*chunk_size; j < (chunk+1)*chunk_size; j++) {
-                // int j1 = j - chunk*chunk_size;
-                int j = rand() % n;
-			    double val = intercept - Y[j];
-            // #pragma omp parallel for reduction(+ : val) num_threads(threads)
-			for (int i=0; i<Graph.size(); i++) {
-                // cout<<val[j1]<<" "<<weights[chunk][i]<<" "<<Graph[i].samples[j]<<endl;
-				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) 
-					val = val + (Graph[i].w * Graph[i].samples[j]);
-			}
-        /*BELOW TWO LINES ARE COMMENTED - else Error varies with no. of threads */
-        // } for(int j = chunk*chunk_size; j < (chunk+1)*chunk_size; j++) {
-        //     int j1 = j - chunk*chunk_size;
+    for (int k = 0; k < iter; k++) {
 
-			for (int i=0; i < Graph.size(); i++) {
-				if  (Graph[i].samples.find(j) != Graph[i].samples.end())
-					Graph[i].w -= (double)neta * Graph[i].samples[j] * val;
-			}
-        // }
-        // free(val);
+        #pragma omp parallel for num_threads(threads)             
+        for (int chunk = 0; chunk < threads; chunk++) {
+                int j = rand() % n;
+                double val = intercept - Y[j];
+            // #pragma omp parallel for reduction(+ : val) num_threads(threads)
+            for (map<int, double>::iterator it=X[j].begin(); it!=X[j].end(); ++it) {
+                val += (w[it->first] * it->second);
+            }
+            for (map<int, double>::iterator it=X[j].begin(); it!=X[j].end(); ++it) {
+                w[it->first] -= (double)neta * it->second * val;
+            }
     }
 
     double error = 0.0;
     #pragma omp parallel for reduction(+ : error) num_threads(threads)
     for (int j1 = 0; j1 < n; j1++) {
         double partError = intercept - Y[j1];
-        for(int i1 = 0; i1 < d; i1++) {
-            partError = partError + Graph[i1].samples[j1]*Graph[i1].w;
-        }
-        error = error + partError * partError;
+        for (std::map<int, double>::iterator it=X[j1].begin(); it!=X[j1].end(); ++it)
+            partError += w[it->first] * it->second;
+        error += partError * partError;
     }
     error = error * maxX * maxX / n;
     cout<<"Error : "<<error<<endl;    
 }
     time (&end);
-	cout << "SGD Completed" << endl;
+    cout << "SGD Completed" << endl;
     printf ("Elasped time is %.2lf seconds.\n", difftime (end,start) );
     // if(is_intercept) cout << intercept << endl;
-	// for (int i=0;i<Graph.size();i++) {
-	// 	cout << Graph[i].w << endl;
+    // for (int i=0;i<Graph.size();i++) {
+    //  cout << Graph[i].w << endl;
  //       }
-	
-  	return 0;
+    
+    return 0;
 }
