@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
         // maxX.assign(d,0);
     double initial_w = 0;
     int j=0; 
-    //j -> feature, i -> feature
+    //j -> sample, i -> feature
     while (j < n)
     {
         inFile >> Y[j];
@@ -123,9 +123,9 @@ int main(int argc, char* argv[]) {
     cout << "SGD Completed" << endl;
     printf ("Elasped time is %.2lf seconds.\n", difftime (end,start) );
     // if(is_intercept) cout << intercept << endl;
-    // for (int i=0;i<Graph.size();i++) {
-    //  cout << Graph[i].w << endl;
- //       }
+    // for (int i=0;i< w.size();i++) {
+    //  cout << w[i] << endl;
+    //    }
     
     return 0;
 }

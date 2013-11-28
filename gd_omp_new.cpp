@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
         // maxX.assign(d,0);
     double initial_w = 0;
 	int j=0; 
-    //j -> feature, i -> feature
+    //j -> sample, i -> feature
 	while (j < n)
 	{
         inFile >> Y[j];
