@@ -17,7 +17,6 @@ using namespace std;
 #define lambda_default .0001
 #define iter_default 10
 #define thread_default 10
-typedef std::map<pair_int, double>::iterator it_type;
 
 struct comp {
     bool operator() (const pair_int &a, const pair_int &b) {
@@ -42,6 +41,7 @@ int main(int argc, char* argv[]) {
     int threads = thread_default;
     int iter = iter_default;
     inFile.open("madelon", ifstream::in);
+    //inFile.open("inputfile", ifstream::in);
 
     if(argc > 3) {
         lambda = atof(argv[1]);
@@ -54,15 +54,12 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     inFile>>n>>d;
-    cout << "number of nodes " << n << " and featured " << d <<endl;
+    cout << "number of nodes " << n << " and features " << d <<endl;
 
-    vector<int > Y;
-    vector<int> maxX;
+    vector<double > Y;
     Y.resize(n);
     Graph.resize(d);
-
-
-    maxX.assign(d,0);
+    int maxX = 0;
     double initial_w = 0;
     int i=0;
     while (i < n)
@@ -73,19 +70,22 @@ int main(int argc, char* argv[]) {
             int k;
             inFile >> k;
             if(k!=0) X[make_pair(i,j)] = k;
-            Graph[j].w = initial_w; //could be removed outside the loop
+            if (i==0) Graph[j].w = initial_w; //could be removed outside the loop
             Graph[j].id = j;       //""
-            if(k > maxX[j]) maxX[j] = k;
+            if(abs(k) > maxX) maxX = abs(k);
         }
         i++;
     }
 
-    for (int i = 0; i < d; i++) {
-        for (int j = 0; j < n; j++) {
-           if(maxX[j]!=0) X[make_pair(i,j)] /= maxX[j];
-        }
-    }
+    //cout << maxX << endl;
 
+    if(maxX != 0) {
+    	for (int i = 0; i < n; i++) {
+        	for (int j = 0; j < d; j++)
+           		X[make_pair(i,j)] /=  maxX;
+            	Y[i] /= maxX;
+	}
+    }
 
     //calculate the \X^T * \X. This approach may not work for large matrices
     for(int i=0; i< n ; i++){
@@ -97,50 +97,48 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    //    std::cout << "size of H "<< H.size() << std::endl;
+    //std::cout << "size of H "<< H.size() << std::endl;
     //calculating the yx for each node
     for (int ii = 0; ii < d; ii++) {
-        double temp = 0;
+        double temp = 0.0;
         for(int k=0; k<n; k++){
-            temp += Y[k] *  X[make_pair(ii,k)];
+            temp += Y[k] *  X[make_pair(k,ii)];
         }
         Graph[ii].yx = temp;
+	cout << temp << endl;
     }
 
-    int k=0;
-    while(k<iter){
-        k++;
-#pragma omp parallel for num_threads(threads)
+    time_t start, end;
+    time (&start);
+    for (int k = 0; k < iter; k++) {
+	#pragma omp parallel for num_threads(threads)
         for (int i = 0; i < d; i++) {
-            double val = 2.0;
+            double val=0.0;
             for (int m = 0; m < d; m++) {
-                val = val + Graph[m].w * H[make_pair(m,i)];
+                if (m!=i) val = val + Graph[m].w * H[make_pair(m,i)];
             }
             if(H[make_pair(i,i)]!=0) Graph[i].w = (Graph[i].yx - val)/(H[make_pair(i,i)]);
-            //    cout << "weight for "<< i <<" node" << Graph[i].w << endl;
-            if(k== iter && i>d-2){
-                double error = 0.0;
-                for(int j1=0; j1<n ; j1++){
-                    double part_error = 0.0 - Y[j1];
-                    for (int i1 = 0; i1 < d; i1++) {
-                        part_error = part_error + (Graph[i1].w * X[make_pair(i1,j1)]);
-                    }
-                    error = error + part_error * part_error;
-                }
-                error = sqrt(error);
-                std::cout << "Error: "<< error << std::endl;
-   //             if(error<1e-6) break;
-            }
         }
+
+    	double error = 0.0;
+    	#pragma omp parallel for reduction(+ : error) num_threads(threads)
+    	for (int i = 0; i < n; i++) {
+        	double partError = 0.0 - Y[i];
+                for(int j = 0; j < d; j++) {
+                        partError = partError + (Graph[j].w * X[make_pair(i,j)]);
+                }
+        	error += partError * partError;
+    	}
+    	error = error * maxX * maxX / n;
+    	cout<<"Error : "<<error<<endl;    
     }
+    time (&end);
+    cout << "CD Completed" << endl;
+    printf ("Elasped time is %.2lf seconds.\n", difftime (end,start) );
 
     for (i=0;i<Graph.size();i++) {
         cout << Graph[i].w << endl;
     }
-
-    /*  for(it_type iterator = H.begin(); iterator != H.end(); iterator++) {
-        cout << iterator->first.first << ", " << iterator->first.second << " " << iterator->second << endl;
-        }
-
-*/    return 0;
+	
+    return 0;
 }
