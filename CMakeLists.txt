@@ -1,2 +1,3 @@
 app(regression regression.cpp)
-app(cdescent_galois cdescent_galois.cpp)
+#app(cdescent_galois cdescent_galois.cpp)
+app(scd scd.cpp)
