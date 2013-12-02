@@ -11,6 +11,8 @@
 #include <queue>
 #include <sys/time.h>
 #include <omp.h>
+#include <sstream>
+#include <sstream>
 
 using namespace std;
 #define pair_int pair< int, int >
@@ -32,8 +34,8 @@ int main(int argc, char* argv[]) {
     float neta = neta_default;
     int threads = thread_default;
     int iter = iter_default;
-    // inFile.open("inputfile", ifstream::in);
-    inFile.open("madelon", ifstream::in);
+    char* filename = "mnist"; // "inputfile"; //"madelon";
+    inFile.open(filename, ifstream::in);
         
         if(argc > 3) {
             neta = atof(argv[1]);
@@ -45,7 +47,10 @@ int main(int argc, char* argv[]) {
         cout << "Unable to open file graph.txt. \nProgram terminating...\n";
                 return 0;
         }
-    inFile>>n>>d;
+    getline(inFile, line);
+    istringstream iss(line);
+    iss>>n>>d;
+    // cout<<n<<" "<<d<<endl;
     vector<double> Y;
     vector<map<int, double> > X;
     vector<double> w;
@@ -56,17 +61,28 @@ int main(int argc, char* argv[]) {
     w.resize(d);
         // maxX.assign(d,0);
     double initial_w = 0;
-    int j=0; 
+    int j=0;
     //j -> sample, i -> feature
     while (j < n)
     {
-        inFile >> Y[j];
-        for (int i=0; i<d; i++) {
-            if(j == 0) w[i] = initial_w;
-            int k = 1;
-            inFile >> k; 
-            X[j][i] = k;
-            if(abs(k) > maxX) maxX = abs(k);
+        getline(inFile, line);
+        istringstream iss(line);
+        iss >> Y[j]; string k; int i = 0;
+        // for (int i=0; i<d; i++) {
+        while(iss >> k) {
+            // if(j == 0) w[i] = initial_w;
+            // int k = 1;
+            // inFile >> k; 
+            if(strcmp(filename, "mnist") == 0) {
+                size_t pos = k.find(":");
+                X[j][atoi((k.substr(0,pos)).c_str())] = atof((k.substr(pos+1)).c_str());
+                maxX = 255;
+            }
+            else {   
+                if(atoi(k.c_str()) != 0) X[j][i] = atoi(k.c_str());
+                if(abs(atoi(k.c_str())) > maxX) maxX = abs(atoi(k.c_str()));
+            }
+            i++;
         }
         j++;
     }
@@ -74,7 +90,6 @@ int main(int argc, char* argv[]) {
     if (j != n) {
         cout << "File input error" << endl; return 0;
     }   
-
     //Normalize
     if(maxX != 0) {
         for(int j = 0; j < n; j++) {

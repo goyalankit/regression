@@ -4,6 +4,7 @@
 #include <limits.h>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string.h>
 #include <cmath>
 #include <vector>
@@ -33,7 +34,8 @@ int main(int argc, char* argv[]) {
     int threads = thread_default;
     int iter = iter_default;
     // inFile.open("inputfile", ifstream::in);
-    inFile.open("madelon", ifstream::in);
+    char* filename = "mnist"; // "inputfile"; //"madelon";
+    inFile.open(filename, ifstream::in);
         
         if(argc > 3) {
             neta = atof(argv[1]);
@@ -45,7 +47,11 @@ int main(int argc, char* argv[]) {
 		cout << "Unable to open file graph.txt. \nProgram terminating...\n";
                 return 0;
         }
-	inFile>>n>>d;
+
+    getline(inFile, line);
+    istringstream iss(line);
+    iss>>n>>d;
+	// inFile>>n>>d;
 	vector<double> Y;
 	vector<map<int, double> > X;
     vector<double> w;
@@ -60,13 +66,24 @@ int main(int argc, char* argv[]) {
     //j -> sample, i -> feature
 	while (j < n)
 	{
-        inFile >> Y[j];
-		for (int i=0; i<d; i++) {
-    		if(j == 0) w[i] = initial_w;
-            int k = 1;
-            inFile >> k; 
-            X[j][i] = k;
-            if(abs(k) > maxX) maxX = abs(k);
+        getline(inFile, line);
+        istringstream iss(line);
+        iss >> Y[j]; string k; int i = 0;
+        // for (int i=0; i<d; i++) {
+        while(iss >> k) {
+            // if(j == 0) w[i] = initial_w;
+            // int k = 1;
+            // inFile >> k; 
+            if(strcmp(filename, "mnist") == 0) {
+                size_t pos = k.find(":");
+                X[j][atoi((k.substr(0,pos)).c_str())] = atof((k.substr(pos+1)).c_str());
+                maxX = 255;
+            }
+            else {   
+                if(atoi(k.c_str()) != 0) X[j][i] = atoi(k.c_str());
+                if(abs(atoi(k.c_str())) > maxX) maxX = abs(atoi(k.c_str()));
+            }
+            i++;
 		}
 		j++;
 	}
