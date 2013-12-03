@@ -12,7 +12,7 @@ int main()
 {
     double *A, *B, *C;
     int m, n, k, i, j;
-    double alpha, beta;
+    double alpha = 1.0, beta = 0.0;
     ifstream inFile;
 
     printf ("\n This example computes real matrix C=alpha*A*B+beta*C using \n"
@@ -22,7 +22,7 @@ int main()
 	inFile.open("inputfile", ifstream::in);
 	inFile >> n >> m;
 	
-//    m = 2000, k = 200, n = 1000;
+//    m = 2000, k = 200, n = 1000; A = Xt(5*6) ; B = X (6*5) ; n = 6; m = 5; k = 5
 	// A -> n * m AT -> m * n n = 5, m = 4
       k = m;
     printf (" Initializing data for matrix multiplication C=A*B for matrix \n"
@@ -34,12 +34,11 @@ int main()
 
     double *Y;	
     A = (double *)mkl_malloc( n*m*sizeof( double ), 64 );
-    B = (double *)mkl_malloc( k*n*sizeof( double ), 64 );
+    // B = (double *)mkl_malloc( k*n*sizeof( double ), 64 );
     C = (double *)mkl_malloc( m*m*sizeof( double ), 64 );
-    if (A == NULL || B == NULL || C == NULL) {
+    if (A == NULL || C == NULL) {
       printf( "\n ERROR: Can't allocate memory for matrices. Aborting... \n\n");
       mkl_free(A);
-      mkl_free(B);
       mkl_free(C);
       return 1;
     }
@@ -59,7 +58,7 @@ int main()
 		for (;j<m; j++) {
 			double k;
 			inFile >> k;
-			printf(" %d = %f ",cnt, k);
+			// printf(" %d = %f ",cnt, k);
 			A[cnt] = k;
 			cnt++;
 		}
@@ -74,7 +73,7 @@ int main()
 
     printf (" Computing matrix product using Intel® MKL dgemm function via CBLAS interface \n\n");
 	//A = n * m B -> n * m
-    cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans, m, m, n, alpha, A, n, A, n, beta, C, m);
+    cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans, m, m, n, alpha, A, m, A, m, beta, C, m);
     printf ("\n Computations completed.\n\n");
 
 // cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, k, alpha, A, k, B, n, beta, C, n);
@@ -106,7 +105,7 @@ int main()
 
     printf ("\n Deallocating memory \n\n");
     mkl_free(A);
-    mkl_free(B);
+    // mkl_free(B);
     mkl_free(C);
 
     printf (" Example completed. \n\n");
