@@ -66,15 +66,12 @@ struct Process {
 	template<typename Context>
 		void operator()(node& source, Context& ctx) {
 			double val = 0.0 - Y[source.id];
-			for (int j=0; j<d; j++) {
-				if  (source.samples.find(j) != source.samples.end()) 
-					val = val + w[j].value * source.samples[j];	
+            		for (map<int, double>::iterator it=Graph[source.id].samples.begin(); it!=Graph[source.id].samples.end(); ++it) {
+				val = val + w[it->first].value * it->second;	
 			}
-			for (int j=0; j<d; j++) {
-				if  (source.samples.find(j) != source.samples.end()) 
-					w[j].value -= (double)neta * source.samples[j] * val;
+            		for (map<int, double>::iterator it=Graph[source.id].samples.begin(); it!=Graph[source.id].samples.end(); ++it) {
+				w[it->first].value -= (double)neta * it->second * val;
 			}
-	
 		}
 };
 
@@ -97,8 +94,8 @@ int main(int argc, char* argv[]) {
         neta = neta_default; 
 	int threads = thread_default;
         int iter = iter_default;
-	inFile.open("madelon", ifstream::in);
-	//inFile.open("inputfile", ifstream::in);
+	//inFile.open("madelon", ifstream::in);
+	inFile.open("inputfile", ifstream::in);
         
         if(argc > 3) {
             neta = atof(argv[1]);
