@@ -112,10 +112,9 @@ int main(int argc, char* argv[]) {
     float w_next;
     time_t start, end;
     time (&start);
-    for (int k = 0; k < iter; k++) {
 
-        #pragma omp parallel for num_threads(threads)             
-        for (int chunk = 0; chunk < threads; chunk++) {
+    #pragma omp parallel for num_threads(threads)             
+    for (int k = 0; k < iter; k++) {
                 int j = rand() % n;
                 float val = intercept - Y[j];
             // #pragma omp parallel for reduction(+ : val) num_threads(threads)
@@ -125,7 +124,6 @@ int main(int argc, char* argv[]) {
             for (map<int, float>::iterator it=X[j].begin(); it!=X[j].end(); ++it) {
                 w[it->first] -= (float)neta * it->second * val;
             }
-    }
     if(show_errors > 0) {
         float error = 0.0;
         #pragma omp parallel for reduction(+ : error) num_threads(threads)
