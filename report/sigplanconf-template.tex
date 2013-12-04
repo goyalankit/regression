@@ -77,192 +77,111 @@ This is the text of the abstract.
 
 \category{CR-number}{subcategory}{third-level}
 
-% general terms are not compulsory anymore, 
-% you may leave them out
-\terms
-term1, term2
-
 \keywords
 keyword1, keyword2
 
 \section{Introduction}
 
-The text of the paper begins here.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
+\section{Related Work}
+
+\section{Regression}
+\noindent
+Regression models and analyzes the correlation of several variables. Given a set of training examples 
+\begin{equation}(x_1,y_1),....,(x_n,y_n)\end{equation} where \begin{equation} x_i \in R^n \end{equation}
+and \begin{equation} y_i \in (-1,1) \end{equation},the goal is to learn a linear scoring function
+\begin{equation} f(x) = w^Tx + b \end{equation} with model parameters \begin{equation} w \in R^m \end{equation}
+and intercept \begin{equation} b \in R. \end{equation}\\
+
+\noindent
+A common choice to find the model parameters is by minimizing the regularized training error given by\\
+\begin{equation} E(w,b) = \sum_{i=1}^{n} L(y_i,f(x_i)) + \alpha R(w) \end{equation} \\
+where L is a loss function that measures models' (mis)fit and \begin{equation}R\end{equation} is a
+regularization term (aka penalty) that penalizes model complexity; \begin{equation}\alpha>0\end{equation}
+is a non-negative hyperparameter.
+
+\section{Models for Regression}
+\subsection{Least Squares}
+The best fitting curve to a set of data points could be obtained using least square method. The method
+assumes that the best-fit curve for a given data has the minimal sum of the deviations squared. It could
+be represented as a minimization problem.\\
+\begin{equation}R(w)=0\end{equation}.
+
+\subsection{Ridge Regression}
+Ridge regression penalizes the size of the regression coefficients. Applying the ridge regression penalty
+has the effect of shrinking the estimates (introducing bias but reducing the variance of the estimate).\\
+\begin{equation}R(w)=\frac{1}{2} \sum_{i=1}^{n} w_i^2\end{equation}.
+
+\subsection{Lasso}
+Ridge regression is capable of reducing the variability and improving the accuracy of linear regression
+models, and that these gains are largest in the presence of multicollinearity. However ridge regression
+doesn't do variable selection, and it fails to provide a parsimonious model with few parameters.
+LASSO is a regression method that penalizes the absolute size of the regression coefficients. It has
+desirable effect of setting coefficients to zero leading to sparse solutions.\\
+\begin{equation}R(w)=\sum_{i=1}^{n} |w_i|\end{equation}.
+
+\subsection{Elastic Net}
+Elastic net is a linear model that allows for learning a sparse model where few of the weights are nonzero
+like Lasso, while still maintaining the regularization properties of Ridge.
+\begin{equation}R(w)= \gamma \frac{1}{2} \sum_{i=1}^{n} w_i^2 + (1-\gamma)\sum_{i=1}^{n} |w_i|\end{equation}.
+
+\section{Solvers for Regression}
+\subsection{Exact Solvers}
+
+\subsection{Gradient Descent}
+In stochastic (or "on-line") gradient descent, the true gradient of is approximated by a gradient at a
+single training sample. The training samples are given one at a time. The algorithm examines the
+current datapoint, and then updates the weight vector accordingly.
+
+\subsection{Stochastic Gradient Descent}
+
+\subsection{Coordinate Descent}
+Coordinate descent is based on the idea that the minimization of a multivariable function can be
+achieved by minimizing it along one direction at a time. Instead of varying descent direction according
+to gradient, one fixes descent direction at the outset.
+
+\subsection{Stochastic Coordinate Descent}
+
+\section{Parallel Implementation}
+\subsection{Parallel Stochastic Gradient Descent}
+\subsection{Parallel Stochastic Coordinate Descent}
+
+\section{TAO Analysis}
+\subsection{Parallel Stochastic Gradient Descent}
+\subsection{Parallel Stochastic Coordinate Descent}
+
+\section{Implementation Framework}
+\subsection{OpenMP}
+\subsection{Galois System}
+\subsection{Benchmarks}
+
+\section{Results}
+\subsection{Parallel Stochastic Gradient Descent}
+\subsubsection{OpenMP}
+\subsubsection{Galois}
+\subsection{Parallel Stochastic Coordinate Descent}
+\subsubsection{OpenMP}
+\subsubsection{Galois}
+
+\section{Conclusion}
+
+% We recommend abbrvnat bibliography style.
+\bibliographystyle{abbrvnat}
+% The bibliography should be embedded for final submission.
+
+\begin{thebibliography}{}
+\softraggedright
+
+\bibitem[Zhang et~al.(2004) Zhang, T.]{zhang1}
+Zhang T., Solving Large Scale Linear Prediction Problems Using Stochastic Gradient Descent Algorithms.
+\bibitem[Niu et~al.(2011)Niu, F.]{niu1}
+Niu F. and Recht B., Hogwild!: A Lock-Free Approach to Parallelizing Stochastic Gradient Descent.
+\bibitem[Richtarik et~al.(2012) Richtarik, P.]{rich1}
+Richtarik P., and Takac M., Parallel Coordinate Descent methods for Big Data Optimization.
+
+\end{thebibliography}
 
 \appendix
+
 \section{Appendix Title}
 
 This is the text of the appendix, if you need one.
@@ -270,21 +189,6 @@ This is the text of the appendix, if you need one.
 \acks
 
 Acknowledgments, if needed.
-
-% We recommend abbrvnat bibliography style.
-
-\bibliographystyle{abbrvnat}
-
-% The bibliography should be embedded for final submission.
-
-\begin{thebibliography}{}
-\softraggedright
-
-\bibitem[Smith et~al.(2009)Smith, Jones]{smith02}
-P. Q. Smith, and X. Y. Jones. ...reference text...
-
-\end{thebibliography}
-
 
 \end{document}
 
