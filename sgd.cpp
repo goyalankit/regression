@@ -133,11 +133,11 @@ int main(int argc, char* argv[]) {
                 // inFile >> k; 
                 if(strcmp(filename, "mnist") == 0) {
                     size_t pos = k.find(":");
-                    X[j][atoi((k.substr(0,pos)).c_str())] = atof((k.substr(pos+1)).c_str());
+                    Graph[j].features[atoi((k.substr(0,pos)).c_str())] = atof((k.substr(pos+1)).c_str());
                     maxX = 255;
                 }
                 else {   
-                    if(atoi(k.c_str()) != 0) X[j][i] = atoi(k.c_str());
+                    if(atoi(k.c_str()) != 0) Graph[j].features[i] = atoi(k.c_str());
                     if(abs(atoi(k.c_str())) > maxX) maxX = abs(atoi(k.c_str()));
                 }
                 i++;
@@ -170,7 +170,7 @@ int main(int argc, char* argv[]) {
                     double error = 0.0;
                     for (int i = 0; i < n; i++) {
                             double partError = 0.0 - Y[i];
-                            for (std::map<int, float>::iterator it=Graph[i].features.begin(); it!=Graph[i].features.end(); ++it)
+                            for (std::map<int, double>::iterator it=Graph[i].features.begin(); it!=Graph[i].features.end(); ++it)
                                  partError += w[it->first].value * it->second;
                             error = error + partError * partError;
                     }
@@ -183,7 +183,7 @@ int main(int argc, char* argv[]) {
                         double error = 0.0;
                     for (int i = 0; i < n; i++) {
                             double partError = 0.0 - Y[i];
-                            for (std::map<int, float>::iterator it=Graph[i].features.begin(); it!=Graph[i].features.end(); ++it)
+                            for (std::map<int, double>::iterator it=Graph[i].features.begin(); it!=Graph[i].features.end(); ++it)
                                  partError += w[it->first].value * it->second;
                             error = error + partError * partError;
                     }

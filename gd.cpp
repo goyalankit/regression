@@ -134,11 +134,11 @@ int main(int argc, char* argv[]) {
                 // inFile >> k; 
                 if(strcmp(filename, "mnist") == 0) {
                     size_t pos = k.find(":");
-                    X[j][atoi((k.substr(0,pos)).c_str())] = atof((k.substr(pos+1)).c_str());
+                    Graph[j].samples[atoi((k.substr(0,pos)).c_str())] = atof((k.substr(pos+1)).c_str());
                     maxX = 255;
                 }
                 else {   
-                    if(atoi(k.c_str()) != 0) X[j][i] = atoi(k.c_str());
+                    if(atoi(k.c_str()) != 0) Graph[j].samples[i] = atoi(k.c_str());
                     if(abs(atoi(k.c_str())) > maxX) maxX = abs(atoi(k.c_str()));
                 }
                 i++;
@@ -170,7 +170,17 @@ int main(int argc, char* argv[]) {
  		Galois::for_each<WL>(w.begin(), w.end(), Process1());
     	}
     gettimeofday(&end, NULL); 
-
+    
+//                        double error = 0.0;
+//                    for (int i = 0; i < n; i++) {
+//                            double partError = 0.0 - Y[i];
+//                            for (std::map<int, double>::iterator it=Graph[i].samples.begin(); it!=Graph[i].samples.end(); ++it)
+//                                 partError += w[it->first].value * it->second;
+//                            error = error + partError * partError;
+//                    }
+//                    error = error * maxX * maxX / n;
+//                    cout<<"Error : "<<error<<endl;
+                    
 	cout << "GD Completed" << endl;
     printf ("Elasped time is %.4lf seconds.\n", (((end.tv_sec  - start.tv_sec) * 1000000u +  end.tv_usec - start.tv_usec) / 1.e6) );
 	for (int i=0;i<d;i++) {
