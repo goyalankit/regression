@@ -8,6 +8,7 @@
 #include <ctime>
 #include <string>
 
+#include "omp.h"
 //#include "cmd_line.h"
 //#include "Losses.h"
 typedef unsigned int uint;
@@ -304,9 +305,6 @@ int main(int argc, char **argv) {
 	std::vector<double> w(num_features,0);
 	std::vector<double> innerprod_with_w(num_examples,0);
 
-	double sum, g, eta;
-	int i;
-
 	// start a clock
 	clock_t start = clock();
 	clock_t elapsed = 0;
@@ -321,11 +319,13 @@ int main(int argc, char **argv) {
 		
 		// choose feature to update in a cyclic manner
 
-                #pragma omp parallel for num_threads(threads) private(i, sum, g ,eta, curr_index, curr_value)
-		for(i = 0; i < num_features; i++){
+                #pragma omp parallel for num_threads(16)
+		for(int i = 0; i < num_features; i++){
 		//i = iter % num_features;
 
-		sum=0;
+			int curr_index;
+			double curr_value;
+		double sum=0, g, eta;
 		for (int j=0; j < examples[i].size(); j++) {
 			IndexValuePair ivpair = examples[i][j];
 			curr_index = ivpair.first;
@@ -356,16 +356,17 @@ int main(int argc, char **argv) {
 			curr_index = ivpair.first;
 			curr_value = ivpair.second;
 
-			innerprod_with_w[curr_index] = innerprod_with_w[curr_index] + eta * curr_value;
+#pragma omp atomic
+			innerprod_with_w[curr_index]  += eta * curr_value;
 		}
 
 		num_accesses += examples[i].size();
 //		std::cout << "new iteration " << i << std::endl;
-			
+		
 
 	}
                // once in a while print the time elapsed, no. of data accesses and the weight vector
-		if (iter % (num_actual_iters/print_me) == 0) {
+			if (iter % (num_actual_iters/print_me) == 0) {
 
 			elapsed += clock() - start;
 
@@ -376,6 +377,7 @@ int main(int argc, char **argv) {
 
 			start = clock();
 		}
+
         }
 
   //  std::cout << "Actual results" << std::endl;
