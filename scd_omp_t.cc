@@ -7,6 +7,7 @@
 #include <sstream>
 #include <ctime>
 #include <string>
+#include <omp.h>
 
 #include "omp.h"
 //#include "cmd_line.h"
