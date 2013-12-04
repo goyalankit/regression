@@ -34,15 +34,19 @@ int main(int argc, char* argv[]) {
     float neta = neta_default;
     int threads = thread_default;
     int iter = iter_default;
-    char* filename = "mnist"; // "inputfile"; //"madelon";
-    inFile.open(filename, ifstream::in);
+    char* filename = "madelon"; // "inputfile"; //"madelon";
+    int show_errors = 1;
         
         if(argc > 3) {
             neta = atof(argv[1]);
             iter = atoi(argv[2]);
             threads = atoi(argv[3]);
+            if(argc > 4) show_errors = atoi(argv[4]);
+            if(argc > 5) filename = argv[5];
         }
-        if(!inFile.is_open())
+    inFile.open(filename, ifstream::in);
+
+    if(!inFile.is_open())
         {
         cout << "Unable to open file graph.txt. \nProgram terminating...\n";
                 return 0;
@@ -122,17 +126,18 @@ int main(int argc, char* argv[]) {
                 w[it->first] -= (float)neta * it->second * val;
             }
     }
-
-    float error = 0.0;
-    #pragma omp parallel for reduction(+ : error) num_threads(threads)
-    for (int j1 = 0; j1 < n; j1++) {
-        float partError = intercept - Y[j1];
-        for (std::map<int, float>::iterator it=X[j1].begin(); it!=X[j1].end(); ++it)
-            partError += w[it->first] * it->second;
-        error += partError * partError;
+    if(show_errors > 0) {
+        float error = 0.0;
+        #pragma omp parallel for reduction(+ : error) num_threads(threads)
+        for (int j1 = 0; j1 < n; j1++) {
+            float partError = intercept - Y[j1];
+            for (std::map<int, float>::iterator it=X[j1].begin(); it!=X[j1].end(); ++it)
+                partError += w[it->first] * it->second;
+            error += partError * partError;
+        }
+        error = error * maxX * maxX / n;
+        cout<<"Error : "<<error<<endl;    
     }
-    error = error * maxX * maxX / n;
-    cout<<"Error : "<<error<<endl;    
 }
     time (&end);
     cout << "SGD Completed" << endl;
