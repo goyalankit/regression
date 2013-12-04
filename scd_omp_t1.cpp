@@ -8,11 +8,14 @@
 #include <ctime>
 #include <string>
 #include <omp.h>
+#include<sys/time.h>
 
 #include "omp.h"
 using namespace std;
 
 int PRINT=20;
+
+struct timeval start, end;
 
 class node_pair {
 public:
@@ -100,8 +103,9 @@ int main(int argc, char **argv) {
 		omp_init_lock(&(lock[i]));
 
 
-        time_t start1, end;
-        time (&start1);
+        //time_t start1, end;
+        //time (&start1);
+	gettimeofday(&start, NULL); //start time of the actual page rank algorithm
 
 	int num_actual_iters = num_iters / num_features;
 	for (int iter=0; iter < num_actual_iters; ++iter) {
@@ -161,8 +165,10 @@ int main(int argc, char **argv) {
 	//destroy the lock
 	 for (int i=0; i<num_examples; i++)
 		 omp_destroy_lock(&(lock[i]));
-    time (&end);
-            printf ("Elapsed time is %.2lf seconds.\n", difftime (end,start1)  );
+ gettimeofday(&end, NULL); //page rank ends here
+    //time (&end);
+	 cout << "Time taken by parallel execution with openmp is on " << threads << "threads is " <<  (((end.tv_sec  - start.tv_sec) * 1000000u +  end.tv_usec - start.tv_usec) / 1.e6) << endl;      
+//      printf ("Elapsed time is %.2lf seconds.\n", difftime (end,start1)  );
     //    for (int i = 0; i < w.size(); i++) {
 //        std::cout << i << " -> " << w[i] << std::endl;
 //    }
