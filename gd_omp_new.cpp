@@ -166,6 +166,22 @@ int main(int argc, char* argv[]) {
         cout<<"Error : "<<error<<endl;    
     }
 }
+    
+    
+            double error = 0.0;
+        #pragma omp parallel for reduction(+ : error) num_threads(threads)
+        for (int j1 = 0; j1 < n; j1++) {
+            double partError = intercept - Y[j1];
+            for (std::map<int, double>::iterator it=X[j1].begin(); it!=X[j1].end(); ++it)
+            // for(int i1 = 0; i1 < d; i1++) {
+                partError += w[it->first] * it->second;
+            // }
+            error += partError * partError;
+        }
+        error = error * maxX * maxX / n;
+        cout<<"Error : "<<error<<endl;   
+        
+        
     time (&end);
 	cout << "SGD Completed" << endl;
     printf ("Elasped time is %.2lf seconds.\n", difftime (end,start) );
