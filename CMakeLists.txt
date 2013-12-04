@@ -1,4 +1,6 @@
 app(regression regression.cpp)
 #app(cdescent_galois cdescent_galois.cpp)
 app(scd scd.cpp)
+app(sgd sgd.cpp)
+app(gd gd.cpp)
 app(scd_omp_g scd_omp_t1_galois.cpp)
