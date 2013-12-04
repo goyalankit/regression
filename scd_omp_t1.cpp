@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
 	int num_actual_iters = num_iters / num_features;
 	for (int iter=0; iter < num_actual_iters; ++iter) {
 		
-                #pragma omp parallel for num_threads(16)
+                #pragma omp parallel for num_threads(threads)
 		for(int i = 0; i < num_features; i++){
 		//i = iter % num_features;
 
