@@ -7,6 +7,7 @@
 #include <sstream>
 #include <ctime>
 #include <string>
+#include <omp.h>
 
 #include "omp.h"
 //#include "cmd_line.h"
@@ -307,6 +308,8 @@ int main(int argc, char **argv) {
 
 	// start a clock
 	clock_t start = clock();
+        time_t start1, end;
+        time (&start1);
 	clock_t elapsed = 0;
 
 	// number of accesses to the data matrix
@@ -356,7 +359,7 @@ int main(int argc, char **argv) {
 			curr_index = ivpair.first;
 			curr_value = ivpair.second;
 
-#pragma omp atomic
+//#pragma omp atomic
 			innerprod_with_w[curr_index]  += eta * curr_value;
 		}
 
@@ -379,12 +382,14 @@ int main(int argc, char **argv) {
 		}
 
         }
+    time (&end);
+            printf ("Elasped time is %.2lf seconds.\n", difftime (end,start1)  );
 
   //  std::cout << "Actual results" << std::endl;
     
-    for (int i = 0; i < w.size(); i++) {
+//    for (int i = 0; i < w.size(); i++) {
 //        std::cout << i << " -> " << w[i] << std::endl;
-    }
+//    }
     
 
 	return( EXIT_SUCCESS );

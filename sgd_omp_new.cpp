@@ -22,8 +22,8 @@ using namespace std;
 #define is_intercept false
 
 // struct node {
-//  map<int, double > features;
-//  double w;
+//  map<int, float > features;
+//  float w;
 // };
 
 int main(int argc, char* argv[]) {
@@ -51,16 +51,16 @@ int main(int argc, char* argv[]) {
     istringstream iss(line);
     iss>>n>>d;
     // cout<<n<<" "<<d<<endl;
-    vector<double> Y;
-    vector<map<int, double> > X;
-    vector<double> w;
+    vector<float> Y;
+    vector<map<int, float> > X;
+    vector<float> w;
 
     int maxX = 0;
     Y.resize(n);
     X.resize(n);
     w.resize(d);
         // maxX.assign(d,0);
-    double initial_w = 0;
+    float initial_w = 0;
     int j=0;
     //j -> sample, i -> feature
     while (j < n)
@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
     cout << "No .of samples=" << n << " No of features=" << d << endl;
     cout << "Neta : "<< neta << " Iterations : "<< iter << " Threads :"<< threads << endl;
 
-    double w_next;
+    float w_next;
     time_t start, end;
     time (&start);
     for (int k = 0; k < iter; k++) {
@@ -113,21 +113,21 @@ int main(int argc, char* argv[]) {
         #pragma omp parallel for num_threads(threads)             
         for (int chunk = 0; chunk < threads; chunk++) {
                 int j = rand() % n;
-                double val = intercept - Y[j];
+                float val = intercept - Y[j];
             // #pragma omp parallel for reduction(+ : val) num_threads(threads)
-            for (map<int, double>::iterator it=X[j].begin(); it!=X[j].end(); ++it) {
+            for (map<int, float>::iterator it=X[j].begin(); it!=X[j].end(); ++it) {
                 val += (w[it->first] * it->second);
             }
-            for (map<int, double>::iterator it=X[j].begin(); it!=X[j].end(); ++it) {
-                w[it->first] -= (double)neta * it->second * val;
+            for (map<int, float>::iterator it=X[j].begin(); it!=X[j].end(); ++it) {
+                w[it->first] -= (float)neta * it->second * val;
             }
     }
 
-    double error = 0.0;
+    float error = 0.0;
     #pragma omp parallel for reduction(+ : error) num_threads(threads)
     for (int j1 = 0; j1 < n; j1++) {
-        double partError = intercept - Y[j1];
-        for (std::map<int, double>::iterator it=X[j1].begin(); it!=X[j1].end(); ++it)
+        float partError = intercept - Y[j1];
+        for (std::map<int, float>::iterator it=X[j1].begin(); it!=X[j1].end(); ++it)
             partError += w[it->first] * it->second;
         error += partError * partError;
     }
