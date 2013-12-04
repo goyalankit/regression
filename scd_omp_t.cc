@@ -9,7 +9,86 @@
 #include <string>
 
 //#include "cmd_line.h"
-#include "Losses.h"
+//#include "Losses.h"
+typedef unsigned int uint;
+
+
+
+double logistic_loss(double a, double b) {
+  if (a <= 10.0 && a >= -10.0) 
+    return(log(1+exp(-a*b)));
+  else {
+    if (a*b > 0.0) 
+      return(0.0);
+    else
+      return(-a*b);
+  }
+}
+
+double logistic_loss_grad(double a, double b) {
+  if (a <= 10.0 && a >= -10.0) 
+    return(-b/(1+exp(a*b)));
+  else {
+    if (a*b > 0.0)
+      return(0.0);
+    else
+      return(-b);
+  }
+}
+
+
+double quadratic_loss(double a, double b) {
+  return(0.5*(a-b)*(a-b));
+}
+
+double quadratic_loss_grad(double a, double b) {
+  return (a-b);
+}
+
+double hinge_loss(double a, double b) {
+  double margin = 1-a*b;
+  if (margin < 0.0) margin = 0.0;
+  return(margin);
+}
+
+double hinge_loss_grad(double a, double b) {
+  double g=0.0;
+  if (a*b < 1) g=-b;
+  return(g);
+}
+
+class Losses {
+
+ public:
+ Losses(int loss_type) : 
+  type(loss_type), my_loss(&logistic_loss), my_grad_loss(&logistic_loss_grad), rho(0.25) {
+    if (type == 1) {
+      my_loss = &hinge_loss;
+      my_grad_loss = &hinge_loss_grad;
+    } else if (type == 2) {
+      my_loss = &quadratic_loss;
+      my_grad_loss = &quadratic_loss_grad;
+      rho = 1;
+    } 
+  }
+
+  double rho;
+
+  double loss(double a,double b) {
+    return((*my_loss)(a,b));
+  }
+
+  double loss_grad(double a,double b) {
+    return((*my_grad_loss)(a,b));
+  }
+
+  ~Losses() { }
+
+ protected:
+  int type;
+  double (*my_loss)(double,double);  
+  double (*my_grad_loss)(double,double);  
+};
 
 class IndexValuePair {
 public:
