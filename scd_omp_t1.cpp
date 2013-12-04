@@ -93,6 +93,13 @@ int main(int argc, char **argv) {
 	std::vector<double> w(num_features,0);
 	std::vector<double> innerprod_with_w(num_examples,0);
 
+	//to lock a single element in array
+	omp_lock_t lock[num_examples];
+	//initialize locks
+	for (int i=0; i<num_examples; i++)
+		omp_init_lock(&(lock[i]));
+
+
         time_t start1, end;
         time (&start1);
 
@@ -132,7 +139,12 @@ int main(int argc, char **argv) {
 			node_pair ivpair = examples[i][j];
 			curr_index = ivpair.first;
 			curr_value = ivpair.second;
+
+			//omp_set_lock(&(lock[curr_index]));
+			#pragma omp atomic
 			innerprod_with_w[curr_index]  += eta * curr_value;
+			//omp_unset_lock(&(lock[curr_index]));
+
 		}
 	}
                // once in a while print the time elapsed, no. of data accesses and the weight vector
@@ -145,6 +157,10 @@ int main(int argc, char **argv) {
 		}
 
         }
+
+	//destroy the lock
+	 for (int i=0; i<num_examples; i++)
+		 omp_destroy_lock(&(lock[i]));
     time (&end);
             printf ("Elapsed time is %.2lf seconds.\n", difftime (end,start1)  );
     //    for (int i = 0; i < w.size(); i++) {
