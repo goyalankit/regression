@@ -110,9 +110,9 @@ int main(int argc, char* argv[]) {
     cout << "Neta : "<< neta << " Iterations : "<< iter << " Threads :"<< threads << endl;
 
     float w_next;
-    time_t start, end;
-    time (&start);
-
+    struct timeval start, end;
+    gettimeofday(&start, NULL); //start time of the actual algorithm
+  
     #pragma omp parallel for num_threads(threads)             
     for (int k = 0; k < iter; k++) {
                 int j = rand() % n;
@@ -149,9 +149,9 @@ int main(int argc, char* argv[]) {
         error = error * maxX * maxX / n;
         cout<<"Error : "<<error<<endl;  
         
-    time (&end);
+    gettimeofday(&end, NULL); 
     cout << "SGD Completed" << endl;
-    printf ("Elasped time is %.2lf seconds.\n", difftime (end,start) );
+    printf ("Elasped time is %.4lf seconds.\n", (((end.tv_sec  - start.tv_sec) * 1000000u +  end.tv_usec - start.tv_usec) / 1.e6) );
     // if(is_intercept) cout << intercept << endl;
     // for (int i=0;i< w.size();i++) {
     //  cout << w[i] << endl;
