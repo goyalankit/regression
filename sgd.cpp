@@ -168,9 +168,8 @@ int main(int argc, char* argv[]) {
 		double error = 0.0;
              	for (int i = 0; i < n; i++) {
                  	double partError = 0.0 - Y[i];
-                 	for(int j = 0; j < d; j++) {
-				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) 
-                     			partError = partError + Graph[i].samples[j]* w[j].value;
+            		for (map<int, double>::iterator it=Graph[i].samples.begin(); it!=Graph[i].samples.end(); ++it) {
+                     			partError = partError + it->second * w[it->first].value;
                  	}
                  	error = error + partError * partError;
              	}
