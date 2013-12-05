@@ -30,6 +30,19 @@
 % authoryear    To obtain author/year citation style instead of numeric.
 
 \usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+
+\newlength\myindent
+\setlength\myindent{1em}
+\newcommand\bindent{%
+  \begingroup
+  \setlength{\itemindent}{\myindent}
+  \addtolength{\algorithmicindent}{\myindent}
+}
+\newcommand\eindent{\endgroup}
+
 
 \begin{document}
 
@@ -187,7 +200,24 @@ to gradient, one fixes descent direction at the outset.
 //Put Equation for Coordinate Descent
 
 \subsection{Stochastic Coordinate Descent}
-//Put Equation for Stochastic Coordinate Descent
+
+\begin{algorithm}
+\caption{Calculate $y = x^n$}
+\begin{algorithmic} 
+\STATE let $w = 0$
+\STATE \bf{for} \begin{math} k = 1,2,.. \end{math}
+    \bindent
+	\STATE \textnormal{sample \begin{math}j\end{math} uniformly at random from \begin{math}\{1,...,2d\}\end{math}}
+	\STATE \textnormal{let \begin{math}g_j = (\Delta{R(w)})_j\end{math}}
+	\STATE \textnormal{let \begin{math}\eta = max\{ -w_j, -g_j/\beta \}\end{math}}
+	\STATE \textnormal{let \begin{math}w_j = w_j + \eta\end{math}}
+    \eindent
+\STATE \bf{end}
+\end{algorithmic}
+\end{algorithm}
+
+
+
 
 \section{Parallel Implementation}
 \subsection{Parallel Stochastic Gradient Descent}
