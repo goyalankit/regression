@@ -22,8 +22,8 @@ using namespace std;
 #define is_intercept false
 
 // struct node {
-//  map<int, double > features;
-//  double w;
+//  map<int, float > features;
+//  float w;
 // };
 
 int main(int argc, char* argv[]) {
@@ -34,15 +34,19 @@ int main(int argc, char* argv[]) {
     float neta = neta_default;
     int threads = thread_default;
     int iter = iter_default;
-    char* filename = "mnist"; // "inputfile"; //"madelon";
-    inFile.open(filename, ifstream::in);
+    char* filename = "madelon"; // "inputfile"; //"madelon";
+    int show_errors = 1;
         
         if(argc > 3) {
             neta = atof(argv[1]);
             iter = atoi(argv[2]);
             threads = atoi(argv[3]);
+            if(argc > 4) show_errors = atoi(argv[4]);
+            if(argc > 5) filename = argv[5];
         }
-        if(!inFile.is_open())
+    inFile.open(filename, ifstream::in);
+
+    if(!inFile.is_open())
         {
         cout << "Unable to open file graph.txt. \nProgram terminating...\n";
                 return 0;
@@ -51,16 +55,16 @@ int main(int argc, char* argv[]) {
     istringstream iss(line);
     iss>>n>>d;
     // cout<<n<<" "<<d<<endl;
-    vector<double> Y;
-    vector<map<int, double> > X;
-    vector<double> w;
+    vector<float> Y;
+    vector<map<int, float> > X;
+    vector<float> w;
 
     int maxX = 0;
     Y.resize(n);
     X.resize(n);
     w.resize(d);
         // maxX.assign(d,0);
-    double initial_w = 0;
+    float initial_w = 0;
     int j=0;
     //j -> sample, i -> feature
     while (j < n)
@@ -105,38 +109,49 @@ int main(int argc, char* argv[]) {
     cout << "No .of samples=" << n << " No of features=" << d << endl;
     cout << "Neta : "<< neta << " Iterations : "<< iter << " Threads :"<< threads << endl;
 
-    double w_next;
-    time_t start, end;
-    time (&start);
+    float w_next;
+    struct timeval start, end;
+    gettimeofday(&start, NULL); //start time of the actual algorithm
+  
+    #pragma omp parallel for num_threads(threads)             
     for (int k = 0; k < iter; k++) {
-
-        #pragma omp parallel for num_threads(threads)             
-        for (int chunk = 0; chunk < threads; chunk++) {
                 int j = rand() % n;
-                double val = intercept - Y[j];
+                float val = intercept - Y[j];
             // #pragma omp parallel for reduction(+ : val) num_threads(threads)
-            for (map<int, double>::iterator it=X[j].begin(); it!=X[j].end(); ++it) {
+            for (map<int, float>::iterator it=X[j].begin(); it!=X[j].end(); ++it) {
                 val += (w[it->first] * it->second);
             }
-            for (map<int, double>::iterator it=X[j].begin(); it!=X[j].end(); ++it) {
-                w[it->first] -= (double)neta * it->second * val;
+            for (map<int, float>::iterator it=X[j].begin(); it!=X[j].end(); ++it) {
+                w[it->first] -= (float)neta * it->second * val;
             }
+    if(show_errors > 0) {
+        float error = 0.0;
+        #pragma omp parallel for reduction(+ : error) num_threads(threads)
+        for (int j1 = 0; j1 < n; j1++) {
+            float partError = intercept - Y[j1];
+            for (std::map<int, float>::iterator it=X[j1].begin(); it!=X[j1].end(); ++it)
+                partError += w[it->first] * it->second;
+            error += partError * partError;
+        }
+        error = error * maxX * maxX / n;
+        cout<<"Error : "<<error<<endl;    
     }
-
-    double error = 0.0;
-    #pragma omp parallel for reduction(+ : error) num_threads(threads)
-    for (int j1 = 0; j1 < n; j1++) {
-        double partError = intercept - Y[j1];
-        for (std::map<int, double>::iterator it=X[j1].begin(); it!=X[j1].end(); ++it)
-            partError += w[it->first] * it->second;
-        error += partError * partError;
-    }
-    error = error * maxX * maxX / n;
-    cout<<"Error : "<<error<<endl;    
 }
-    time (&end);
+    
+            float error = 0.0;
+        #pragma omp parallel for reduction(+ : error) num_threads(threads)
+        for (int j1 = 0; j1 < n; j1++) {
+            float partError = intercept - Y[j1];
+            for (std::map<int, float>::iterator it=X[j1].begin(); it!=X[j1].end(); ++it)
+                partError += w[it->first] * it->second;
+            error += partError * partError;
+        }
+        error = error * maxX * maxX / n;
+        cout<<"Error : "<<error<<endl;  
+        
+    gettimeofday(&end, NULL); 
     cout << "SGD Completed" << endl;
-    printf ("Elasped time is %.2lf seconds.\n", difftime (end,start) );
+    printf ("Elasped time is %.4lf seconds.\n", (((end.tv_sec  - start.tv_sec) * 1000000u +  end.tv_usec - start.tv_usec) / 1.e6) );
     // if(is_intercept) cout << intercept << endl;
     // for (int i=0;i< w.size();i++) {
     //  cout << w[i] << endl;

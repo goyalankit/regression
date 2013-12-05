@@ -33,16 +33,20 @@ int main(int argc, char* argv[]) {
     float neta = neta_default;
     int threads = thread_default;
     int iter = iter_default;
+    int show_errors = 1;
     // inFile.open("inputfile", ifstream::in);
-    char* filename = "mnist"; // "inputfile"; //"madelon";
-    inFile.open(filename, ifstream::in);
+    char* filename = "madelon"; // "inputfile"; //"madelon";
         
         if(argc > 3) {
             neta = atof(argv[1]);
             iter = atoi(argv[2]);
             threads = atoi(argv[3]);
+            if(argc > 4) show_errors = atoi(argv[4]);
+            if(argc > 5) filename = argv[5];
         }
-        if(!inFile.is_open())
+    inFile.open(filename, ifstream::in);
+
+    if(!inFile.is_open())
         {
 		cout << "Unable to open file graph.txt. \nProgram terminating...\n";
                 return 0;
@@ -108,8 +112,8 @@ int main(int argc, char* argv[]) {
     cout << "Neta : "<< neta << " Iterations : "<< iter << " Threads :"<< threads << endl;
 
 	double w_next;
-    time_t start, end;
-    time (&start);
+    struct timeval start, end;
+    gettimeofday(&start, NULL); //start time of the actual algorithm
     double** weights = (double **)malloc(sizeof(double *)*threads);
 
     for(int y =0 ; y < threads; y++) weights[y] = (double *)malloc(sizeof(double)*d);
@@ -147,23 +151,40 @@ int main(int argc, char* argv[]) {
         }
         w[y] = mean/threads;
     }
-
-    double error = 0.0;
-    #pragma omp parallel for reduction(+ : error) num_threads(threads)
-    for (int j1 = 0; j1 < n; j1++) {
-        double partError = intercept - Y[j1];
-        for (std::map<int, double>::iterator it=X[j1].begin(); it!=X[j1].end(); ++it)
-        // for(int i1 = 0; i1 < d; i1++) {
-            partError += w[it->first] * it->second;
-        // }
-        error += partError * partError;
+    if(show_errors > 0) {
+        double error = 0.0;
+        #pragma omp parallel for reduction(+ : error) num_threads(threads)
+        for (int j1 = 0; j1 < n; j1++) {
+            double partError = intercept - Y[j1];
+            for (std::map<int, double>::iterator it=X[j1].begin(); it!=X[j1].end(); ++it)
+            // for(int i1 = 0; i1 < d; i1++) {
+                partError += w[it->first] * it->second;
+            // }
+            error += partError * partError;
+        }
+        error = error * maxX * maxX / n;
+        cout<<"Error : "<<error<<endl;    
     }
-    error = error * maxX * maxX / n;
-    cout<<"Error : "<<error<<endl;    
 }
-    time (&end);
+    
+    
+            double error = 0.0;
+        #pragma omp parallel for reduction(+ : error) num_threads(threads)
+        for (int j1 = 0; j1 < n; j1++) {
+            double partError = intercept - Y[j1];
+            for (std::map<int, double>::iterator it=X[j1].begin(); it!=X[j1].end(); ++it)
+            // for(int i1 = 0; i1 < d; i1++) {
+                partError += w[it->first] * it->second;
+            // }
+            error += partError * partError;
+        }
+        error = error * maxX * maxX / n;
+        cout<<"Error : "<<error<<endl;   
+        
+        
+    gettimeofday(&end, NULL); 
 	cout << "SGD Completed" << endl;
-    printf ("Elasped time is %.2lf seconds.\n", difftime (end,start) );
+    printf ("Elasped time is %.4lf seconds.\n", (((end.tv_sec  - start.tv_sec) * 1000000u +  end.tv_usec - start.tv_usec) / 1.e6) );
     // if(is_intercept) cout << intercept << endl;
 	// for (int i=0;i<Graph.size();i++) {
 	// 	cout << Graph[i].w << endl;

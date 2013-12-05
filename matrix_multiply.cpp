@@ -19,7 +19,7 @@ int main()
             " Intel® MKL function dgemm, where A, B, and  C are matrices and \n"
             " alpha and beta are double precision scalars\n\n");
 
-	inFile.open("inputfile", ifstream::in);
+	inFile.open("inputfile1", ifstream::in);
 	inFile >> n >> m;
 	
 //    m = 2000, k = 200, n = 1000; A = Xt(5*6) ; B = X (6*5) ; n = 6; m = 5; k = 5
@@ -111,3 +111,4 @@ int main()
     printf (" Example completed. \n\n");
     return 0;
 }
+

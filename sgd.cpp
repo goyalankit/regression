@@ -47,7 +47,7 @@ struct comp {
 };
 
 struct node {
-	map<int, double > samples;
+	map<int, double > features;
 	vector<double> w;
 	int id;
 };
@@ -66,15 +66,12 @@ struct Process {
 	template<typename Context>
 		void operator()(node& source, Context& ctx) {
 			double val = 0.0 - Y[source.id];
-			for (int j=0; j<d; j++) {
-				if  (source.samples.find(j) != source.samples.end()) 
-					val = val + w[j].value * source.samples[j];	
+            		for (map<int, double>::iterator it=Graph[source.id].features.begin(); it!=Graph[source.id].features.end(); ++it) {
+				val = val + w[it->first].value * it->second;	
 			}
-			for (int j=0; j<d; j++) {
-				if  (source.samples.find(j) != source.samples.end()) 
-					w[j].value -= (double)neta * source.samples[j] * val;
+            		for (map<int, double>::iterator it=Graph[source.id].features.begin(); it!=Graph[source.id].features.end(); ++it) {
+				w[it->first].value -= (double)neta * it->second * val;
 			}
-	
 		}
 };
 
@@ -97,21 +94,27 @@ int main(int argc, char* argv[]) {
         neta = neta_default; 
 	int threads = thread_default;
         int iter = iter_default;
-	inFile.open("madelon", ifstream::in);
+        int show_errors = 1;
 	//inFile.open("inputfile", ifstream::in);
+    char* filename = "madelon"; // "inputfile"; //"madelon";
         
         if(argc > 3) {
             neta = atof(argv[1]);
             iter = atoi(argv[2]);
 	    threads = atoi(argv[3]);
+            if(argc > 4) show_errors = atoi(argv[4]);
+            if(argc > 5) filename = argv[5];
         }
 	Galois::setActiveThreads(threads);
+	inFile.open(filename, ifstream::in);
         if(!inFile.is_open())
         {
 		cout << "Unable to open file graph.txt. \nProgram terminating...\n";
                 return 0;
         }
-	inFile>>n>>d;
+    getline(inFile, line);
+    istringstream iss(line);
+    iss>>n>>d;
 	int maxX = 0;
 	Y.resize(n);
 	Graph.resize(n);
@@ -120,28 +123,34 @@ int main(int argc, char* argv[]) {
 	int j=0;
 	while (j < n)
 	{
-                inFile >> Y[j];
-		Graph[j].w.resize(d);
-		Graph[j].id = j;
-		for (int i=0; i<d; i++) {
-			if (j==0) {
-				w[i].value = initial_w;
-				w[i].id = i;
-			}
-			Graph[j].w[i] = initial_w;
-			int k;
-                        inFile >> k; 
-                        if (k!=0) Graph[j].samples[i] = k;
-                        if(abs(k) > maxX) maxX = abs(k);
-		}
-		j++;
+            getline(inFile, line);
+            istringstream iss(line);
+            iss >> Y[j]; string k; int i = 0;
+            Graph[j].w.resize(d);
+            // for (int i=0; i<d; i++) {
+            while(iss >> k) {
+                // if(j == 0) w[i] = initial_w;
+                // int k = 1;
+                // inFile >> k; 
+                if(strcmp(filename, "mnist") == 0) {
+                    size_t pos = k.find(":");
+                    Graph[j].features[atoi((k.substr(0,pos)).c_str())] = atof((k.substr(pos+1)).c_str());
+                    maxX = 255;
+                }
+                else {   
+                    if(atoi(k.c_str()) != 0) Graph[j].features[i] = atoi(k.c_str());
+                    if(abs(atoi(k.c_str())) > maxX) maxX = abs(atoi(k.c_str()));
+                }
+                i++;
+                    }
+                    j++;
 	}
  
         //Normalize
 	if(maxX != 0) {
             for(int j = 0; j < n; j++) {
                 for(int i = 0; i< d; i++) 
-                    if (Graph[j].samples.find(i) != Graph[j].samples.end()) Graph[j].samples[i] /= maxX;
+                    if (Graph[j].features.find(i) != Graph[j].features.end()) Graph[j].features[i] /= maxX;
                 Y[j] /= maxX;
             }
             cout<< "Factor :" << maxX << endl;
@@ -153,40 +162,40 @@ int main(int argc, char* argv[]) {
 	
 	//typedef GaloisRuntime::WorkList::LIFO<> WL;
 	typedef GaloisRuntime::WorkList::ChunkedFIFO<128> WL;
-	time_t start, end;
-        time (&start);
+    struct timeval start, end;
+    gettimeofday(&start, NULL); //start time of the actual algorithm
 
 	for (int k = 0; k < iter; k++) {
  		Galois::for_each<WL>(Graph.begin(), Graph.end(), Process());
- 		//Galois::for_each<WL>(w.begin(), w.end(), Process1());
-
-		//for (int j = 0; j< d; j++) {
-                //	double mean = 0.0;
-                //	for (int i = 0; i < Graph.size(); i++) {
-                //    		mean += Graph[i].w[j];
-                //	}
-                //	w[j] = mean/Graph.size();
-                //}
-             	
-		double error = 0.0;
-             	for (int i = 0; i < n; i++) {
-                 	double partError = 0.0 - Y[i];
-                 	for(int j = 0; j < d; j++) {
-				if  (Graph[i].samples.find(j) != Graph[i].samples.end()) 
-                     			partError = partError + Graph[i].samples[j]* w[j].value;
-                 	}
-                 	error = error + partError * partError;
-             	}
-             	error = error * maxX * maxX / n;
-             	cout<<"Error : "<<error<<endl;
+                if(show_errors > 0) {
+                    double error = 0.0;
+                    for (int i = 0; i < n; i++) {
+                            double partError = 0.0 - Y[i];
+                            for (std::map<int, double>::iterator it=Graph[i].features.begin(); it!=Graph[i].features.end(); ++it)
+                                 partError += w[it->first].value * it->second;
+                            error = error + partError * partError;
+                    }
+                    error = error * maxX * maxX / n;
+                    cout<<"Error : "<<error<<endl;
+                }
     	}
-    	time (&end);
+    gettimeofday(&end, NULL); 
 
+                        double error = 0.0;
+                    for (int i = 0; i < n; i++) {
+                            double partError = 0.0 - Y[i];
+                            for (std::map<int, double>::iterator it=Graph[i].features.begin(); it!=Graph[i].features.end(); ++it)
+                                 partError += w[it->first].value * it->second;
+                            error = error + partError * partError;
+                    }
+                    error = error * maxX * maxX / n;
+                    cout<<"Error : "<<error<<endl;
+                    
 	cout << "SGD Completed" << endl;
-	printf ("Elasped time is %.2lf seconds.\n", difftime (end,start) );
-	for (int i=0;i<d;i++) {
-		cout << w[i].value << endl;
-        }
+    printf ("Elasped time is %.4lf seconds.\n", (((end.tv_sec  - start.tv_sec) * 1000000u +  end.tv_usec - start.tv_usec) / 1.e6) );
+//	for (int i=0;i<d;i++) {
+//		cout << w[i].value << endl;
+//        }
 	
   	return 0;
 }
