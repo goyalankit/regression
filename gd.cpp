@@ -127,6 +127,7 @@ int main(int argc, char* argv[]) {
             getline(inFile, line);
             istringstream iss(line);
             iss >> Y[j]; string k; int i = 0;
+            Graph[j].w.resize(d);
             // for (int i=0; i<d; i++) {
             while(iss >> k) {
                 // if(j == 0) w[i] = initial_w;
@@ -168,18 +169,29 @@ int main(int argc, char* argv[]) {
 	for (int k = 0; k < iter; k++) {
  		Galois::for_each<WL>(Graph.begin(), Graph.end(), Process());
  		Galois::for_each<WL>(w.begin(), w.end(), Process1());
+                if(show_errors > 0) {
+                    double error = 0.0;
+                    for (int i = 0; i < n; i++) {
+                            double partError = 0.0 - Y[i];
+                            for (std::map<int, double>::iterator it=Graph[i].samples.begin(); it!=Graph[i].samples.end(); ++it)
+                                 partError += w[it->first].value * it->second;
+                            error = error + partError * partError;
+                    }
+                    error = error * maxX * maxX / n;
+                    cout<<"Error : "<<error<<endl;
+                }
     	}
     gettimeofday(&end, NULL); 
     
-//                        double error = 0.0;
-//                    for (int i = 0; i < n; i++) {
-//                            double partError = 0.0 - Y[i];
-//                            for (std::map<int, double>::iterator it=Graph[i].samples.begin(); it!=Graph[i].samples.end(); ++it)
-//                                 partError += w[it->first].value * it->second;
-//                            error = error + partError * partError;
-//                    }
-//                    error = error * maxX * maxX / n;
-//                    cout<<"Error : "<<error<<endl;
+                        double error = 0.0;
+                    for (int i = 0; i < n; i++) {
+                            double partError = 0.0 - Y[i];
+                            for (std::map<int, double>::iterator it=Graph[i].samples.begin(); it!=Graph[i].samples.end(); ++it)
+                                 partError += w[it->first].value * it->second;
+                            error = error + partError * partError;
+                    }
+                    error = error * maxX * maxX / n;
+                    cout<<"Error : "<<error<<endl;
                     
 	cout << "GD Completed" << endl;
     printf ("Elasped time is %.4lf seconds.\n", (((end.tv_sec  - start.tv_sec) * 1000000u +  end.tv_usec - start.tv_usec) / 1.e6) );

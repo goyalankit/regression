@@ -126,6 +126,7 @@ int main(int argc, char* argv[]) {
             getline(inFile, line);
             istringstream iss(line);
             iss >> Y[j]; string k; int i = 0;
+            Graph[j].w.resize(d);
             // for (int i=0; i<d; i++) {
             while(iss >> k) {
                 // if(j == 0) w[i] = initial_w;
