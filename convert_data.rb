@@ -10,9 +10,9 @@ File.open("mnist", "r").each_line do |line|
         line_count += 1
         next
     end
-    line_count += 1
     split_values = line.split(" ")
     sample_number = line_count - 1
+    line_count += 1
     split_values.each_with_index do |value, index|
         next if(value.strip == "")
         if(index == 0)
@@ -30,22 +30,21 @@ File.open("mnist", "r").each_line do |line|
 end
 
 File.open("mnist_samples", 'a') do |file| 
-	file.write("#{num_examples} #{num_features}") 
+    file.write("#{num_examples} #{num_features}") 
 
-	num_features.to_i.times do |i|
-    		if(feature_value[i.to_s].nil?)
-        		file.write("\n")
-        		next
-    		end
-    		feature_value[i.to_s].each do |sn, val|
-        		file.write("#{sn} #{val} ")
-    		end
-    		file.write("\n")
-	end
+    num_features.to_i.times do |i|
+        if(feature_value[i.to_s].nil?)
+            file.write("\n")
+            next
+        end
+        feature_value[i.to_s].each do |sn, val|
+            file.write("#{sn} #{val} ")
+        end
+        file.write("\n")
+    end
 end
 
 num_examples.to_i.times do |i|
-File.open("mnist_examples", 'a') do |file| 
-        		file.write("#{Y[i]}\n")
-end
+
+    File.open("mnist_examples", 'a') { |file| file.write("#{Y[i]}\n") }
 end
