@@ -126,6 +126,7 @@ int main(int argc, char **argv) {
 		}
 
 		g = sum / num_examples;
+		std::cout << "lambda " << lambda << endl;
 		if (w[i] - g > lambda) 
 			eta = -g - lambda;
 		else {

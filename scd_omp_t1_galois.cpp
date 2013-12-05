@@ -30,6 +30,8 @@ using namespace std;
 
 int PRINT=20;
 
+struct timeval start, end;
+
 class node_pair {
 public:
 	node_pair(int i, double v) : first(i), second(v) { }
@@ -51,7 +53,7 @@ struct node {
 };
 
 vector<node> Graph;
-typedef GaloisRuntime::WorkList::LIFO<> WL;
+typedef GaloisRuntime::WorkList::dChunkedFIFO<31> WL;
 
 struct Process {
 	int sn;
@@ -164,9 +166,7 @@ int main(int argc, char **argv) {
 	}
 	labels_file.close();
 
-        time_t start1, end;
-        time (&start1);
-
+gettimeofday(&start, NULL);
 	int num_actual_iters = num_iters / num_features;
 	for (int iter=0; iter < num_actual_iters; ++iter) {
 		
@@ -182,8 +182,9 @@ int main(int argc, char **argv) {
 
         }
 
-    time (&end);
-            printf ("Elapsed time is %.2lf seconds.\n", difftime (end,start1)  );
+  gettimeofday(&end, NULL);
+ cout << "Time taken by parallel execution on galois "<< threads << " threads is " <<  (((end.tv_sec  - start.tv_sec) * 1000000u +  end.tv_usec - start.tv_usec) / 1.e6) << endl;
+
     //    for (int i = 0; i < w.size(); i++) {
 //        std::cout << i << " -> " << w[i] << std::endl;
 //    }

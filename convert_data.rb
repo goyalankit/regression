@@ -1,12 +1,13 @@
 Y = {}
-feature_value = {}
+feature_value = []
 line_count = 0
 num_features = 0
 num_examples = 0
-File.open("mnist", "r").each_line do |line|
+File.open("/scratch/02683/prat0318/mnist", "r").each_line do |line|
     if(line_count == 0)
         num_examples = line.split(" ")[0]
         num_features = line.split(" ")[1]
+	p "running for #{num_examples} samples and  #{num_features} features"
         line_count += 1
         next
     end
@@ -21,23 +22,25 @@ File.open("mnist", "r").each_line do |line|
         end
         feature_number = value.split(":")[0]
         sample_value = value.split(":")[1]
-        if(feature_value[feature_number].nil?)
-            feature_value[feature_number] = { sample_number => sample_value }
+        if(feature_value[feature_number.to_i].nil?)
+            feature_value[feature_number.to_i] = {sample_number => sample_value}
         else
-            feature_value[feature_number].merge!({ sample_number => sample_value })
+            feature_value[feature_number.to_i][sample_number] = sample_value 
         end
     end
 end
+
+p "writing samples"
 
 File.open("mnist_samples", 'a') do |file| 
     file.write("#{num_examples} #{num_features}") 
 
     num_features.to_i.times do |i|
-        if(feature_value[i.to_s].nil?)
+        if(feature_value[i].nil?)
             file.write("\n")
             next
         end
-        feature_value[i.to_s].each do |sn, val|
+        feature_value[i].each do |sn, val|
             file.write("#{sn} #{val} ")
         end
         file.write("\n")

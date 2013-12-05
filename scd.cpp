@@ -51,6 +51,8 @@ struct node {
 	double yx;
 };
 
+struct timeval start, end;
+
 typedef Galois::Graph::LC_CSR_Graph<node,float> Graph;
 typedef Graph::GraphNode GNode;
 Graph graph;
@@ -62,9 +64,9 @@ struct process {
 		void operator()(GNode& src, ContextTy& lwl) {
 			double hii = 0;
 			double val = 0.0;
-			for (Graph::edge_iterator jj = graph.edge_begin(src), ej = graph.edge_end(src); jj != ej; ++jj) {
+			for (Graph::edge_iterator jj = graph.edge_begin(src, Galois::NONE), ej = graph.edge_end(src, Galois::NONE); jj != ej; ++jj) {
 				if(graph.getEdgeDst(jj) != src){
-					val = val + graph.getData(graph.getEdgeDst(jj)).w * graph.getEdgeData(jj);
+					val = val + graph.getData(graph.getEdgeDst(jj), Galois::NONE).w * graph.getEdgeData(jj);
 				}
 				else{
 					hii = graph.getEdgeData(jj);
@@ -72,7 +74,7 @@ struct process {
 			}	
 
 			if(hii != 0){
-				graph.getData(src).w = (graph.getData(src).yx - val)/hii;
+				graph.getData(src, Galois::NONE).w = (graph.getData(src, Galois::NONE).yx - val)/hii;
 			}
 
 		}
@@ -180,8 +182,7 @@ int main(int argc, char* argv[]) {
 		graph.getData(src, Galois::NONE).yx = temp;
 	}
 
-	time_t start, end;
-	time (&start);
+	gettimeofday(&start, NULL); 
 	for (int k = 0; k < iter; k++) {
 		Galois::for_each<WL>(graph.begin(), graph.end(), process());
 		
@@ -198,9 +199,10 @@ int main(int argc, char* argv[]) {
 			cout<<"Error : "<<error<<endl;   
 		}
 	}
-	time (&end);
+	gettimeofday(&end, NULL);
 	cout << "CD Completed" << endl;
-	printf ("Elasped time is %.2lf seconds.\n", difftime (end,start) );
+
+ cout << "Time taken by scd execution on galois with "<<  threads << " threads on  nodes is " <<  (((end.tv_sec  - start.tv_sec) * 1000000u +  end.tv_usec - start.tv_usec) / 1.e6) << endl;
 
 	for (Graph::iterator ii = graph.begin(), ei = graph.end(); ii != ei; ++ii) {
 		GNode src = *ii;
