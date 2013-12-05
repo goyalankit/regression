@@ -3,10 +3,11 @@ feature_value = []
 line_count = 0
 num_features = 0
 num_examples = 0
-File.open("mnist", "r").each_line do |line|
+File.open("/scratch/02683/prat0318/mnist", "r").each_line do |line|
     if(line_count == 0)
         num_examples = line.split(" ")[0]
         num_features = line.split(" ")[1]
+	p "running for #{num_examples} samples and  #{num_features} features"
         line_count += 1
         next
     end
@@ -28,6 +29,8 @@ File.open("mnist", "r").each_line do |line|
         end
     end
 end
+
+p "writing samples"
 
 File.open("mnist_samples", 'a') do |file| 
     file.write("#{num_examples} #{num_features}") 
