@@ -121,7 +121,7 @@ The best fitting curve to a set of data points could be obtained using least squ
 assumes that the best-fit curve for a given data has the minimal sum of the deviations squared. It could
 be represented as a minimization problem. For Least squares, the regularization function \begin{equation}R(w)=0\end{equation}
 such that the error is given by \\
-\begin{equation} E(w,b) =\frac{1}{2} \sum_{i=1}^{n} (y-Ax}^2\end{equation}
+\begin{equation} E(w,b) =\frac{1}{2} \sum_{i=1}^{n} (y-Ax)^2\end{equation}
 
 \subsection{Regularization for Regression}
 Regularization refers to a process of introducing additional information in order to solve an ill-posed problem or to prevent overfitting. 
@@ -133,7 +133,7 @@ For Regression, various Regularization models are used as described next.
 Ridge regression penalizes the size of the regression coefficients. Applying the ridge regression penalty
 has the effect of shrinking the estimates (introducing bias but reducing the variance of the estimate). The Error
 function is given by \\
-\begin{equation} E(w,b) =\frac{1}{2} \sum_{i=1}^{n} (y-Ax}^2 + \sum_{i=1}^{n} w_i^2 \end{equation} \\
+\begin{equation} E(w,b) =\frac{1}{2} \sum_{i=1}^{n} (y-Ax)^2 + \sum_{i=1}^{n} w_i^2 \end{equation} \\
 The Regularization function is
 \begin{equation}R(w)=\frac{1}{2} \sum_{i=1}^{n} w_i^2\end{equation}.
 
@@ -143,14 +143,14 @@ models, and that these gains are largest in the presence of multicollinearity. H
 doesn't do variable selection, and it fails to provide a parsimonious model with few parameters.
 LASSO is a regression method that penalizes the absolute size of the regression coefficients. It has
 desirable effect of setting coefficients to zero leading to sparse solutions.\\
-\begin{equation} E(w,b) =\frac{1}{2} \sum_{i=1}^{n} (y-Ax}^2 + \sum_{i=1}^{n} w_i \end{equation} \\
+\begin{equation} E(w,b) =\frac{1}{2} \sum_{i=1}^{n} (y-Ax)^2 + \sum_{i=1}^{n} w_i \end{equation} \\
 The Regularization function is
 \begin{equation}R(w)=\sum_{i=1}^{n} |w_i|\end{equation}.
 
 \subsection{Elastic Net}
 Elastic net is a linear model that allows for learning a sparse model where few of the weights are nonzero
 like Lasso, while still maintaining the regularization properties of Ridge. The Error function is given by
-\begin{equation}E(w,b) =\frac{1}{2} \sum_{i=1}^{n} (y-Ax}^2 + \sum_{i=1}^{n} w_i^2 + \sum_{i=1}^{n} w_i \end{equation} \\
+\begin{equation}E(w,b) =\frac{1}{2} \sum_{i=1}^{n} (y-Ax)^2 + \sum_{i=1}^{n} w_i^2 + \sum_{i=1}^{n} w_i \end{equation} \\
 The Regularization function is
 \begin{equation}R(w) = \gamma \frac{1}{2} \sum_{i=1}^{n} w_i^2 + (1-\gamma)\sum_{i=1}^{n} |w_i|\end{equation}.
 
@@ -171,7 +171,7 @@ current datapoint, and then updates the weight vector accordingly.
 //Put Equation for Stochastic Gradient Descent
 
 \subsection{Coordinate Descent}
-As described in \{fried1}, Coordinate descent methods (CDM) are one of the most successful classes of algorithms in the big data optimization domain. 
+As described in \cite{fried1}, Coordinate descent methods (CDM) are one of the most successful classes of algorithms in the big data optimization domain. 
 Broadly speaking, CDMs are based on the strategy of updating a single coordinate (or a single block of coordinates) of the vector
 of variables at each iteration. This often drastically reduces memory requirements as well as the
 arithmetic complexity of a single iteration, making the methods easily implementable and scalable.
