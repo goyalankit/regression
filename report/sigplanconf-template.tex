@@ -198,7 +198,7 @@ function is taken w.r.t one sample at a time and the new weight value for all fe
 At the end of the iteration, the final weight values are updated with the mean of weight values calculated using all samples.
 
 \begin{algorithm}
-\caption{Gradient Descent}
+\caption{	Gradient Descent}
 \begin{algorithmic} 
 
 \STATE \bf{INPUT} \begin{math} X \in {R}^{N \times  d}, y \in R^N, learning\;  rate\;  \eta, intial\; w \end{math} 
@@ -262,7 +262,24 @@ number of function evaluations.
 Coordinate descent is based on the idea that the minimization of a multi-variable function can be
 achieved by minimizing it along one direction at a time. Its different from the gradient descent as instead of varying descent direction according
 to gradient, one fixes descent direction at the outset.
-//Put Equation for Coordinate Descent
+\begin{algorithm}
+\caption{Stochastic coordinate descent}
+\begin{algorithmic} 
+\STATE let $w = 0$
+\STATE \bf{for} \begin{math} k = 1,2,.. \end{math}
+    \bindent
+	\STATE \bf{for} \textnormal{\begin{math}j\end{math} in \begin{math}\{1,...,2d\}\end{math}}
+		\quadindent
+	\STATE \textnormal{let \begin{math}g_j = (\bigtriangledown{E(w)})_j\end{math}}
+	\STATE \textnormal{let \begin{math}\eta = max\{ -w_j, -g_j/\beta \}\end{math}}
+	\STATE \textnormal{let \begin{math}w_j = w_j + \eta\end{math}}
+	\quadeindent
+	\STATE \bf{end for}
+    \eindent
+\STATE \bf{end for}
+\end{algorithmic}
+\end{algorithm}
+
 
 \subsection{Stochastic Coordinate Descent}
 If the number of features and data sets is large, going over all dimensions in each iteration is an
@@ -281,7 +298,7 @@ described below.
 	\STATE \textnormal{let \begin{math}\eta = max\{ -w_j, -g_j/\beta \}\end{math}}
 	\STATE \textnormal{let \begin{math}w_j = w_j + \eta\end{math}}
     \eindent
-\STATE \bf{end}
+\STATE \bf{end for}
 \end{algorithmic}
 \end{algorithm}
 
