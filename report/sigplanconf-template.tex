@@ -191,9 +191,31 @@ At the end of the iteration, the final weight values are updated with the mean o
 \subsection{Stochastic Gradient Descent}
 In stochastic (or "on-line") gradient descent, the true gradient of the function is approximated by a gradient at a
 single training sample. The training samples are given one at a time. The algorithm examines the
+current datapoint, and then updates the weight vector accordingly.
 current datapoint, and then updates the weight vector accordingly. Thus, it is different from Gradient Descent where the weight
 vector is updated with the mean of all samples.
-//Put Equation for Stochastic Gradient Descent
+
+\begin{algorithm}
+\caption{Stochastic Gradient Descent}
+\begin{algorithmic} 
+
+\STATE \bf{INPUT} \begin{math} X \in {R}^{N \times  d}, y \in R^N, learning\;  rate\;  \eta, intial\; w \end{math} 
+\STATE \bf{OUTPUT} \textnormal{Solution} \begin{math}  w \end{math} 
+
+	\STATE \textnormal{\begin{math} t = 0\end{math} }
+
+	\STATE \bf{while} \textnormal{not converged} \bf{do}
+    	\bindent
+	 \STATE \textnormal{\indent choose a random training example \begin{math}x_i\end{math}}
+
+	 \STATE \textnormal{\indent Compute gradient for \begin{math}x_i: \bigtriangledown{E_w(x_i)}\end{math}}
+	 \STATE \textnormal{\indent Update \begin{math}w: w^{(t+1)} \gets w^{(t)} - \bigtriangledown{E_w(x_i)}\end{math}}
+	 \STATE \textnormal{\indent \begin{math}t \gets t + 1\end{math}}
+	    \eindent
+	\STATE \bf{end while}
+
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{Coordinate Descent}
 As described in \cite{fried1}, Coordinate descent methods (CDM) are one of the most successful classes of algorithms in the big data optimization domain. 
@@ -217,7 +239,7 @@ features to be updated can be choosen randomly or in a cyclic manner. The algori
 described below.
 
 \begin{algorithm}
-\caption{Calculate $y = x^n$}
+\caption{Stochastic coordinate descent}
 \begin{algorithmic} 
 \STATE let $w = 0$
 \STATE \bf{for} \begin{math} k = 1,2,.. \end{math}
@@ -230,6 +252,14 @@ described below.
 \STATE \bf{end}
 \end{algorithmic}
 \end{algorithm}
+
+\section{Parallel Implementation}
+\subsection{Parallel Stochastic Gradient Descent}
+\subsection{Parallel Stochastic Coordinate Descent}
+
+\section{TAO Analysis}
+\subsection{Parallel Stochastic Gradient Descent}
+\subsection{Parallel Stochastic Coordinate Descent}
 
 \section{Implementation Framework}
 \subsection{OpenMP}
