@@ -198,9 +198,9 @@ int main(int argc, char* argv[]) {
                     
 	cout << "GD Completed" << endl;
     printf ("Elasped time is %.4lf seconds.\n", (((end.tv_sec  - start.tv_sec) * 1000000u +  end.tv_usec - start.tv_usec) / 1.e6) );
-	for (int i=0;i<d;i++) {
-		cout << w[i].value << endl;
-        }
+//	for (int i=0;i<d;i++) {
+//		cout << w[i].value << endl;
+//        }
 	
   	return 0;
 }
