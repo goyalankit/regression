@@ -91,7 +91,8 @@ The main focus of this work is to solve the problem of Regression for Sparse Dat
 To the best of our knowledge, this is the first attempt at implementing parallel Regression Algorithms using
 Galois. Two different solvers; Gradient and Coordinate descent and their stochastic versions are implemented. The
 algorithms are parallelized using OpenMP and Galois framework and their performance and accuracy are compared.
-The Tao Analysis for the two solvers is presented and Speedup is compared for different Galois worklist scheduling. 
+The Tao Analysis for the two solvers is presented and Speedup is compared for different Galois worklist scheduling. A
+comparative analysis is presented for change in error loss with respect to the number of iterations and threads. 
 \end{abstract}
 
 \category{CR-number}{subcategory}{third-level}
@@ -138,11 +139,11 @@ assumes that the best-fit curve for a given data has the minimal sum of the devi
 be represented as a minimization problem. For Least squares, the regularization function \begin{math}R(w)=0\end{math}
 such that the error is given by \\
 \begin{equation} E(w,b) =\frac{1}{2} \sum_{i=1}^{n} (y-Ax)^2\end{equation}
+Least Squares has the problem of Overfitting leading to a model that fits the training data very well, but does not generalize well (predict accurately for new examples).
 
 \subsection{Regularization for Regression}
 Regularization refers to a process of introducing additional information in order to solve an ill-posed problem or to prevent overfitting. 
 This information is usually of the form of a penalty for complexity, such as restrictions for smoothness or bounds on the vector space norm.
-Overfitting is learning a model that fits the training data very well, but does not generalize well (predict accurately for new examples).
 For Regression, various Regularization models are used as described next.
 
 \subsubsection{Ridge Regression}
@@ -172,18 +173,26 @@ The Regularization function is
 
 \section{Solvers for Regression}
 \subsection{Exact Solvers}
+Different libraries for matrix computation and linear algebra operations
+Default BLAS and LAPACK, used by Octave
+Intel Math Kernel Library (Intel MKL), used by Matlab
+AMD Core Math Library (ACML)
+Automatically Tuned Linear Algebra Software (ATLAS)
+Closed form solution:- \begin {math} O(nd^2 + d^3) \end {math} time and \begin {math} O(d^2) \end {math} space for linear regression
+Not scalable for large number of features (d).
 
 \subsection{Gradient Descent}
 To find a local minimum of a function using gradient descent, one takes steps proportional to the negative of 
-the gradient (or of the approximate gradient) of the function at the current point. If instead one takes steps 
-proportional to the positive of the gradient, one approaches a local maximum of that function; 
-the procedure is then known as gradient ascent.
+the gradient (or of the approximate gradient) of the function at the current point. The gradient of the error 
+function is taken w.r.t one sample at a time and the new weight value for all features is computed.
+At the end of the iteration, the final weight values are updated with the mean of weight values calculated using all samples.
 //Put Equation for Gradient Descent
 
 \subsection{Stochastic Gradient Descent}
 In stochastic (or "on-line") gradient descent, the true gradient of the function is approximated by a gradient at a
 single training sample. The training samples are given one at a time. The algorithm examines the
-current datapoint, and then updates the weight vector accordingly.
+current datapoint, and then updates the weight vector accordingly. Thus, it is different from Gradient Descent where the weight
+vector is updated with the mean of all samples.
 //Put Equation for Stochastic Gradient Descent
 
 \subsection{Coordinate Descent}
@@ -191,22 +200,21 @@ As described in \cite{fried1}, Coordinate descent methods (CDM) are one of the m
 Broadly speaking, CDMs are based on the strategy of updating a single coordinate (or a single block of coordinates) of the vector
 of variables at each iteration. This often drastically reduces memory requirements as well as the
 arithmetic complexity of a single iteration, making the methods easily implementable and scalable.
-In certain applications, a single iteration can amount to as few as 4 multiplications and additions
-only [15]! On the other hand, many more iterations are necessary for convergence than it is usual
-for classical gradient methods.
+On the other hand, many more iterations are necessary for convergence than it is usual for classical gradient methods.
 Coordinate descent is a non-derivative optimization algorithm. To find a local minimum of a function, one does line 
 search along one coordinate direction at the current point in each iteration. One uses different coordinate directions 
 cyclically throughout the procedure. On non-separable functions the algorithm may fail to find the optimum in a reasonable 
-number of function evaluations. Coordinate descent is based on the idea that the minimization of a multi-variable function can be
-achieved by minimizing it along one direction at a time. Instead of varying descent direction according
+number of function evaluations. 
+Coordinate descent is based on the idea that the minimization of a multi-variable function can be
+achieved by minimizing it along one direction at a time. Its different from the gradient descent as instead of varying descent direction according
 to gradient, one fixes descent direction at the outset.
 //Put Equation for Coordinate Descent
 
 \subsection{Stochastic Coordinate Descent}
-
-\begin{equation} \mu = \frac{y^T \bar{X_i} - \widehat{w_i}^T H e_i }{H_{ii} + 2\lambda} \end{equation}
-
-
+If the number of features and data sets is large, going over all dimensions in each iteration is an
+expensive approach. In Stochastic Coordinate Descent, only one feature is updated at each iteration. The 
+features to be updated can be choosen randomly or in a cyclic manner. The algorithm used for SCD is 
+described below.
 
 \begin{algorithm}
 \caption{Calculate $y = x^n$}
@@ -233,9 +241,10 @@ to gradient, one fixes descent direction at the outset.
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=80mm]{mnist_scatter.png}
-\caption{Sparse representation of a small set of samples from MNIST. X axis represent the feature present, Y axis represent a sample for which features are present. }
+\caption{Sparse representation of a small set of samples from MNIST. X axis represents the feature present, Y axis represents a sample for which features are present. }
 \label{overflow}
 \end{figure}
+
 MNIST is a sparse dataset(9\% of the total data-set are non-zero values). This data was primarily built for classification analysis. The database was constructed from NIST's Special Database 3 and Special Database 1 which contain binary images of handwritten digits. The variable set consists of all pixels used to form the digit image. We transformed the data for regression by selecting only two digit samples, namely 1 and 9 and then using it as a binary regression. Samples for 1 were given a Y value of 1 and samples for 9 were given a Y value of -1. Total feature size of the samples is 800 and the total number of samples used were around 0.5 million (513280 samples). Value of any X feature lies in the range(0,255).
 
 \subsection{Madelon}
@@ -249,6 +258,7 @@ Madelon is a dense dataset, with number of features kept comparable to the numbe
 \subsection{Parallel Gradient Descent}
 \subsection{Parallel Stochastic Gradient Descent}
 \subsection{Parallel Stochastic Coordinate Descent}
+\begin{equation} \mu = \frac{y^T \bar{X_i} - \widehat{w_i}^T H e_i }{H_{ii} + 2\lambda} \end{equation}
 
 \section{Results}
 \subsection{Parallel Stochastic Gradient Descent}
