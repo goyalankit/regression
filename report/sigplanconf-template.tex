@@ -198,7 +198,7 @@ function is taken w.r.t one sample at a time and the new weight value for all fe
 At the end of the iteration, the final weight values are updated with the mean of weight values calculated using all samples.
 
 \begin{algorithm}
-\caption{Gradient Descent}
+\caption{	Gradient Descent}
 \begin{algorithmic} 
 
 \STATE \bf{INPUT} \begin{math} X \in {R}^{N \times  d}, y \in R^N, learning\;  rate\;  \eta, intial\; w \end{math} 
@@ -260,7 +260,24 @@ number of function evaluations.
 Coordinate descent is based on the idea that the minimization of a multi-variable function can be
 achieved by minimizing it along one direction at a time. Its different from the gradient descent as instead of varying descent direction according
 to gradient, one fixes descent direction at the outset.
-//Put Equation for Coordinate Descent
+\begin{algorithm}
+\caption{Coordinate descent}
+\begin{algorithmic} 
+\STATE let $w = 0$
+\STATE \bf{for} \begin{math} k = 1,2,.. \end{math}
+    \bindent
+	\STATE \bf{for} \textnormal{\begin{math}j\end{math} in \begin{math}\{1,...,2d\}\end{math}}
+		\quadindent
+	\STATE \textnormal{let \begin{math}g_j = (\bigtriangledown{E(w)})_j\end{math}}
+	\STATE \textnormal{let \begin{math}\eta = max\{ -w_j, -g_j/\beta \}\end{math}}
+	\STATE \textnormal{let \begin{math}w_j = w_j + \eta\end{math}}
+	\quadeindent
+	\STATE \bf{end for}
+    \eindent
+\STATE \bf{end for}
+\end{algorithmic}
+\end{algorithm}
+
 
 \subsection{Stochastic Coordinate Descent}
 If the number of features and data sets is large, going over all dimensions in each iteration is an
@@ -279,7 +296,7 @@ described below.
 	\STATE \textnormal{let \begin{math}\eta = max\{ -w_j, -g_j/\beta \}\end{math}}
 	\STATE \textnormal{let \begin{math}w_j = w_j + \eta\end{math}}
     \eindent
-\STATE \bf{end}
+\STATE \bf{end for}
 \end{algorithmic}
 \end{algorithm}
 
@@ -343,24 +360,50 @@ used once.
 \subsubsection{No of Iterations vs Accuracy}
 \subsection{Parallel Stochastic Gradient Descent}
 
-\begin{table}
-\caption{Run time for SGD on MNIST dataset}
+\begin{table}[htbp]
+\caption{Run time for GD on MNIST dataset}
 \begin{tabular}{|l|r|r|r|r|r|}
 \hline
  & 1 & 2 & 4 & 8 & 16 \\ \hline
 Galois Chunked FIFO & 45.96 & 30.36 & 20.53 & 16.08 & 12.53 \\ \hline
 Galois dChunked FIFO & 43.46 & 26.55 & 15.26 & 8.33 & 6.33 \\ \hline
 Galois FIFO & 32.5433 & 24.79 & 19.76 & 17.54 & 16.38 \\ \hline
-OPENMP NO-CH. & 15.55 & 6.83 & 3.49 & 2.12 & 1.13 \\ \hline
-OPENMP NO-CH. & 15.72 & 7.184 & 3.70 & 2.30 & 1.31 \\ \hline
+OPENMP & 15.72 & 7.184 & 3.70 & 2.30 & 1.31 \\ \hline
+OPENMP Chunked. & 15.55 & 6.83 & 3.49 & 2.12 & 1.13 \\ \hline
 \end{tabular}
 \end{table}
 
+\begin{table}[htbp]
+\caption{Run time for SGD on MNIST dataset}
+\begin{tabular}{|l|r|r|r|r|r|}
+\hline
+ & 1 & 2 & 4 & 8 & 16 \\ \hline
+Galois CHUNKED FIFO & 38.43 & 21.24 & 12.32 & 6.39 & 4.11 \\ \hline
+Galois FIFO & 21.24 & 20.09 & 17.81 & 16.38 & 15.88 \\ \hline
+OPENMP & 6.97 & 3.38 & 1.83 & 1.04 & 0.63 \\ \hline
+\end{tabular}
+\label{Label of the table}
+\end{table}
+
+
 \subsubsection{Different Galois Schedules vs OpenMP}
 \subsubsection{Accuracy Comparsion for SGD vs GD}
-\subsubsection{Error Rate Variation with Danmping Factor (\neta)}
+\subsubsection{Error Rate Variation with Danmping Factor \(\eta\) }
+
 \subsection{Parallel Stochastic Coordinate Descent}
 \subsubsection{Different Galois Schedules vs OpenMP}
+
+\begin{table}[htbp]
+\caption{Runtime for SCD on Madelon dataset}
+\begin{tabular}{|l|r|r|r|r|r|}
+\hline
+ & 1 & 2 & 4 & 8 & 16 \\ \hline
+Galois - LC\_CSR & 349.69 & 204.94 & 123.65 & 84.76 & 261.08 \\ \hline
+Galois - STL::Vector  & 35.80 & 32.06 & 32.06 & 31.95 & 36.24 \\ \hline
+OPENMP & 22.14 & 37.08 & 17.4413 & 9.02 & 5.66 \\ \hline
+\end{tabular}
+\label{Label of the table}
+\end{table}
 
 \section{Conclusion}
 
