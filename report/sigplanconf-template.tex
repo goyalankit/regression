@@ -31,7 +31,6 @@
 
 \usepackage{amsmath}
 
-
 \begin{document}
 
 \special{papersize=8.5in,11in}
@@ -72,7 +71,11 @@
 \maketitle
 
 \begin{abstract}
-This is the text of the abstract.
+The main focus of this work is to solve the problem of Regression for Sparse Data-sets using the Galois framework.
+To the best of our knowledge, this is the first attempt at implementing parallel Regression Algorithms using
+Galois. Two different solvers; Gradient and Coordinate descent and their stochastic versions are implemented. The
+algorithms are parallelized using OpenMP and Galois framework and their performance and accuracy are compared.
+The Tao Analysis for the two solvers is presented and Speedup is compared for different Galois worklist scheduling. 
 \end{abstract}
 
 \category{CR-number}{subcategory}{third-level}
@@ -83,6 +86,19 @@ keyword1, keyword2
 \section{Introduction}
 
 \section{Related Work}
+Several papers were written recently studying the iteration complexity of serial CDMs of various flavours and in various settings. 
+We will only provide a brief summary here, for a more detailed account we refer the reader to [16]. Classical CDMs update the coordinates in a cyclic order; 
+the first attempt at analyzing the complexity of such a method is due to [21]. Stochastic/randomized CDMs, that is, methods where
+the coordinate to be updated is chosen randomly, were first analyzed for quadratic objectives [24,4], later independently generalized to
+L1-regularized problems [23] and smooth block-structured problems [10], and finally unified and refined in [19, 16]. 
+The problems considered in the above papers are either unconstrained or have (block) separable constraints. Recently, randomized CDMs
+were developed for problems with linearly coupled constraints [7, 8]. A greedy CDM for L1-regularized problems was 
+first analyzed in [15]; more work on this topic include [5, 2]. A CDM with inexact updates was first proposed and analyzed in [26]. Partially
+separable problems were independently studied in [13], where an asynchronous parallel stochastic
+gradient algorithm was developed to solve them.
+When writing this paper, the authors were aware only of the parallel CDM proposed and analyzed in [1]. Several papers on the 
+topic appeared around the time this paper was finalized or after [6, 28, 22, 22, 14]. Further papers on various aspects of the 
+topic of parallel CDMs, building on the work in this paper, include [25, 17, 3, 18].
 
 \section{Regression}
 \noindent
@@ -103,43 +119,75 @@ is a non-negative hyperparameter.
 \subsection{Least Squares}
 The best fitting curve to a set of data points could be obtained using least square method. The method
 assumes that the best-fit curve for a given data has the minimal sum of the deviations squared. It could
-be represented as a minimization problem.\\
-\begin{equation}R(w)=0\end{equation}.
+be represented as a minimization problem. For Least squares, the regularization function \begin{equation}R(w)=0\end{equation}
+such that the error is given by \\
+\begin{equation} E(w,b) =\frac{1}{2} \sum_{i=1}^{n} (y-Ax}^2\end{equation}
 
-\subsection{Ridge Regression}
+\subsection{Regularization for Regression}
+Regularization refers to a process of introducing additional information in order to solve an ill-posed problem or to prevent overfitting. 
+This information is usually of the form of a penalty for complexity, such as restrictions for smoothness or bounds on the vector space norm.
+Overfitting is learning a model that fits the training data very well, but does not generalize well (predict accurately for new examples).
+For Regression, various Regularization models are used as described next.
+
+\subsubsection{Ridge Regression}
 Ridge regression penalizes the size of the regression coefficients. Applying the ridge regression penalty
-has the effect of shrinking the estimates (introducing bias but reducing the variance of the estimate).\\
+has the effect of shrinking the estimates (introducing bias but reducing the variance of the estimate). The Error
+function is given by \\
+\begin{equation} E(w,b) =\frac{1}{2} \sum_{i=1}^{n} (y-Ax}^2 + \sum_{i=1}^{n} w_i^2 \end{equation} \\
+The Regularization function is
 \begin{equation}R(w)=\frac{1}{2} \sum_{i=1}^{n} w_i^2\end{equation}.
 
-\subsection{Lasso}
+\subsubsection{Lasso}
 Ridge regression is capable of reducing the variability and improving the accuracy of linear regression
 models, and that these gains are largest in the presence of multicollinearity. However ridge regression
 doesn't do variable selection, and it fails to provide a parsimonious model with few parameters.
 LASSO is a regression method that penalizes the absolute size of the regression coefficients. It has
 desirable effect of setting coefficients to zero leading to sparse solutions.\\
+\begin{equation} E(w,b) =\frac{1}{2} \sum_{i=1}^{n} (y-Ax}^2 + \sum_{i=1}^{n} w_i \end{equation} \\
+The Regularization function is
 \begin{equation}R(w)=\sum_{i=1}^{n} |w_i|\end{equation}.
 
 \subsection{Elastic Net}
 Elastic net is a linear model that allows for learning a sparse model where few of the weights are nonzero
-like Lasso, while still maintaining the regularization properties of Ridge.
-\begin{equation}R(w)= \gamma \frac{1}{2} \sum_{i=1}^{n} w_i^2 + (1-\gamma)\sum_{i=1}^{n} |w_i|\end{equation}.
+like Lasso, while still maintaining the regularization properties of Ridge. The Error function is given by
+\begin{equation}E(w,b) =\frac{1}{2} \sum_{i=1}^{n} (y-Ax}^2 + \sum_{i=1}^{n} w_i^2 + \sum_{i=1}^{n} w_i \end{equation} \\
+The Regularization function is
+\begin{equation}R(w) = \gamma \frac{1}{2} \sum_{i=1}^{n} w_i^2 + (1-\gamma)\sum_{i=1}^{n} |w_i|\end{equation}.
 
 \section{Solvers for Regression}
 \subsection{Exact Solvers}
 
 \subsection{Gradient Descent}
-In stochastic (or "on-line") gradient descent, the true gradient of is approximated by a gradient at a
-single training sample. The training samples are given one at a time. The algorithm examines the
-current datapoint, and then updates the weight vector accordingly.
+To find a local minimum of a function using gradient descent, one takes steps proportional to the negative of 
+the gradient (or of the approximate gradient) of the function at the current point. If instead one takes steps 
+proportional to the positive of the gradient, one approaches a local maximum of that function; 
+the procedure is then known as gradient ascent.
+//Put Equation for Gradient Descent
 
 \subsection{Stochastic Gradient Descent}
+In stochastic (or "on-line") gradient descent, the true gradient of the function is approximated by a gradient at a
+single training sample. The training samples are given one at a time. The algorithm examines the
+current datapoint, and then updates the weight vector accordingly.
+//Put Equation for Stochastic Gradient Descent
 
 \subsection{Coordinate Descent}
-Coordinate descent is based on the idea that the minimization of a multivariable function can be
+As described in \{fried1}, Coordinate descent methods (CDM) are one of the most successful classes of algorithms in the big data optimization domain. 
+Broadly speaking, CDMs are based on the strategy of updating a single coordinate (or a single block of coordinates) of the vector
+of variables at each iteration. This often drastically reduces memory requirements as well as the
+arithmetic complexity of a single iteration, making the methods easily implementable and scalable.
+In certain applications, a single iteration can amount to as few as 4 multiplications and additions
+only [15]! On the other hand, many more iterations are necessary for convergence than it is usual
+for classical gradient methods.
+Coordinate descent is a non-derivative optimization algorithm. To find a local minimum of a function, one does line 
+search along one coordinate direction at the current point in each iteration. One uses different coordinate directions 
+cyclically throughout the procedure. On non-separable functions the algorithm may fail to find the optimum in a reasonable 
+number of function evaluations. Coordinate descent is based on the idea that the minimization of a multivariable function can be
 achieved by minimizing it along one direction at a time. Instead of varying descent direction according
 to gradient, one fixes descent direction at the outset.
+//Put Equation for Coordinate Descent
 
 \subsection{Stochastic Coordinate Descent}
+//Put Equation for Stochastic Coordinate Descent
 
 \section{Parallel Implementation}
 \subsection{Parallel Stochastic Gradient Descent}
@@ -177,6 +225,13 @@ Zhang T., Solving Large Scale Linear Prediction Problems Using Stochastic Gradie
 Niu F. and Recht B., Hogwild!: A Lock-Free Approach to Parallelizing Stochastic Gradient Descent.
 \bibitem[Richtarik et~al.(2012) Richtarik, P.]{rich1}
 Richtarik P., and Takac M., Parallel Coordinate Descent methods for Big Data Optimization.
+\bibitem[Friedman et~al.(2007) Friedman, J.]{fried1}
+J. Friedman, T. Hastie, H. Hoeing, and R. Tibshirani, Pathwise coordinate optimization.
+\bibitem[Fu et~al.(1998) Fu, W.]{fu1}
+W. Fu, Penalized regressions: the bridge versus the lasso.
+\bibitem[Wu et~al.(2008) Wu, T.]{wu1}
+T. Wu and K. Lange, Coordinate descent algorithms for lasso penalized regression.
+\bibitem[Galois paper] {galois1}
 
 \end{thebibliography}
 
