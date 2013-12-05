@@ -203,6 +203,12 @@ to gradient, one fixes descent direction at the outset.
 
 \subsection{Stochastic Coordinate Descent}
 
+Equation that we have implemented. To implement it in Galois.
+
+\begin{equation} \mu = \frac{y^T \bar{X_i} - \widehat{w_i}^T H e_i }{H_{ii} + 2\lambda} \end{equation}
+
+
+
 \begin{algorithm}
 \caption{Calculate $y = x^n$}
 \begin{algorithmic} 
@@ -219,6 +225,8 @@ to gradient, one fixes descent direction at the outset.
 \end{algorithm}
 
 
+
+Equation that we have implemented.
 \section{Parallel Implementation}
 \subsection{Parallel Stochastic Gradient Descent}
 \subsection{Parallel Stochastic Coordinate Descent}
