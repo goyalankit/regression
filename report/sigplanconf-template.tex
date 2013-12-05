@@ -208,15 +208,13 @@ to gradient, one fixes descent direction at the outset.
 \STATE \bf{for} \begin{math} k = 1,2,.. \end{math}
     \bindent
 	\STATE \textnormal{sample \begin{math}j\end{math} uniformly at random from \begin{math}\{1,...,2d\}\end{math}}
-	\STATE \textnormal{let \begin{math}g_j = (\Delta{R(w)})_j\end{math}}
+	\STATE \textnormal{let \begin{math}g_j = (\bigtriangledown{E(w)})_j\end{math}}
 	\STATE \textnormal{let \begin{math}\eta = max\{ -w_j, -g_j/\beta \}\end{math}}
 	\STATE \textnormal{let \begin{math}w_j = w_j + \eta\end{math}}
     \eindent
 \STATE \bf{end}
 \end{algorithmic}
 \end{algorithm}
-
-
 
 
 \section{Parallel Implementation}
