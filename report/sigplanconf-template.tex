@@ -219,11 +219,9 @@ At the end of the iteration, the final weight values are updated with the mean o
 \end{algorithmic}
 \end{algorithm}
 
-
 \subsection{Stochastic Gradient Descent}
 In stochastic (or "on-line") gradient descent, the true gradient of the function is approximated by a gradient at a
 single training sample. The training samples are given one at a time. The algorithm examines the
-current datapoint, and then updates the weight vector accordingly.
 current datapoint, and then updates the weight vector accordingly. Thus, it is different from Gradient Descent where the weight
 vector is updated with the mean of all samples.
 
@@ -315,6 +313,36 @@ Madelon is a dense dataset, with number of features kept comparable to the numbe
 
 \section{TAO Analysis}
 
+\section{Parallel Implementation}
+\subsection{Parallel Gradient Descent}
+For the Parallel Implementation of Gradient Descent, the entire dataset is divided into chunks. The chunk size is determined by the number
+of threads such that each thread works on a chunk. Every thread computes the gradient for different samples in its chunk and updates
+the weight vector locally. This prevents contention among the threads with each thread operating on independent values of the weight
+vector. At the end of each iteration, the weight vector values for all chunks are averaged and the global weight vector
+values are updated. Thus, the threads get synchronized at the end of each iteration. Figure X shows how the work is divided amond different
+threads.
+//Add figure
+//Add algorithm
+
+\subsection{Parallel Stochastic Gradient Descent}
+In Stochastic Gradient Descent, in each iteration, one sample is choosen and the weight vector is updated using its gradient. It the threads need
+to wait for the previous value of weight vector to be updated, it will make the algorithm very sequential. For Parallel SGD, in each iteration, a thread
+chooses one sample, computes its gradient and updates the weight vector immediately. The thread then starts with a new iteration without synchronizing
+with the other threads. The idea used is presented in \cite{rich1} where a lock-free implementation of the Parallel Stochastic Gradient is
+described. As proved in the paper, convergence is still guranteed for sparse data-sets. The threads are synchronized after all the samples have been
+used once.
+//Add algorithm
+
+\subsection{Parallel Stochastic Coordinate Descent}
+\begin{equation} \mu = \frac{y^T \bar{X_i} - \widehat{w_i}^T H e_i }{H_{ii} + 2\lambda} \end{equation}
+
+\section{Results}
+\subsection{Parallel Gradient Descent}
+\subsubsection{Different Galois Schedules vs OpenMP}
+\subsubsection{Different Regression Models vs Accuracy}
+\subsubsection{No of Iterations vs Accuracy}
+\subsection{Parallel Stochastic Gradient Descent}
+
 \begin{table}
 \caption{Run time for SGD on MNIST dataset}
 \begin{tabular}{|l|r|r|r|r|r|}
@@ -328,21 +356,6 @@ OPENMP NO-CH. & 15.72 & 7.184 & 3.70 & 2.30 & 1.31 \\ \hline
 \end{tabular}
 \end{table}
 
-\subsection{Parallel Stochastic Gradient Descent}
-\subsection{Parallel Stochastic Coordinate Descent}
-
-\section{Parallel Implementation}
-\subsection{Parallel Gradient Descent}
-\subsection{Parallel Stochastic Gradient Descent}
-\subsection{Parallel Stochastic Coordinate Descent}
-\begin{equation} \mu = \frac{y^T \bar{X_i} - \widehat{w_i}^T H e_i }{H_{ii} + 2\lambda} \end{equation}
-
-\section{Results}
-\subsection{Parallel Gradient Descent}
-\subsubsection{Different Galois Schedules vs OpenMP}
-\subsubsection{Different Regression Models vs Accuracy}
-\subsubsection{No of Iterations vs Accuracy}
-\subsection{Parallel Stochastic Gradient Descent}
 \subsubsection{Different Galois Schedules vs OpenMP}
 \subsubsection{Accuracy Comparsion for SGD vs GD}
 \subsubsection{Error Rate Variation with Danmping Factor (\neta)}
