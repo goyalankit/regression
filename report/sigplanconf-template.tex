@@ -362,6 +362,19 @@ OPENMP & 6.97 & 3.38 & 1.83 & 1.04 & 0.63 \\ \hline
 
 \subsection{Parallel Stochastic Coordinate Descent}
 
+\begin{table}[htbp]
+\caption{Runtime for SCD on Madelon dataset}
+\begin{tabular}{|l|r|r|r|r|r|}
+\hline
+ & 1 & 2 & 4 & 8 & 16 \\ \hline
+Galois - LC\_CSR & 349.69 & 204.94 & 123.65 & 84.76 & 261.08 \\ \hline
+Galois - STL::Vector  & 35.80 & 32.06 & 32.06 & 31.95 & 36.24 \\ \hline
+OPENMP & 22.14 & 37.08 & 17.4413 & 9.02 & 5.66 \\ \hline
+\end{tabular}
+\label{Label of the table}
+\end{table}
+
+
 \section{Parallel Implementation}
 \subsection{Parallel Gradient Descent}
 \subsection{Parallel Stochastic Gradient Descent}
