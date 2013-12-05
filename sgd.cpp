@@ -162,6 +162,9 @@ int main(int argc, char* argv[]) {
 	
 	//typedef GaloisRuntime::WorkList::LIFO<> WL;
 	typedef GaloisRuntime::WorkList::ChunkedFIFO<128> WL;
+	//typedef GaloisRuntime::WorkList::dChunkedFIFO<128> WL;
+	//typedef GaloisRuntime::WorkList::FIFO<> WL;
+	//typedef GaloisRuntime::WorkList::LocalQueues<> WL;
     struct timeval start, end;
     gettimeofday(&start, NULL); //start time of the actual algorithm
 
