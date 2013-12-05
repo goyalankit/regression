@@ -374,6 +374,19 @@ OPENMP & 22.14 & 37.08 & 17.4413 & 9.02 & 5.66 \\ \hline
 \label{Label of the table}
 \end{table}
 
+\begin{table}[htbp]
+\caption{Runtime for SCD on MNIST dataset}
+\begin{tabular}{|l|r|r|r|r|r|}
+\hline
+ & 1 & 2 & 4 & 8 & 16 \\ \hline
+OPENMP & 124.04 & 79.97 & 53.85 & 32.29 & 19.69 \\ \hline
+Galois STL::Vector & 206.14 & 205.62 & 206.20 & 205.67 & 205.42 \\ \hline
+\end{tabular}
+\label{Label of the table}
+\end{table}
+
+
+
 
 \section{Parallel Implementation}
 \subsection{Parallel Gradient Descent}
