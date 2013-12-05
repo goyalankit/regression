@@ -59,13 +59,13 @@
 \subtitle{Subtitle Text, if any}
 
 \authorinfo{Abhishek Agarwal}
-           {Affiliation1}
-           {xxx@gmail.com}
+           {University of Texas at Austin}
+           {abhishek.agarwal@utexas.edu}
 \authorinfo{Ankit Goyal}
-           {Affiliation1}
-           {xxx@gmail.com}
+           {University of Texas at Austin}
+           {ankit3goyal@gmail.com}
 \authorinfo{Prateek Agarwal}
-           {Affiliation1}
+           {University of Texas at Austin}
            {prat0318@gmail.com}
 
 \maketitle
@@ -103,23 +103,23 @@ topic of parallel CDMs, building on the work in this paper, include [25, 17, 3, 
 \section{Regression}
 \noindent
 Regression models and analyzes the correlation of several variables. Given a set of training examples 
-\begin{equation}(x_1,y_1),....,(x_n,y_n)\end{equation} where \begin{equation} x_i \in R^n \end{equation}
-and \begin{equation} y_i \in (-1,1) \end{equation},the goal is to learn a linear scoring function
-\begin{equation} f(x) = w^Tx + b \end{equation} with model parameters \begin{equation} w \in R^m \end{equation}
-and intercept \begin{equation} b \in R. \end{equation}\\
+\begin{math}(x_1,y_1),....,(x_n,y_n)\end{math} where \begin{math} x_i \in R^n \end{math}
+and \begin{math} y_i \in (-1,1) \end{math},the goal is to learn a linear scoring function
+\begin{math} f(x) = w^Tx + b \end{math} with model parameters \begin{math} w \in R^m \end{math}
+and intercept \begin{math} b \in R. \end{math}\\
 
 \noindent
 A common choice to find the model parameters is by minimizing the regularized training error given by\\
 \begin{equation} E(w,b) = \sum_{i=1}^{n} L(y_i,f(x_i)) + \alpha R(w) \end{equation} \\
-where L is a loss function that measures models' (mis)fit and \begin{equation}R\end{equation} is a
-regularization term (aka penalty) that penalizes model complexity; \begin{equation}\alpha>0\end{equation}
+where L is a loss function that measures models' (mis)fit and \begin{math}R\end{math} is a
+regularization term (aka penalty) that penalizes model complexity; \begin{math}\alpha>0\end{math}
 is a non-negative hyperparameter.
 
 \section{Models for Regression}
 \subsection{Least Squares}
 The best fitting curve to a set of data points could be obtained using least square method. The method
 assumes that the best-fit curve for a given data has the minimal sum of the deviations squared. It could
-be represented as a minimization problem. For Least squares, the regularization function \begin{equation}R(w)=0\end{equation}
+be represented as a minimization problem. For Least squares, the regularization function \begin{math}R(w)=0\end{math}
 such that the error is given by \\
 \begin{equation} E(w,b) =\frac{1}{2} \sum_{i=1}^{n} (y-Ax)^2\end{equation}
 
