@@ -34,6 +34,8 @@ int main(int argc, char* argv[]) {
     int threads = thread_default;
     int iter = iter_default;
     int show_errors = 1;
+    double lambda1 = 0.0;
+    double lambda2 = 0.0;
     // inFile.open("inputfile", ifstream::in);
     char* filename = "madelon"; // "inputfile"; //"madelon";
         
@@ -43,6 +45,7 @@ int main(int argc, char* argv[]) {
             threads = atoi(argv[3]);
             if(argc > 4) show_errors = atoi(argv[4]);
             if(argc > 5) filename = argv[5];
+            if(argc > 6) {lambda1 = atof(argv[6]);lambda2 = atof(argv[7]);}
         }
     inFile.open(filename, ifstream::in);
 
@@ -138,7 +141,7 @@ int main(int argc, char* argv[]) {
         //     int j1 = j - chunk*chunk_size;
             for (std::map<int, double>::iterator it=X[j].begin(); it!=X[j].end(); ++it) {
 			// for (int i=0; i < Graph.size(); i++) {
-    			weights[chunk][it->first] -= (double)neta * it->second * val[j1];
+    			weights[chunk][it->first] = weights[chunk][it->first]*(1+lambda1) - (double)neta * it->second * val[j1] + lambda2;
 			}
         }
         free(val);
