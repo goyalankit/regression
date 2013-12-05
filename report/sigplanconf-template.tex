@@ -332,20 +332,34 @@ Madelon is a dense dataset, with number of features kept comparable to the numbe
 
 \section{TAO Analysis}
 
-\begin{table}
-\caption{Run time for SGD on MNIST dataset}
+\begin{table}[htbp]
+\caption{Run time for GD on MNIST dataset}
 \begin{tabular}{|l|r|r|r|r|r|}
 \hline
  & 1 & 2 & 4 & 8 & 16 \\ \hline
 Galois Chunked FIFO & 45.96 & 30.36 & 20.53 & 16.08 & 12.53 \\ \hline
 Galois dChunked FIFO & 43.46 & 26.55 & 15.26 & 8.33 & 6.33 \\ \hline
 Galois FIFO & 32.5433 & 24.79 & 19.76 & 17.54 & 16.38 \\ \hline
-OPENMP NO-CH. & 15.55 & 6.83 & 3.49 & 2.12 & 1.13 \\ \hline
-OPENMP NO-CH. & 15.72 & 7.184 & 3.70 & 2.30 & 1.31 \\ \hline
+OPENMP & 15.72 & 7.184 & 3.70 & 2.30 & 1.31 \\ \hline
+OPENMP Chunked. & 15.55 & 6.83 & 3.49 & 2.12 & 1.13 \\ \hline
 \end{tabular}
 \end{table}
 
 \subsection{Parallel Stochastic Gradient Descent}
+\begin{table}[htbp]
+\caption{Run time for SGD on MNIST dataset}
+\begin{tabular}{|l|r|r|r|r|r|}
+\hline
+ & 1 & 2 & 4 & 8 & 16 \\ \hline
+Galois CHUNKED FIFO & 38.43 & 21.24 & 12.32 & 6.39 & 4.11 \\ \hline
+Galois FIFO & 21.24 & 20.09 & 17.81 & 16.38 & 15.88 \\ \hline
+OPENMP & 6.97 & 3.38 & 1.83 & 1.04 & 0.63 \\ \hline
+\end{tabular}
+\label{Label of the table}
+\end{table}
+
+
+
 \subsection{Parallel Stochastic Coordinate Descent}
 
 \section{Parallel Implementation}
@@ -362,7 +376,7 @@ OPENMP NO-CH. & 15.72 & 7.184 & 3.70 & 2.30 & 1.31 \\ \hline
 \subsection{Parallel Stochastic Gradient Descent}
 \subsubsection{Different Galois Schedules vs OpenMP}
 \subsubsection{Accuracy Comparsion for SGD vs GD}
-\subsubsection{Error Rate Variation with Danmping Factor (\neta)}
+\subsubsection{Error Rate Variation with Danmping Factor \(\eta\) }
 \subsection{Parallel Stochastic Coordinate Descent}
 \subsubsection{Different Galois Schedules vs OpenMP}
 
