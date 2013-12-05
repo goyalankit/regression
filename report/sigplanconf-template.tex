@@ -47,6 +47,16 @@
 }
 \newcommand\eindent{\endgroup}
 
+\newlength\mysecindent
+\setlength\mysecindent{2em}
+\newcommand\quadindent{%
+  \begingroup
+  \setlength{\itemindent}{\mysecindent}
+  \addtolength{\algorithmicindent}{\mysecindent}
+}
+\newcommand\quadeindent{\endgroup}
+
+
 \begin{document}
 
 \special{papersize=8.5in,11in}
@@ -186,7 +196,29 @@ To find a local minimum of a function using gradient descent, one takes steps pr
 the gradient (or of the approximate gradient) of the function at the current point. The gradient of the error 
 function is taken w.r.t one sample at a time and the new weight value for all features is computed.
 At the end of the iteration, the final weight values are updated with the mean of weight values calculated using all samples.
-//Put Equation for Gradient Descent
+
+\begin{algorithm}
+\caption{Gradient Descent}
+\begin{algorithmic} 
+
+\STATE \bf{INPUT} \begin{math} X \in {R}^{N \times  d}, y \in R^N, learning\;  rate\;  \eta, intial\; w \end{math} 
+\STATE \bf{OUTPUT} \textnormal{Solution} \begin{math}  w \end{math} 
+	\STATE \textnormal{\begin{math} t = 0\end{math} }
+	\STATE \bf{while} \textnormal{not converged} \bf{do}
+    	\bindent
+		 \STATE \bf{for} \textnormal{\indent training example \begin{math}1,2,3..k\end{math}}
+		\quadindent
+			 \STATE \textnormal{\indent Compute gradient for \begin{math}x_i: \bigtriangledown{E_w(x_i)}\end{math}}
+			 \STATE \textnormal{\indent Update \begin{math}w: w^{(t+1)} \gets w^{(t)} - \bigtriangledown{E_w(x_i)}\end{math}}
+			 \STATE \textnormal{\indent \begin{math}t \gets t + 1\end{math}}
+		\quadeindent
+	 \STATE \bf{end for}
+	 \eindent
+\STATE \bf{end while}
+
+\end{algorithmic}
+\end{algorithm}
+
 
 \subsection{Stochastic Gradient Descent}
 In stochastic (or "on-line") gradient descent, the true gradient of the function is approximated by a gradient at a
