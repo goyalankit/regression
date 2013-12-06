@@ -223,6 +223,24 @@ At the end of the iteration, the final weight values are updated with the mean o
 \end{algorithmic}
 \end{algorithm}
 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{gd_speed_sparse.png}
+\caption{Speedup for Gradient descent on sparse dataset MNIST. }
+\label{overflow}
+\end{figure}
+
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{gd_scale_sparse.png}
+\caption{Scalability for Gradient descent on sparse dataset MNIST. }
+\label{overflow}
+\end{figure}
+
+
+
+
 \subsection{Stochastic Gradient Descent}
 In stochastic (or "on-line") gradient descent, the true gradient of the function is approximated by a gradient at a
 single training sample. The training samples are given one at a time. The algorithm examines the
