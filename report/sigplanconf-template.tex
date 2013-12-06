@@ -339,16 +339,13 @@ threads.
 //Add algorithm
 
 \subsection{Parallel Stochastic Gradient Descent}
-In Stochastic Gradient Descent, in each iteration, one sample is choosen and the weight vector is updated using its gradient. It the threads need
-to wait for the previous value of weight vector to be updated, it will make the algorithm very sequential. For Parallel SGD, in each iteration, a thread
-chooses one sample, computes its gradient and updates the weight vector immediately. The thread then starts with a new iteration without synchronizing
-with the other threads. The idea used is presented in \cite{rich1} where a lock-free implementation of the Parallel Stochastic Gradient is
-described. As proved in the paper, convergence is still guranteed for sparse data-sets. The threads are synchronized after all the samples have been
-used once.
+In Stochastic Gradient Descent, in each iteration, one sample is choosen and the weight vector is updated using its gradient. 
+If the threads need to wait for the previous value of weight vector to be updated, it will make the algorithm very sequential. For Parallel SGD, in each iteration, a thread chooses one sample, computes its gradient and updates the weight vector immediately. The thread then starts with a new iteration without synchronizing with the other threads. The idea used is presented in \cite{rich1} where a lock-free implementation of the Parallel Stochastic Gradient is described. As proved in the paper, convergence is still guranteed for sparse data-sets. The threads are synchronized after all the samples have been used once.
 //Add algorithm
 
 \subsection{Parallel Stochastic Coordinate Descent}
 \begin{equation} \mu = \frac{y^T \bar{X_i} - \widehat{w_i}^T H e_i }{H_{ii} + 2\lambda} \end{equation}
+//Add the 2 different implementations
 
 \section{Results}
 
@@ -365,12 +362,13 @@ OPENMP & 15.72 & 7.184 & 3.70 & 2.30 & 1.31 \\ \hline
 OPENMP Chunked. & 15.55 & 6.83 & 3.49 & 2.12 & 1.13 \\ \hline
 \end{tabular}
 \end{table}
-
+	
 	\subsubsection{Different Galois Schedules vs OpenMP}
-    	Figure X compares the Scalability for different Galois Schedules and OpenMP for the sparse dataset Mnist.
+	Table X shows the runtime for the Gradient Descent for sparse dataset Mnist. The minimum runtime is 
+	achieved for OpenMP Chunked implementation. Figure X compares the Scalability for different Galois Schedules and OpenMP.
 	The chunked implementations scales better compared to un-chunked version for both Galois and OpenMP. This is expected as the chunked
     	implementation distributes the samples among different threads and has less contention. For the same reason,
-    	the Chunked and DChunked-FIFO Scheduling have better scalability than the FIFO scheduling. Also, OpemMP
+    	the Chunked and DChunked-FIFO Scheduling have better scalability than the FIFO scheduling. Also, OpenMP
     	scales better than Galois for both chunked and unchunked version.
      
     	\subsubsection{Different Regression Models vs Accuracy}
@@ -379,7 +377,9 @@ OPENMP Chunked. & 15.55 & 6.83 & 3.49 & 2.12 & 1.13 \\ \hline
 	models penalize the objective function and thus, the Error Loss is greater than Least Squares. 
     
    	\subsubsection{No of Iterations vs Accuracy}
-	As can be seen for
+	As can be seen from Figure X, the Error Loss function for Least Squares decreases with iterations as the models
+	tries to perfectly fit the training data. The Error Loss function for Lasso and Elastic Net increases with iterations
+	due to regularization.
 
 \subsection{Parallel Stochastic Gradient Descent}
 \begin{table}[htbp]
@@ -394,10 +394,21 @@ OPENMP & 6.97 & 3.38 & 1.83 & 1.04 & 0.63 \\ \hline
 \label{Label of the table}
 \end{table}
 
-
 	\subsubsection{Different Galois Schedules vs OpenMP}
-	\subsubsection{Accuracy Comparsion for SGD vs GD}
-	\subsubsection{Error Rate Variation with Danmping Factor \(\eta\) }
+	Table X and Figure X compare the runtime and scalibilty for different Galois schedules and OpenMP for Parallel SGD
+	implementation. As the case with Gradient Descent, best runtime and speedup is achieved for OpenMp chunked implementation.
+	Also, Chunked FIFO Galois scheduling give much better speeup compared to FIFO scheduling for the worklist.
+	
+	\subsubsection{Accuracy Comparison for SGD vs GD}
+	For the same number of iterations, GD is more accurate than SGD as can be seen in Figure X. This is because in one iteration
+	of GD, all the samples are taken into consideration and the weight vector is updated with the mean of values computed using all
+	samples. On the contrary, in SGD only one sample is considered in each iteration. This also means that GD is a lot faster compared
+	to SGD for the same number of iterations.
+
+	\subsubsection{Error Rate Variation with Damping Factor \(\eta\) }
+	The key insight in Figure X is that the Error loss function oscillates more for a bigger value of the Damping factor (neta).
+	As can be seen, Error loss oscillates the most for a neta value of 0.01. For neta equals to 0.001, the Error loss converges faster
+	as compared to 0.0001 but it oscillates more as well.
 
 \subsection{Parallel Stochastic Coordinate Descent}
 \begin{table}[htbp]
@@ -417,18 +428,12 @@ OPENMP & 22.14 & 37.08 & 17.4413 & 9.02 & 5.66 \\ \hline
 \begin{tabular}{|l|r|r|r|r|r|}
 \hline
  & 1 & 2 & 4 & 8 & 16 \\ \hline
-OPENMP & 124.04 & 79.97 & 53.85 & 32.29 & 19.69 \\ \hline
 Galois STL::Vector & 206.14 & 205.62 & 206.20 & 205.67 & 205.42 \\ \hline
+OPENMP & 124.04 & 79.97 & 53.85 & 32.29 & 19.69 \\ \hline
 \end{tabular}
 \label{Label of the table}
 \end{table}
 
-
-\subsubsection{Different Galois Schedules vs OpenMP}
-\subsubsection{Accuracy Comparsion for SGD vs GD}
-\subsubsection{Error Rate Variation with Damping Factor \(\eta\) }
-
-\subsection{Parallel Stochastic Coordinate Descent}
 \subsubsection{Different Galois Schedules vs OpenMP}
 
 \section{Conclusion}
