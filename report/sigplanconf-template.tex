@@ -229,42 +229,6 @@ At the end of the iteration, the final weight values are updated with the mean o
 
 
 
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=80mm]{gd_scale_sparse.png}
-\caption{Scalability for Gradient descent on sparse dataset MNIST. }
-\label{overflow}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=80mm]{gd_speed_sparse.png}
-\caption{Speedup for Gradient descent on sparse dataset MNIST. }
-\label{overflow}
-\end{figure}
-
-
-
-
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=80mm]{sgd_scale_sparse.png}
-\caption{Scalability for Stochastic Gradient descent on sparse dataset MNIST. }
-\label{overflow}
-\end{figure}
-
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=80mm]{sgd_speed_sparse.png}
-\caption{Speedup for Stochastic Gradient descent on sparse dataset MNIST. }
-\label{overflow}
-\end{figure}
-
-
-
-
 \subsection{Stochastic Gradient Descent}
 In stochastic (or "on-line") gradient descent, the true gradient of the function is approximated by a gradient at a
 single training sample. The training samples are given one at a time. The algorithm examines the
@@ -334,40 +298,6 @@ expensive approach. In Stochastic Coordinate Descent, only one feature is update
 features to be updated can be choosen randomly or in a cyclic manner. The algorithm used for SCD is 
 described below.
 
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=80mm]{scd_scale_dense.png}
-\caption{Scalability for Coordinate Gradient descent on dense dataset Madelon }
-\label{overflow}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=80mm]{scd_speed_dense.png}
-\caption{Speedup for Stochastic Coordinate Gradient descent on dense dataset Madelon }
-\label{overflow}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=80mm]{scd_scale_sparse.png}
-\caption{Scalability for Stochastic Coordinate Gradient descent on sparse dataset MNIST }
-\label{overflow}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=80mm]{scd_speed_sparse.png}
-\caption{Speedup for Stochastic Coordinate Gradient descent on sparse dataset MNIST }
-\label{overflow}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=80mm]{error_comparison.png}
-\caption{Error loss comprison for with varying the damping factor }
-\label{overflow}
-\end{figure}
 
 \begin{figure}[ht!]
 \centering
@@ -375,7 +305,6 @@ described below.
 \caption{Openmp Chunked data access pattern by multiple threads}
 \label{overflow}
 \end{figure}
-
 
 
 
@@ -444,10 +373,10 @@ the new iteration using another feature without waiting for other threads to fin
 updated once. For the Galois system, the algorithm was implemented using two different data structures for storing the samples; one being the 
 Galois LC\_CSR\_Graph and the other being the C++ STL vector. The performance obtained using the two implementations was compared.
 
-	
+//Add Tao analysis picture
 \section{TAO Analysis}
 \subsection{Parallel Stochastic Gradient Descent}
-
+//Add picture
 1) \bf{Topology}:\rm The graph is structured. Basically, each sample is represented by a nodes with no edges. Each node contains the
 a map which stores all non-zero values for a particular sample. The map data structure uses much lesser memory for a sparse dataset. \\
 2) \bf{Active Nodes}:\\\rm
@@ -457,16 +386,9 @@ processing of current active nodes.
 3) \bf{Operator}: \rm As we only modify the weight vector and do not alter any other node values :after each operation, we are just
 locally computing the values.
 
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=80mm]{lc_scr_graph.png}
-\caption{Tao analysis for Parallel Stochastic Coordinate Descent }
-\label{overflow}
-\end{figure}
-
-
 \rm
 \subsection{Parallel Stochastic Coordinate Descent}
+//Add picture
 1) \bf{Topology|: \rm For the implementation with LC\_CSR\_Graph, the topology is unstructured. Each node represents a feature. Edges are present only if the corresponding entry of the H matrix is non-empty, which is computed by the product of the sample matrix with its transpose. For the other implementation with C++ STL Data Structure, the topology is structured with no edges between the nodes.\\
 2) \bf{Active Nodes}:\rm \\
 2.1) \bf{Location}: \rm Location is not data-driven as we do not alter the active nodes on the basis of the
@@ -478,6 +400,51 @@ with any ordering. \\
 locally computing the values.\\
 
 \section{Results}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{scd_scale_dense.png}
+\caption{Scalability for Coordinate Gradient descent on dense dataset Madelon }
+\label{overflow}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{scd_speed_dense.png}
+\caption{Speedup for Stochastic Coordinate Gradient descent on dense dataset Madelon }
+\label{overflow}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{scd_scale_sparse.png}
+\caption{Scalability for Stochastic Coordinate Gradient descent on sparse dataset MNIST }
+\label{overflow}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{scd_speed_sparse.png}
+\caption{Speedup for Stochastic Coordinate Gradient descent on sparse dataset MNIST }
+\label{overflow}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{gd_speed_sparse.png}
+\caption{Speedup for Gradient descent on sparse dataset MNIST. }
+\label{overflow}
+\end{figure}
+
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{gd_scale_sparse.png}
+\caption{Scalability for Gradient descent on sparse dataset MNIST. }
+\label{overflow}
+\end{figure}
+
+
 
 \subsection{Parallel Gradient Descent}	
 \begin{table}[htbp]
@@ -502,20 +469,39 @@ OPENMP Chunked. & 15.55 & 6.83 & 3.49 & 2.12 & 1.13 \\ \hline
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[width=80mm]{chunked_fifo.png}
-\caption{Chunked FIFO }
+\includegraphics[width=80mm]{sgd_scale_sparse.png}
+\caption{Scalability for Stochastic Gradient descent on sparse dataset MNIST. }
 \label{overflow}
 \end{figure}
 
 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{sgd_speed_sparse.png}
+\caption{Speedup for Stochastic Gradient descent on sparse dataset MNIST. }
+\label{overflow}
+\end{figure}
+	Table X shows the runtime for the Gradient Descent for sparse dataset Mnist. The minimum runtime is 
+	achieved for OpenMP Chunked implementation. Figure X compares the Scalability for different Galois Schedules and OpenMP.
+	The chunked implementations scales better compared to un-chunked version for both Galois and OpenMP. This is expected as the chunked
+    	implementation distributes the samples among different threads and has less contention. For the same reason,
+    	the Chunked and DChunked-FIFO Scheduling have better scalability than the FIFO scheduling. Also, OpenMP
     	scales better than Galois for both chunked and unchunked version.
      
     	\subsubsection{Different Regression Models vs Accuracy}
+
 	Figure X compares the Error Loss for different Regression Models. The Error Loss is minimum for Least Squares
 	as it tries to (mis)fit the training data the best, leading to Overfitting. The Ridge, Lasso and Elastic Net
 	models penalize the objective function and thus, the Error Loss is greater than Least Squares. 
     
    	\subsubsection{No of Iterations vs Accuracy}
+    	
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{error_loss1.png}
+\caption{ Error Loss between different Regression models. }
+\label{overflow}
+\end{figure}
 	As can be seen from Figure X, the Error Loss function for Least Squares decreases with iterations as the models
 	tries to perfectly fit the training data. The Error Loss function for Lasso and Elastic Net increases with iterations
 	due to regularization.
