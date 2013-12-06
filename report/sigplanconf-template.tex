@@ -36,7 +36,7 @@
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{graphicx}
-
+\usepackage{tabularx}
 
 \newlength\myindent
 \setlength\myindent{1em}
@@ -466,12 +466,12 @@ locally computing the values.\\
 \subsection{Parallel Gradient Descent}	
 \begin{table}[htbp]
 \caption{Run time for GD on MNIST dataset}
-\begin{tabular}{|l|r|r|r|r|r|}
+\begin{tabular}{|p{9em}|p{2em}|p{2em}|p{2em}|p{2em}|p{2em}|}
 \hline
  & 1 & 2 & 4 & 8 & 16 \\ \hline
 Galois Chunked FIFO & 45.96 & 30.36 & 20.53 & 16.08 & 12.53 \\ \hline
 Galois dChunked FIFO & 43.46 & 26.55 & 15.26 & 8.33 & 6.33 \\ \hline
-Galois FIFO & 32.5433 & 24.79 & 19.76 & 17.54 & 16.38 \\ \hline
+Galois FIFO & 32.54 & 24.79 & 19.76 & 17.54 & 16.38 \\ \hline
 OPENMP & 15.72 & 7.184 & 3.70 & 2.30 & 1.31 \\ \hline
 OPENMP Chunked. & 15.55 & 6.83 & 3.49 & 2.12 & 1.13 \\ \hline
 \end{tabular}
@@ -498,7 +498,7 @@ OPENMP Chunked. & 15.55 & 6.83 & 3.49 & 2.12 & 1.13 \\ \hline
 \subsection{Parallel Stochastic Gradient Descent}
 \begin{table}[htbp]
 \caption{Run time for SGD on MNIST dataset}
-\begin{tabular}{|l|r|r|r|r|r|}
+\begin{tabular}{|p{9em}|p{2em}|p{2em}|p{2em}|p{2em}|p{2em}|}
 \hline
  & 1 & 2 & 4 & 8 & 16 \\ \hline
 Galois CHUNKED FIFO & 38.43 & 21.24 & 12.32 & 6.39 & 4.11 \\ \hline
@@ -528,7 +528,7 @@ OPENMP & 6.97 & 3.38 & 1.83 & 1.04 & 0.63 \\ \hline
 \subsection{Parallel Stochastic Coordinate Descent}
 \begin{table}[htbp]
 \caption{Runtime for SCD on Madelon dataset}
-\begin{tabular}{|l|r|r|r|r|r|}
+\begin{tabular}{|p{9em}|p{2em}|p{2em}|p{2em}|p{2em}|p{2em}|}
 \hline
  & 1 & 2 & 4 & 8 & 16 \\ \hline
 Galois - LC\_CSR & 349.69 & 204.94 & 123.65 & 84.76 & 261.08 \\ \hline
@@ -540,7 +540,7 @@ OPENMP & 22.14 & 37.08 & 17.4413 & 9.02 & 5.66 \\ \hline
 
 \begin{table}[htbp]
 \caption{Runtime for SCD on MNIST dataset}
-\begin{tabular}{|l|r|r|r|r|r|}
+\begin{tabular}{|p{9em}|p{2em}|p{2em}|p{2em}|p{2em}|p{2em}|}
 \hline
  & 1 & 2 & 4 & 8 & 16 \\ \hline
 Galois STL::Vector & 206.14 & 205.62 & 206.20 & 205.67 & 205.42 \\ \hline
@@ -548,6 +548,7 @@ OPENMP & 124.04 & 79.97 & 53.85 & 32.29 & 19.69 \\ \hline
 \end{tabular}
 \label{Label of the table}
 \end{table}
+
 
 \subsubsection{Different Galois Schedules vs OpenMP}
 Tables X \& X show that the OpenMP implementation has lesser runtime than Galois. This is in accordance with the results seen for the Gradient
