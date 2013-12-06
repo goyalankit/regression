@@ -300,10 +300,6 @@ described below.
 \end{algorithmic}
 \end{algorithm}
 
-\section{Parallel Implementation}
-\subsection{Parallel Stochastic Gradient Descent}
-\subsection{Parallel Stochastic Coordinate Descent}
-
 \section{TAO Analysis}
 \subsection{Parallel Stochastic Gradient Descent}
 \subsection{Parallel Stochastic Coordinate Descent}
@@ -312,7 +308,8 @@ described below.
 \subsection{OpenMP}
 \subsection{Galois System}
 \subsection{Scikit Runs}
-\subsection{Stampede}
+\subsection{RunTime Environment}
+\subsection{Performance Metrics}
 
 \section{Datasets}
 \subsection{Mnist}
@@ -354,12 +351,8 @@ used once.
 \begin{equation} \mu = \frac{y^T \bar{X_i} - \widehat{w_i}^T H e_i }{H_{ii} + 2\lambda} \end{equation}
 
 \section{Results}
-\subsection{Parallel Gradient Descent}
-\subsubsection{Different Galois Schedules vs OpenMP}
-\subsubsection{Different Regression Models vs Accuracy}
-\subsubsection{No of Iterations vs Accuracy}
-\subsection{Parallel Stochastic Gradient Descent}
 
+\subsection{Parallel Gradient Descent}	
 \begin{table}[htbp]
 \caption{Run time for GD on MNIST dataset}
 \begin{tabular}{|l|r|r|r|r|r|}
@@ -373,6 +366,22 @@ OPENMP Chunked. & 15.55 & 6.83 & 3.49 & 2.12 & 1.13 \\ \hline
 \end{tabular}
 \end{table}
 
+	\subsubsection{Different Galois Schedules vs OpenMP}
+    	Figure X compares the Scalability for different Galois Schedules and OpenMP for the sparse dataset Mnist.
+	The chunked implementations scales better compared to un-chunked version for both Galois and OpenMP. This is expected as the chunked
+    	implementation distributes the samples among different threads and has less contention. For the same reason,
+    	the Chunked and DChunked-FIFO Scheduling have better scalability than the FIFO scheduling. Also, OpemMP
+    	scales better than Galois for both chunked and unchunked version.
+     
+    	\subsubsection{Different Regression Models vs Accuracy}
+	Figure X compares the Error Loss for different Regression Models. The Error Loss is minimum for Least Squares
+	as it tries to (mis)fit the training data the best, leading to Overfitting. The Ridge, Lasso and Elastic Net
+	models penalize the objective function and thus, the Error Loss is greater than Least Squares. 
+    
+   	\subsubsection{No of Iterations vs Accuracy}
+	As can be seen for
+
+\subsection{Parallel Stochastic Gradient Descent}
 \begin{table}[htbp]
 \caption{Run time for SGD on MNIST dataset}
 \begin{tabular}{|l|r|r|r|r|r|}
@@ -386,13 +395,11 @@ OPENMP & 6.97 & 3.38 & 1.83 & 1.04 & 0.63 \\ \hline
 \end{table}
 
 
-\subsubsection{Different Galois Schedules vs OpenMP}
-\subsubsection{Accuracy Comparsion for SGD vs GD}
-\subsubsection{Error Rate Variation with Danmping Factor \(\eta\) }
+	\subsubsection{Different Galois Schedules vs OpenMP}
+	\subsubsection{Accuracy Comparsion for SGD vs GD}
+	\subsubsection{Error Rate Variation with Danmping Factor \(\eta\) }
 
 \subsection{Parallel Stochastic Coordinate Descent}
-\subsubsection{Different Galois Schedules vs OpenMP}
-
 \begin{table}[htbp]
 \caption{Runtime for SCD on Madelon dataset}
 \begin{tabular}{|l|r|r|r|r|r|}
@@ -419,7 +426,8 @@ Galois STL::Vector & 206.14 & 205.62 & 206.20 & 205.67 & 205.42 \\ \hline
 
 \subsubsection{Different Galois Schedules vs OpenMP}
 \subsubsection{Accuracy Comparsion for SGD vs GD}
-\subsubsection{Error Rate Variation with Danmping Factor \(\eta\) }
+\subsubsection{Error Rate Variation with Damping Factor \(\eta\) }
+
 \subsection{Parallel Stochastic Coordinate Descent}
 \subsubsection{Different Galois Schedules vs OpenMP}
 
