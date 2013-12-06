@@ -232,12 +232,6 @@ At the end of the iteration, the final weight values are updated with the mean o
 \end{algorithmic}
 \end{algorithm}
 
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=80mm]{gd_speed_sparse.png}
-\caption{Speedup for Gradient descent on sparse dataset MNIST. }
-\label{overflow}
-\end{figure}
 
 
 \begin{figure}[ht!]
@@ -246,6 +240,15 @@ At the end of the iteration, the final weight values are updated with the mean o
 \caption{Scalability for Gradient descent on sparse dataset MNIST. }
 \label{overflow}
 \end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{gd_speed_sparse.png}
+\caption{Speedup for Gradient descent on sparse dataset MNIST. }
+\label{overflow}
+\end{figure}
+
+
 
 
 
@@ -364,7 +367,12 @@ described below.
 \label{overflow}
 \end{figure}
 
-
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{error_comparison.png}
+\caption{Error loss comprison for with varying the damping factor }
+\label{overflow}
+\end{figure}
 
 
 
@@ -485,8 +493,8 @@ OPENMP Chunked. & 15.55 & 6.83 & 3.49 & 2.12 & 1.13 \\ \hline
 \end{table}
 	
 	\subsubsection{Different Galois Schedules vs OpenMP}
-	Table X shows the runtime for the Gradient Descent for sparse dataset Mnist. The minimum runtime is 
-	achieved for OpenMP Chunked implementation. Figure X compares the Scalability for different Galois Schedules and OpenMP.
+	Table 1 shows the runtime for the Gradient Descent for sparse dataset Mnist. The minimum runtime is 
+	achieved for OpenMP Chunked implementation. Figure 1 compares the Scalability for different Galois Schedules and OpenMP.
 	The chunked implementations scales better compared to un-chunked version for both Galois and OpenMP. This is expected as the chunked
     	implementation distributes the samples among different threads and has less contention. For the same reason,
     	the Chunked and DChunked-FIFO Scheduling have better scalability than the FIFO scheduling. Also, OpenMP
@@ -579,9 +587,9 @@ Gradient Descent converges faster than Gradient descent because of the online up
 rate \(\eta\) leads to faster convergence rate but causes lot more oscillations and an increased risk of divergence.
 
 % We recommend abbrvnat bibliography style.
-\bibliographystyle{unsrt}
+%\bibliographystyle{unsrt}
 
-%\bibliographystyle{abbrvnat}
+\bibliographystyle{abbrvnat}
 % The bibliography should be embedded for final submission.
 
 \begin{thebibliography}{}
