@@ -452,7 +452,7 @@ locally computing the values.
 \subsection{Parallel Stochastic Coordinate Descent}
 %Add picture
 1) \bf{Topology|: \rm For the implementation with LC\_CSR\_Graph, the topology is unstructured. Each node represents a feature. Edges are present only if the corresponding entry of the H matrix is non-empty, which is computed by the product of the sample matrix with its transpose. For the other implementation with C++ STL Data Structure, the topology is structured with no edges between the nodes.\\
-2) \bf{Active Nodes}:\\
+2) \bf{Active Nodes}:\rm \\
 2.1) \bf{Location}: \rm Location is not data-driven as we do not alter the active nodes on the basis of the
 nodes processed. We know a-priori what nodes will be chosen, i.e. location is topology driven.
 2.2) Ordering: As the model can chose any feature in any order, ordering of nodes is unordered. Rate
