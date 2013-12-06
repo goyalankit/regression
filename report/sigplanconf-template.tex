@@ -111,21 +111,23 @@ comparative analysis is presented for change in error loss with respect to the n
 keyword1, keyword2
 
 \section{Introduction}
+First, what is the most effective method of minimizing the objective function. Second, how does one choose the tuning parameter λ. 
 
 \section{Related Work}
-Several papers were written recently studying the iteration complexity of serial CDMs of various flavours and in various settings. 
-We will only provide a brief summary here, for a more detailed account we refer the reader to [16]. Classical CDMs update the coordinates in a cyclic order; 
-the first attempt at analyzing the complexity of such a method is due to [21]. Stochastic/randomized CDMs, that is, methods where
-the coordinate to be updated is chosen randomly, were first analyzed for quadratic objectives [24,4], later independently generalized to
-L1-regularized problems [23] and smooth block-structured problems [10], and finally unified and refined in [19, 16]. 
-The problems considered in the above papers are either unconstrained or have (block) separable constraints. Recently, randomized CDMs
-were developed for problems with linearly coupled constraints [7, 8]. A greedy CDM for L1-regularized problems was 
-first analyzed in [15]; more work on this topic include [5, 2]. A CDM with inexact updates was first proposed and analyzed in [26]. Partially
-separable problems were independently studied in [13], where an asynchronous parallel stochastic
-gradient algorithm was developed to solve them.
-When writing this paper, the authors were aware only of the parallel CDM proposed and analyzed in [1]. Several papers on the 
-topic appeared around the time this paper was finalized or after [6, 28, 22, 22, 14]. Further papers on various aspects of the 
-topic of parallel CDMs, building on the work in this paper, include [25, 17, 3, 18].
+With the current advances in multicore processing and the existing need for processing huge web-scale data sets has motivated 
+researchers to develop schemes for the parallelization of various machine learning algorithms. Parallelization of the various Regression 
+methods continue to be an area of active research. Gradient Descent and Coordinate Descent solvers for regression are embarassingly parallel 
+as different samples/features can be processed in parallel during each iteration. The parallelization of their Stochastic versions is more
+interesting since only one sample/feature is processed in each iteration. \cite{zhang1} proves the convergence for the standard and averaged 
+versions of SGD. However, if locks are implemented to synchronize the threads after each iteration, the scalability of the algorithm is heavily
+compromised. Hogwild \cite{hogwild} aims to show using novel theoretical analysis, algorithms, and implementation that SGD can be implemented
+without any locking. \\
+{noindent}h
+Several papers have been written studying the iteration complexity of serial and parallel Coordinate Descent Methods(CDMs) in various settings.
+Classical CDMs update the weight vectors in a cyclic order whereas in Stochastic/randomized CDMs, the coordinate to be updated is chosen randomly.
+\cite{pcd1} shows that randomized (block) coordinate descent methods can be accelerated by parallelization when applied to the problem 
+of minimizing the sum of a partially separable smooth convex function and a simple separable convex function. 
+\cite{tewari} and \cite{shotgun} apply the Stochastic Methods for \begin{math}l1 \end{math} Regularized Loss Minimization. 
 
 \section{Regression}
 \noindent
@@ -447,16 +449,18 @@ OPENMP & 124.04 & 79.97 & 53.85 & 32.29 & 19.69 \\ \hline
 
 \bibitem[Zhang et~al.(2004) Zhang, T.]{zhang1}
 Zhang T., Solving Large Scale Linear Prediction Problems Using Stochastic Gradient Descent Algorithms.
-\bibitem[Niu et~al.(2011)Niu, F.]{niu1}
+\bibitem[Niu et~al.(2011)Niu, F.]{hogwild}
 Niu F. and Recht B., Hogwild!: A Lock-Free Approach to Parallelizing Stochastic Gradient Descent.
 \bibitem[Richtarik et~al.(2012) Richtarik, P.]{rich1}
 Richtarik P., and Takac M., Parallel Coordinate Descent methods for Big Data Optimization.
-\bibitem[Friedman et~al.(2007) Friedman, J.]{fried1}
+\bibitem[Friedman et~al.(2007) Friedman, J.]{pcd1}
 J. Friedman, T. Hastie, H. Hoeing, and R. Tibshirani, Pathwise coordinate optimization.
 \bibitem[Fu et~al.(1998) Fu, W.]{fu1}
-W. Fu, Penalized regressions: the bridge versus the lasso.
-\bibitem[Wu et~al.(2008) Wu, T.]{wu1}
 T. Wu and K. Lange, Coordinate descent algorithms for lasso penalized regression.
+\bibitem[Tewari et~al.(2008) Wu, T.]{tewari}
+Stochastic methods for l1 regularized loss minimization
+\bibitem[Tewari et~al.(2008) Wu, T.]{shotgun}
+Parallelized Coordinate Descent for L-1 regularized loss minimization!
 \bibitem[Galois paper] {galois1}
 
 \end{thebibliography}
