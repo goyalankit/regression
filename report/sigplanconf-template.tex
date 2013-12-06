@@ -64,7 +64,7 @@
 \setlength{\pdfpagewidth}{\paperwidth}
 
 \conferenceinfo{CONF 'yy}{Month d--d, 20yy, City, ST, Country} 
-\copyrightyear{20yy} 
+\copyrightyear{2013} 
 \copyrightdata{978-1-nnnn-nnnn-n/yy/mm} 
 \doi{nnnnnnn.nnnnnnn}
 
@@ -81,7 +81,7 @@
 \titlebanner{banner above paper title}        % These are ignored unless
 \preprintfooter{short description of paper}   % 'preprint' option specified.
 
-\title{Parallelized Regressions}
+\title{Parallel Implementation of Approximate Solvers for Regression using Galois and OpenMP}
 \subtitle{Subtitle Text, if any}
 
 \authorinfo{Abhishek Agarwal}
@@ -98,8 +98,7 @@
 
 \begin{abstract}
 The main focus of this work is to solve the problem of Regression for Sparse Data-sets using the Galois framework.
-To the best of our knowledge, this is the first attempt at implementing parallel Regression Algorithms using
-Galois. Two different solvers; Gradient and Coordinate descent and their stochastic versions are implemented. The
+Two different solvers; Gradient and Coordinate descent and their stochastic versions are implemented. The
 algorithms are parallelized using OpenMP and Galois framework and their performance and accuracy are compared.
 The Tao Analysis for the two solvers is presented and Speedup is compared for different Galois worklist scheduling. A
 comparative analysis is presented for change in error loss with respect to the number of iterations and threads. 
@@ -111,7 +110,9 @@ comparative analysis is presented for change in error loss with respect to the n
 keyword1, keyword2
 
 \section{Introduction}
-First, what is the most effective method of minimizing the objective function. Second, how does one choose the tuning parameter λ. 
+Exact solvers are unscalable for a large number of features. Thus, approximate solvers are used like Coordinate Descent and Gradient Descent are used 
+when the size of datasets is huge. The algorithms were parallelized using OpenMP and Galois and the Error loss function 
+values were compared with Scikit Learn. Two benchmarks, one sparse and one dense are used to measure the performance of the implementation.
 
 \section{Related Work}
 With the current advances in multicore processing and the existing need for processing huge web-scale data sets has motivated 
@@ -122,12 +123,13 @@ interesting since only one sample/feature is processed in each iteration. \cite{
 versions of SGD. However, if locks are implemented to synchronize the threads after each iteration, the scalability of the algorithm is heavily
 compromised. Hogwild \cite{hogwild} aims to show using novel theoretical analysis, algorithms, and implementation that SGD can be implemented
 without any locking. \\
-{noindent}h
+{noindent}
 Several papers have been written studying the iteration complexity of serial and parallel Coordinate Descent Methods(CDMs) in various settings.
 Classical CDMs update the weight vectors in a cyclic order whereas in Stochastic/randomized CDMs, the coordinate to be updated is chosen randomly.
 \cite{pcd1} shows that randomized (block) coordinate descent methods can be accelerated by parallelization when applied to the problem 
 of minimizing the sum of a partially separable smooth convex function and a simple separable convex function. 
 \cite{tewari} and \cite{shotgun} apply the Stochastic Methods for \begin{math}l1 \end{math} Regularized Loss Minimization. 
+To the best of our knowledge, this is the first attempt at implementing parallel Regression Algorithms using Galois.
 
 \section{Regression}
 \noindent
@@ -185,13 +187,12 @@ The Regularization function is
 
 \section{Solvers for Regression}
 \subsection{Exact Solvers}
-Different libraries for matrix computation and linear algebra operations
-Default BLAS and LAPACK, used by Octave
-Intel Math Kernel Library (Intel MKL), used by Matlab
-AMD Core Math Library (ACML)
-Automatically Tuned Linear Algebra Software (ATLAS)
-Closed form solution:- \begin {math} O(nd^2 + d^3) \end {math} time and \begin {math} O(d^2) \end {math} space for linear regression
-Not scalable for large number of features (d).
+Exact solvers for Regression use various libraries for matrix computation and linear algebra operations.
+Default BLAS \cite{blas} and LAPACK, used by Octave and Intel Math Kernel Library (Intel MKL), used by Matlab
+are used for obtaining exact solutions for Regression problems. For samples n and d features, the closed form
+solution is of the order \begin {math} O(nd^2 + d^3) \end {math} time and \begin {math} O(d^2) \end {math} space for linear regression.
+Thus, it is highly unscalable for large number of features d. For the same reason, exact solvers have not been
+evaluated in this work and the further analysis would focus on approximate solvers.
 
 \subsection{Gradient Descent}
 To find a local minimum of a function using gradient descent, one takes steps proportional to the negative of 
@@ -280,7 +281,6 @@ to gradient, one fixes descent direction at the outset.
 \end{algorithmic}
 \end{algorithm}
 
-
 \subsection{Stochastic Coordinate Descent}
 If the number of features and data sets is large, going over all dimensions in each iteration is an
 expensive approach. In Stochastic Coordinate Descent, only one feature is updated at each iteration. The 
@@ -302,16 +302,19 @@ described below.
 \end{algorithmic}
 \end{algorithm}
 
-\section{TAO Analysis}
-\subsection{Parallel Stochastic Gradient Descent}
-\subsection{Parallel Stochastic Coordinate Descent}
-
 \section{Implementation Framework}
 \subsection{OpenMP}
+The OpenMP \cite{openmp} is an API that supports multi-platform shared memory multiprocessing programming in C, C++, and Fortran, on most processor architectures and operating systems, including Solaris, AIX, HP-UX, GNU/Linux, Mac OS X, and Windows platforms. It consists of a set of compiler directives, library routines, and environment variables that influence run-time behavior. OpenMP uses a portable, scalable model that gives programmers a simple and flexible interface for developing parallel applications for platforms ranging from the standard desktop computer to the supercomputer. OpenMP 2.5 was used for the parallel
+implementation of the algorithms.
+
 \subsection{Galois System}
-\subsection{Scikit Runs}
+Galois \cite{galois1}, \cite{galois2} is a system that automatically executes "Galoized" serial C++ or Java code in parallel on shared-memory machines. It works by exploiting amorphous data-parallelism, which is present even in irregular codes that are organized around pointer-based data structures such as graphs and trees. Galois allows the programmer to write serial C++ or Java code while still getting the performance of parallel execution. All the programmer has to do is use Galois-provided data structures, which are necessary for correct concurrent execution, and annotate which loops should be run in parallel. The Galois system then speculatively extracts as much parallelism as it can. The paper analyses the effect of using different Galois schedules for the implementation. 
+
+\subsection{Scikit Learn}
+Scikit Learn \cite{scikit} consits of simple and efficient tools for data mining and data analysis implemented in Python. It is open source and commercially usable with a BSD license. For the purpose of this work, scikit was used to compare the Error loss function obtained from sckit with our implementation for the same datasets.
+
 \subsection{RunTime Environment}
-\subsection{Performance Metrics}
+The Algorithms were run on the Stampede machine which is one of the largest computing systems in the world for open science research. As an NSF HPC acquisition, this system provides unprecedented computational capabilities to the national research community enabling breakthrough science that has never before been possible. The scale of Stampede delivers opportunities in computational science and technology research, from highly parallel algorithms to high-throughput computing, from scalable visualization to next generation programming languages. It boasts of a total of 6400 nodes with each nodes consisting of 16 cores and a total mememory of 205 TB. Since both OpenMP and Galois are shared memory based, a maximum of 16 cores were used for all runs.
 
 \section{Datasets}
 \subsection{Mnist}
@@ -326,8 +329,6 @@ MNIST is a sparse dataset(9\% of the total data-set are non-zero values). This d
 
 \subsection{Madelon}
 Madelon is a dense dataset, with number of features kept comparable to the number of samples. It was generated by the program hypercube\_data.m. Some co-variance is added by multiplying the generated data by a random matrix A, with uniformly distributed random numbers between -1 and 1. The samples have been assigned Y values such that half of the samples are assigned 1 as Y value and the other half as -1 as Y value.Total feature size of the samples is 500 and the total number of samples used were 5000. Values of any X feature lies in the range(0,999).
-
-\section{TAO Analysis}
 
 \section{Parallel Implementation}
 \subsection{Parallel Gradient Descent}
@@ -347,7 +348,38 @@ If the threads need to wait for the previous value of weight vector to be update
 
 \subsection{Parallel Stochastic Coordinate Descent}
 \begin{equation} \mu = \frac{y^T \bar{X_i} - \widehat{w_i}^T H e_i }{H_{ii} + 2\lambda} \end{equation}
-//Add the 2 different implementations
+The Parallel Stochastic Coordinate Descent is conceptually similar to the parallel implementation of Stochastic Gradient Descent, except that instead of
+processing a sample in one iteration, a feature is processed and a new value of the weight vector of that feature is obtained. The threads then start with
+the new iteration using another feature without waiting for other threads to finish. The threads are synchronized after all the features have been
+updated once. For the Galois system, the algorithm was implemented using two different data structures for storing the samples; one being the 
+Galois LC\_CSR\_Graph and the other being the C++ STL vector.
+
+\\Add Tao analysis picture
+\section{TAO Analysis}
+\subsection{Parallel Stochastic Gradient Descent}
+//Add picture
+1) \bf{Topology}: The graph is structured. Basically, each sample is represented by a nodes with no edges. Each node contains the
+a map which stores all non-zero values for a particular sample. The map data structure uses much lesser memory for a sparse dataset. 
+2) \bf{Active Nodes}:
+2.1) \bf{Location}: Location is topology driven as the pool of active nodes do not change with the
+processing of current active nodes.
+2.2) \bf{Ordering}: Ordering is unordered as the nodes can be processed in any order. The convergence of the algorithm does not 
+depend on the ordering we choose, just the rate of convergence varies.
+3) \bf{Operator}: As we only modify the weight vector and do not alter any other node values :after each operation, we are just
+locally computing the values.
+
+\subsection{Parallel Stochastic Coordinate Descent}
+//Add picture
+1) Topology: The topology is unstructured. Each node represents a feature. Edges are present only if the corresponding entry of the H matrix is
+non-empty, which is computed by the product of the sample matrix with its transpose.
+2) Active Nodes:
+2.1) Location: Location is not data-driven as we do not alter the active nodes on the basis of the
+nodes processed. We know a-priori what nodes will be chosen, i.e. location is topology driven.
+2.2) Ordering: As the model can chose any feature in any order, ordering of nodes is unordered. Rate
+of convergence would depend upon the choice of the ordering, but eventually the model will converge
+with any ordering.
+3) Operator: As we only modify the value w (i.e. weight of the node) after each operation, we are just
+locally computing the values.
 
 \section{Results}
 
@@ -399,7 +431,7 @@ OPENMP & 6.97 & 3.38 & 1.83 & 1.04 & 0.63 \\ \hline
 	\subsubsection{Different Galois Schedules vs OpenMP}
 	Table X and Figure X compare the runtime and scalibilty for different Galois schedules and OpenMP for Parallel SGD
 	implementation. As the case with Gradient Descent, best runtime and speedup is achieved for OpenMp chunked implementation.
-	Also, Chunked FIFO Galois scheduling give much better speeup compared to FIFO scheduling for the worklist.
+	Also, Chunked FIFO Galois scheduling gives much better speeup compared to FIFO scheduling for the worklist.
 	
 	\subsubsection{Accuracy Comparison for SGD vs GD}
 	For the same number of iterations, GD is more accurate than SGD as can be seen in Figure X. This is because in one iteration
@@ -447,10 +479,10 @@ OPENMP & 124.04 & 79.97 & 53.85 & 32.29 & 19.69 \\ \hline
 \begin{thebibliography}{}
 \softraggedright
 
-\bibitem[Zhang et~al.(2004) Zhang, T.]{zhang1}
-Zhang T., Solving Large Scale Linear Prediction Problems Using Stochastic Gradient Descent Algorithms.
 \bibitem[Niu et~al.(2011)Niu, F.]{hogwild}
 Niu F. and Recht B., Hogwild!: A Lock-Free Approach to Parallelizing Stochastic Gradient Descent.
+\bibitem[Zhang et~al.(2004) Zhang, T.]{zhang1}
+Zhang T., Solving Large Scale Linear Prediction Problems Using Stochastic Gradient Descent Algorithms.
 \bibitem[Richtarik et~al.(2012) Richtarik, P.]{rich1}
 Richtarik P., and Takac M., Parallel Coordinate Descent methods for Big Data Optimization.
 \bibitem[Friedman et~al.(2007) Friedman, J.]{pcd1}
@@ -461,7 +493,20 @@ T. Wu and K. Lange, Coordinate descent algorithms for lasso penalized regression
 Stochastic methods for l1 regularized loss minimization
 \bibitem[Tewari et~al.(2008) Wu, T.]{shotgun}
 Parallelized Coordinate Descent for L-1 regularized loss minimization!
-\bibitem[Galois paper] {galois1}
+\bibitem[Pingali et~al. ] {galois1}
+Keshav Pingali , Donald Nguyen , Milind Kulkarni , Martin Burtscher , M. Amber Hassaan , Rashid
+Kaleem , Tsung-Hsien Lee , Andrew Lenharth , Roman Manevich , Mario Méndez-Lojo , Dimitrios
+Prountzos , Xin Sui, The tao of parallelism in algorithms, Proceedings of the 32nd ACM SIGPLAN
+conference on Programming language design and implementation, June 04-08, 2011, San Jose,
+California, USA
+\bibitem[Blas library ] {blas}
+Basic Linear Algebra Subprograms for Fortran Usage.
+\bibitem[OpenMP ] {openmp}
+http://openmp.org/wp/
+\bibitem[OpenMP ] {galois2}
+http://iss.ices.utexas.edu/?p=projects/galois
+\bibitem[sckit-learn ] {scikit}
+http://scikit-learn.org/stable/
 
 \end{thebibliography}
 
