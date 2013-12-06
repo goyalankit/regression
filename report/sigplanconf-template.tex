@@ -356,7 +356,7 @@ For the Parallel Implementation of Gradient Descent, the entire dataset is divid
 of threads such that each thread works on a chunk. Every thread computes the gradient for different samples in its chunk and updates
 the weight vector locally. This prevents contention among the threads with each thread operating on independent values of the weight
 vector. At the end of each iteration, the weight vector values for all chunks are averaged and the global weight vector
-values are updated. Thus, the threads get synchronized at the end of each iteration. Figure ~\ref{fig:worker} shows how the work is divided among different
+values are updated. Thus, the threads get synchronized at the end of each iteration. Figure 1 shows how the work is divided among different
 threads.
 
 \subsection{Parallel Stochastic Gradient Descent}
@@ -365,7 +365,6 @@ If the threads need to wait for the previous value of weight vector to be update
 
 
 \subsection{Parallel Stochastic Coordinate Descent}
-\begin{equation} \mu = \frac{y^T \bar{X_i} - \widehat{w_i}^T H e_i }{H_{ii} + 2\lambda} \end{equation}
 The Parallel Stochastic Coordinate Descent is conceptually similar to the parallel implementation of Stochastic Gradient Descent, except that instead of
 processing a sample in one iteration, a feature is processed and a new value of the weight vector of that feature is obtained. The threads then start with
 the new iteration using another feature without waiting for other threads to finish. The threads are synchronized after all the features have been
@@ -381,7 +380,7 @@ Galois LC\_CSR\_Graph and the other being the C++ STL vector. The performance ob
 \caption{Using ChunkedFifo as worklist for Galoi implementation of SGD.}
 \label{overflow}
 \end{figure}
-
+\noindent
 1) \bf{Topology}:\rm The graph is structured. Basically, each sample is represented by a nodes with no edges. Each node contains the
 a map which stores all non-zero values for a particular sample. The map data structure uses much lesser memory for a sparse dataset. \\
 2) \bf{Active Nodes}:\\\rm
@@ -612,8 +611,7 @@ T. Wu and K. Lange, Coordinate descent algorithms for lasso penalized regression
 Stochastic methods for l1 regularized loss minimization
 \bibitem[Tewari et~al.(2008)]{shotgun}
 Ambuj Tewari., Parallelized Coordinate Descent for L-1 regularized loss minimization!
-\bibitem[Pingali et~al. () ] {galois1} Keshav Pingali , Donald Nguyen , Milind Kulkarni , Martin Burtscher , M. Amber Hassaan , Rashid
-Kaleem , Tsung-Hsien Lee , Andrew Lenharth , Roman Manevich , Mario Méndez-Lojo , Dimitrios
+\bibitem[Pingali et~al. () ] {galois1} Keshav Pingali , Donald Nguyen , Milind Kulkarni , Martin Burtscher , M. Amber Hassaan , Rashid Kaleem , Tsung-Hsien Lee , Andrew Lenharth , Roman Manevich , Mario Méndez-Lojo , Dimitrios
 Prountzos , Xin Sui, The tao of parallelism in algorithms, Proceedings of the 32nd ACM SIGPLAN
 conference on Programming language design and implementation, June 04-08, 2011, San Jose,
 California, USA
