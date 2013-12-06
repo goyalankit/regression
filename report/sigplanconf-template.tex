@@ -82,7 +82,6 @@
 \preprintfooter{short description of paper}   % 'preprint' option specified.
 
 \title{Parallel Implementation of Approximate Solvers for Regression using Galois and OpenMP}
-\subtitle{Subtitle Text, if any}
 
 \authorinfo{Abhishek Agarwal}
            {University of Texas at Austin}
@@ -107,9 +106,11 @@ comparative analysis is presented for change in error loss with respect to the n
 \category{CR-number}{subcategory}{third-level}
 
 \keywords
-keyword1, keyword2
+Machine Learning, Stochastic, Gradient, Speedup, Scalability, Ridge Regression, Lasso, Elastic Net, TAO Analysis, Learning Rate, Overfitting, Regularization.
 
 \section{Introduction}
+Regression, which is a key problem in the field of machine learning, is a statistical process for estimating the relationships among variables. 
+Different Models like Least Squares, Ridge Regression and Lasso are used for, Overfitting, Regularization. 
 Exact solvers are unscalable for a large number of features. Thus, approximate solvers are used like Coordinate Descent and Gradient Descent are used 
 when the size of datasets is huge. The algorithms were parallelized using OpenMP and Galois and the Error loss function 
 values were compared with Scikit Learn. Two benchmarks, one sparse and one dense are used to measure the performance of the implementation.
@@ -352,7 +353,7 @@ The Parallel Stochastic Coordinate Descent is conceptually similar to the parall
 processing a sample in one iteration, a feature is processed and a new value of the weight vector of that feature is obtained. The threads then start with
 the new iteration using another feature without waiting for other threads to finish. The threads are synchronized after all the features have been
 updated once. For the Galois system, the algorithm was implemented using two different data structures for storing the samples; one being the 
-Galois LC\_CSR\_Graph and the other being the C++ STL vector.
+Galois LC\_CSR\_Graph and the other being the C++ STL vector. The performance obtained using the two implementations was compared.
 
 \\Add Tao analysis picture
 \section{TAO Analysis}
@@ -370,8 +371,7 @@ locally computing the values.
 
 \subsection{Parallel Stochastic Coordinate Descent}
 //Add picture
-1) Topology: The topology is unstructured. Each node represents a feature. Edges are present only if the corresponding entry of the H matrix is
-non-empty, which is computed by the product of the sample matrix with its transpose.
+1) Topology: For the implementation with LC\_CSR\_Graph, the topology is unstructured. Each node represents a feature. Edges are present only if the corresponding entry of the H matrix is non-empty, which is computed by the product of the sample matrix with its transpose. For the other implementation with C++ STL Data Structure, the topology is structured with no edges between the nodes.
 2) Active Nodes:
 2.1) Location: Location is not data-driven as we do not alter the active nodes on the basis of the
 nodes processed. We know a-priori what nodes will be chosen, i.e. location is topology driven.
@@ -436,11 +436,12 @@ OPENMP & 6.97 & 3.38 & 1.83 & 1.04 & 0.63 \\ \hline
 	\subsubsection{Accuracy Comparison for SGD vs GD}
 	For the same number of iterations, GD is more accurate than SGD as can be seen in Figure X. This is because in one iteration
 	of GD, all the samples are taken into consideration and the weight vector is updated with the mean of values computed using all
-	samples. On the contrary, in SGD only one sample is considered in each iteration. This also means that GD is a lot faster compared
-	to SGD for the same number of iterations.
+	samples. On the contrary, in SGD only one sample is considered in each iteration. This also means that SGD is a lot faster compared
+	to GD for the same number of iterations. Also, SGD converges faster than GD due to immediate update of values but runs a higher
+	risk of divergence.
 
-	\subsubsection{Error Rate Variation with Damping Factor \(\eta\) }
-	The key insight in Figure X is that the Error loss function oscillates more for a bigger value of the Damping factor (neta).
+	\subsubsection{Error Rate Variation with Learning Rate \(\eta\) }
+	The key insight in Figure X is that the Error loss function oscillates more for a bigger value of the Learning Rate (neta).
 	As can be seen, Error loss oscillates the most for a neta value of 0.01. For neta equals to 0.001, the Error loss converges faster
 	as compared to 0.0001 but it oscillates more as well.
 
@@ -469,8 +470,16 @@ OPENMP & 124.04 & 79.97 & 53.85 & 32.29 & 19.69 \\ \hline
 \end{table}
 
 \subsubsection{Different Galois Schedules vs OpenMP}
+Tables X & X show that the OpenMP implementation has lesser runtime than Galois. This is in accordance with the results seen for the Gradient
+algorithms. Also the LC\_CSR\_Graph implementation is slower than the STL::Vector implementation. 
 
 \section{Conclusion}
+Gradient Descent, Coordinate Descent and their parallel Stochastic versions were implemented on OpenMP and Galois systems. The runtimes and speedup
+were compared for OpenMP and Galois and it was concluded that OpenMP had lesser runtime than Galois in all cases. Also, the chunked implementations
+were faster than the non-Chunked ones for both Galois and OpenMP. Also, the Error loss function was least for Least Squares Regression implying that it
+(mis)fits the training data the most. The Error loss function decreases with the number of iterations for Least Squares leading to Overfitting. The Stochastic
+Gradient Descent converges faster than Gradient descent because of the online updation of weight values. Last but not the least, a larger value of learning
+rate (\eta) leads to faster convergence rate but causes lot more oscillations and an increased risk of divergence.
 
 % We recommend abbrvnat bibliography style.
 \bibliographystyle{abbrvnat}
