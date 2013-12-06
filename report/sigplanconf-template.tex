@@ -357,7 +357,7 @@ For the Parallel Implementation of Gradient Descent, the entire dataset is divid
 of threads such that each thread works on a chunk. Every thread computes the gradient for different samples in its chunk and updates
 the weight vector locally. This prevents contention among the threads with each thread operating on independent values of the weight
 vector. At the end of each iteration, the weight vector values for all chunks are averaged and the global weight vector
-values are updated. Thus, the threads get synchronized at the end of each iteration. Figure X shows how the work is divided amond different
+values are updated. Thus, the threads get synchronized at the end of each iteration. Figure ~\ref{fig:worker} shows how the work is divided among different
 threads.
 
 \subsection{Parallel Stochastic Gradient Descent}
@@ -401,39 +401,14 @@ locally computing the values.\\
 
 \section{Results}
 
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=80mm]{scd_scale_dense.png}
-\caption{Scalability for Coordinate Gradient descent on dense dataset Madelon }
-\label{overflow}
-\end{figure}
 
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=80mm]{scd_speed_dense.png}
-\caption{Speedup for Stochastic Coordinate Gradient descent on dense dataset Madelon }
-\label{overflow}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=80mm]{scd_scale_sparse.png}
-\caption{Scalability for Stochastic Coordinate Gradient descent on sparse dataset MNIST }
-\label{overflow}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=80mm]{scd_speed_sparse.png}
-\caption{Speedup for Stochastic Coordinate Gradient descent on sparse dataset MNIST }
-\label{overflow}
-\end{figure}
+\subsection{Parallel Gradient Descent}	
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=80mm]{gd_speed_sparse.png}
 \caption{Speedup for Gradient descent on sparse dataset MNIST. }
-\label{overflow}
+\label{fig:sp_gd_mnist}
 \end{figure}
 
 
@@ -441,12 +416,9 @@ locally computing the values.\\
 \centering
 \includegraphics[width=80mm]{gd_scale_sparse.png}
 \caption{Scalability for Gradient descent on sparse dataset MNIST. }
-\label{overflow}
+\label{fig:sc_gd_mnist}
 \end{figure}
 
-
-
-\subsection{Parallel Gradient Descent}	
 \begin{table}[htbp]
 \caption{Run time for GD on MNIST dataset}
 \begin{tabular}{|p{9em}|p{2em}|p{2em}|p{2em}|p{2em}|p{2em}|}
@@ -458,31 +430,13 @@ Galois FIFO & 32.54 & 24.79 & 19.76 & 17.54 & 16.38 \\ \hline
 OPENMP & 15.72 & 7.184 & 3.70 & 2.30 & 1.31 \\ \hline
 OPENMP Chunked. & 15.55 & 6.83 & 3.49 & 2.12 & 1.13 \\ \hline
 \end{tabular}
+\label{tb:gd_mnist}
 \end{table}
 	
 	\subsubsection{Different Galois Schedules vs OpenMP}
-	Table 1 shows the runtime for the Gradient Descent for sparse dataset Mnist. The minimum runtime is 
-	achieved for OpenMP Chunked implementation. Figure 1 compares the Scalability for different Galois Schedules and OpenMP.
-	The chunked implementations scales better compared to un-chunked version for both Galois and OpenMP. This is expected as the chunked
-    	implementation distributes the samples among different threads and has less contention. For the same reason,
-    	the Chunked and DChunked-FIFO Scheduling have better scalability than the FIFO scheduling. Also, OpenMP
 
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=80mm]{sgd_scale_sparse.png}
-\caption{Scalability for Stochastic Gradient descent on sparse dataset MNIST. }
-\label{overflow}
-\end{figure}
-
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=80mm]{sgd_speed_sparse.png}
-\caption{Speedup for Stochastic Gradient descent on sparse dataset MNIST. }
-\label{overflow}
-\end{figure}
-	Table X shows the runtime for the Gradient Descent for sparse dataset Mnist. The minimum runtime is 
-	achieved for OpenMP Chunked implementation. Figure X compares the Scalability for different Galois Schedules and OpenMP.
+	Table ~\ref{tb:gd_mnist} shows the runtime for the Gradient Descent for sparse dataset Mnist. The minimum runtime is 
+	achieved for OpenMP Chunked implementation. Figure ~\ref{fig:sc_gd_mnist} compares the Scalability for different Galois Schedules and OpenMP.
 	The chunked implementations scales better compared to un-chunked version for both Galois and OpenMP. This is expected as the chunked
     	implementation distributes the samples among different threads and has less contention. For the same reason,
     	the Chunked and DChunked-FIFO Scheduling have better scalability than the FIFO scheduling. Also, OpenMP
@@ -490,7 +444,7 @@ OPENMP Chunked. & 15.55 & 6.83 & 3.49 & 2.12 & 1.13 \\ \hline
      
     	\subsubsection{Different Regression Models vs Accuracy}
 
-	Figure X compares the Error Loss for different Regression Models. The Error Loss is minimum for Least Squares
+	Figure ~\ref{error_loss} compares the Error Loss for different Regression Models. The Error Loss is minimum for Least Squares
 	as it tries to (mis)fit the training data the best, leading to Overfitting. The Ridge, Lasso and Elastic Net
 	models penalize the objective function and thus, the Error Loss is greater than Least Squares. 
     
@@ -500,13 +454,28 @@ OPENMP Chunked. & 15.55 & 6.83 & 3.49 & 2.12 & 1.13 \\ \hline
 \centering
 \includegraphics[width=80mm]{error_loss1.png}
 \caption{ Error Loss between different Regression models. }
-\label{overflow}
+\label{fig:fitting}
 \end{figure}
-	As can be seen from Figure X, the Error Loss function for Least Squares decreases with iterations as the models
+	As can be seen from Figure ~\ref{fig:fitting}, the Error Loss function for Least Squares decreases with iterations as the models
 	tries to perfectly fit the training data. The Error Loss function for Lasso and Elastic Net increases with iterations
 	due to regularization.
 
 \subsection{Parallel Stochastic Gradient Descent}
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{sgd_scale_sparse.png}
+\caption{Scalability for Stochastic Gradient descent on sparse dataset MNIST. }
+\label{fig:sc_sgd_mnist}
+\end{figure}
+
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{sgd_speed_sparse.png}
+\caption{Speedup for Stochastic Gradient descent on sparse dataset MNIST. }
+\label{fig:sp_sgd_mnist}
+\end{figure}
+
 \begin{table}[htbp]
 \caption{Run time for SGD on MNIST dataset}
 \begin{tabular}{|p{9em}|p{2em}|p{2em}|p{2em}|p{2em}|p{2em}|}
@@ -516,27 +485,62 @@ Galois CHUNKED FIFO & 38.43 & 21.24 & 12.32 & 6.39 & 4.11 \\ \hline
 Galois FIFO & 21.24 & 20.09 & 17.81 & 16.38 & 15.88 \\ \hline
 OPENMP & 6.97 & 3.38 & 1.83 & 1.04 & 0.63 \\ \hline
 \end{tabular}
-\label{Label of the table}
+\label{tb:sgd_mnist}
 \end{table}
 
 	\subsubsection{Different Galois Schedules vs OpenMP}
-	Table X and Figure X compare the runtime and scalibilty for different Galois schedules and OpenMP for Parallel SGD
+	Table ~\ref{tb:sgd_mnist} and Figure ~\ref{fig:sc_sgd_mnist} compare the runtime and scalibilty for different Galois schedules and OpenMP for Parallel SGD
 	implementation. As the case with Gradient Descent, best runtime and speedup is achieved for OpenMp chunked implementation.
 	Also, Chunked FIFO Galois scheduling gives much better speeup compared to FIFO scheduling for the worklist.
 	
 	\subsubsection{Accuracy Comparison for SGD vs GD}
-	For the same number of iterations, GD is more accurate than SGD as can be seen in Figure X. This is because in one iteration
+	For the same number of iterations, GD is more accurate than SGD. This is because in one iteration
 	of GD, all the samples are taken into consideration and the weight vector is updated with the mean of values computed using all
 	samples. On the contrary, in SGD only one sample is considered in each iteration. This also means that SGD is a lot faster compared
 	to GD for the same number of iterations. Also, SGD converges faster than GD due to immediate update of values but runs a higher
 	risk of divergence.
 
 	\subsubsection{Error Rate Variation with Learning Rate \(\eta\) }
-	The key insight in Figure X is that the Error loss function oscillates more for a bigger value of the Learning Rate (neta).
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{error_comparison.png}
+\caption{Error loss comprison for with varying the damping factor }
+\label{error_loss}
+\end{figure}
+	The key insight in Figure ~\ref{error_loss} is that the Error loss function oscillates more for a bigger value of the Learning Rate (neta).
 	As can be seen, Error loss oscillates the most for a neta value of 0.01. For neta equals to 0.001, the Error loss converges faster
 	as compared to 0.0001 but it oscillates more as well.
 
 \subsection{Parallel Stochastic Coordinate Descent}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{scd_scale_dense.png}
+\caption{Scalability for Stochastic Coordinate descent on dense dataset Madelon }
+\label{fig:sc_scd_madelon}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{scd_speed_dense.png}
+\caption{Speedup for Stochastic Coordinate descent on dense dataset Madelon }
+\label{fig:sp_scd_madelon}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{scd_scale_sparse.png}
+\caption{Scalability for Stochastic Coordinate descent on sparse dataset MNIST }
+\label{fig:sc_scd_mnist}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{scd_speed_sparse.png}
+\caption{Speedup for Stochastic Coordinate descent on sparse dataset MNIST }
+\label{fig:sp_scd_mnist}
+\end{figure}
+
 \begin{table}[htbp]
 \caption{Runtime for SCD on Madelon dataset}
 \begin{tabular}{|p{7em}|p{2.5em}|p{2.5em}|p{2.5em}|p{2em}|p{2.5em}|}
@@ -546,7 +550,7 @@ Galois - LC\_CSR & 349.69 & 204.94 & 123.65 & 84.76 & 261.08 \\ \hline
 Galois - STL::Vector  & 35.80 & 32.06 & 32.06 & 31.95 & 36.24 \\ \hline
 OPENMP & 22.14 & 37.08 & 17.44 & 9.02 & 5.66 \\ \hline
 \end{tabular}
-\label{Label of the table}
+\label{tb:scd_madelon}
 \end{table}
 
 \begin{table}[htbp]
@@ -557,12 +561,12 @@ OPENMP & 22.14 & 37.08 & 17.44 & 9.02 & 5.66 \\ \hline
 Galois STL::Vector & 206.14 & 205.62 & 206.20 & 205.67 & 205.42 \\ \hline
 OPENMP & 124.04 & 79.97 & 53.85 & 32.29 & 19.69 \\ \hline
 \end{tabular}
-\label{Label of the table}
+\label{tb:scd_mnist}
 \end{table}
 
 
 \subsubsection{Different Galois Schedules vs OpenMP}
-Tables X \& X show that the OpenMP implementation has lesser runtime than Galois. This is in accordance with the results seen for the Gradient
+Tables ~\ref{tb:scd_mnist} \& ~\ref{tb:scd_madelon} show that the OpenMP implementation has lesser runtime than Galois. This is in accordance with the results seen for the Gradient
 algorithms. Also the LC\_CSR\_Graph implementation is slower than the STL::Vector implementation. 
 
 \section{Conclusion}
