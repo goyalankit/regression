@@ -40,7 +40,7 @@
 
 \newlength\myindent
 \setlength\myindent{1em}
-\newcommand\bindent{%
+\newcommand\bindent{
   \begingroup
   \setlength{\itemindent}{\myindent}
   \addtolength{\algorithmicindent}{\myindent}
@@ -49,7 +49,7 @@
 
 \newlength\mysecindent
 \setlength\mysecindent{2em}
-\newcommand\quadindent{%
+\newcommand\quadindent{
   \begingroup
   \setlength{\itemindent}{\mysecindent}
   \addtolength{\algorithmicindent}{\mysecindent}
@@ -435,31 +435,31 @@ the new iteration using another feature without waiting for other threads to fin
 updated once. For the Galois system, the algorithm was implemented using two different data structures for storing the samples; one being the 
 Galois LC\_CSR\_Graph and the other being the C++ STL vector. The performance obtained using the two implementations was compared.
 
-//Add Tao analysis picture
+%Add Tao analysis picture
 \section{TAO Analysis}
 \subsection{Parallel Stochastic Gradient Descent}
-//Add picture
-1) \bf{Topology}: The graph is structured. Basically, each sample is represented by a nodes with no edges. Each node contains the
-a map which stores all non-zero values for a particular sample. The map data structure uses much lesser memory for a sparse dataset. 
-2) \bf{Active Nodes}:
-2.1) \bf{Location}: Location is topology driven as the pool of active nodes do not change with the
+%Add picture
+1) \bf{Topology}:\rm The graph is structured. Basically, each sample is represented by a nodes with no edges. Each node contains the
+a map which stores all non-zero values for a particular sample. The map data structure uses much lesser memory for a sparse dataset. \\
+2) \bf{Active Nodes}:\\\rm
+2.1) \bf{Location}: \rm Location is topology driven as the pool of active nodes do not change with the
 processing of current active nodes.
-2.2) \bf{Ordering}: Ordering is unordered as the nodes can be processed in any order. The convergence of the algorithm does not 
-depend on the ordering we choose, just the rate of convergence varies.
-3) \bf{Operator}: As we only modify the weight vector and do not alter any other node values :after each operation, we are just
+2.2) \bf{Ordering}: \rm Ordering is unordered as the nodes can be processed in any order. The convergence of the algorithm does not depend on the ordering we choose, just the rate of convergence varies.\\
+3) \bf{Operator}: \rm As we only modify the weight vector and do not alter any other node values :after each operation, we are just
 locally computing the values.
 
+\rm
 \subsection{Parallel Stochastic Coordinate Descent}
-//Add picture
-1) Topology: For the implementation with LC\_CSR\_Graph, the topology is unstructured. Each node represents a feature. Edges are present only if the corresponding entry of the H matrix is non-empty, which is computed by the product of the sample matrix with its transpose. For the other implementation with C++ STL Data Structure, the topology is structured with no edges between the nodes.
-2) Active Nodes:
-2.1) Location: Location is not data-driven as we do not alter the active nodes on the basis of the
+%Add picture
+1) \bf{Topology|: \rm For the implementation with LC\_CSR\_Graph, the topology is unstructured. Each node represents a feature. Edges are present only if the corresponding entry of the H matrix is non-empty, which is computed by the product of the sample matrix with its transpose. For the other implementation with C++ STL Data Structure, the topology is structured with no edges between the nodes.\\
+2) \bf{Active Nodes}:\\
+2.1) \bf{Location}: \rm Location is not data-driven as we do not alter the active nodes on the basis of the
 nodes processed. We know a-priori what nodes will be chosen, i.e. location is topology driven.
 2.2) Ordering: As the model can chose any feature in any order, ordering of nodes is unordered. Rate
 of convergence would depend upon the choice of the ordering, but eventually the model will converge
-with any ordering.
-3) Operator: As we only modify the value w (i.e. weight of the node) after each operation, we are just
-locally computing the values.
+with any ordering. \\
+3) \bf{ Operator}:\rm As we only modify the value w (i.e. weight of the node) after each operation, we are just
+locally computing the values.\\
 
 \section{Results}
 
@@ -559,7 +559,7 @@ were compared for OpenMP and Galois and it was concluded that OpenMP had lesser 
 were faster than the non-Chunked ones for both Galois and OpenMP. Also, the Error loss function was least for Least Squares Regression implying that it
 (mis)fits the training data the most. The Error loss function decreases with the number of iterations for Least Squares leading to Overfitting. The Stochastic
 Gradient Descent converges faster than Gradient descent because of the online updation of weight values. Last but not the least, a larger value of learning
-rate (\eta) leads to faster convergence rate but causes lot more oscillations and an increased risk of divergence.
+rate \(\eta\) leads to faster convergence rate but causes lot more oscillations and an increased risk of divergence.
 
 % We recommend abbrvnat bibliography style.
 \bibliographystyle{abbrvnat}
