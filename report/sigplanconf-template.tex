@@ -373,10 +373,8 @@ the new iteration using another feature without waiting for other threads to fin
 updated once. For the Galois system, the algorithm was implemented using two different data structures for storing the samples; one being the 
 Galois LC\_CSR\_Graph and the other being the C++ STL vector. The performance obtained using the two implementations was compared.
 
-//Add Tao analysis picture
 \section{TAO Analysis}
 \subsection{Parallel Stochastic Gradient Descent}
-//Add picture
 1) \bf{Topology}:\rm The graph is structured. Basically, each sample is represented by a nodes with no edges. Each node contains the
 a map which stores all non-zero values for a particular sample. The map data structure uses much lesser memory for a sparse dataset. \\
 2) \bf{Active Nodes}:\\\rm
@@ -388,7 +386,6 @@ locally computing the values.
 
 \rm
 \subsection{Parallel Stochastic Coordinate Descent}
-//Add picture
 1) \bf{Topology|: \rm For the implementation with LC\_CSR\_Graph, the topology is unstructured. Each node represents a feature. Edges are present only if the corresponding entry of the H matrix is non-empty, which is computed by the product of the sample matrix with its transpose. For the other implementation with C++ STL Data Structure, the topology is structured with no edges between the nodes.\\
 2) \bf{Active Nodes}:\rm \\
 2.1) \bf{Location}: \rm Location is not data-driven as we do not alter the active nodes on the basis of the
