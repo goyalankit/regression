@@ -299,14 +299,6 @@ features to be updated can be choosen randomly or in a cyclic manner. The algori
 described below.
 
 
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=70mm]{openmp_chunked.png}
-\caption{Openmp Chunked data access pattern by multiple threads}
-\label{overflow}
-\end{figure}
-
-
 
 \begin{algorithm}
 \caption{Stochastic coordinate descent}
@@ -325,6 +317,13 @@ described below.
 
 \section{Implementation Framework}
 \subsection{OpenMP}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=70mm]{openmp_chunked.png}
+\caption{Openmp Chunked data access pattern by multiple threads}
+\label{overflow}
+\end{figure}
 The OpenMP \cite{openmp} is an API that supports multi-platform shared memory multiprocessing programming in C, C++, and Fortran, on most processor architectures and operating systems, including Solaris, AIX, HP-UX, GNU/Linux, Mac OS X, and Windows platforms. It consists of a set of compiler directives, library routines, and environment variables that influence run-time behavior. OpenMP uses a portable, scalable model that gives programmers a simple and flexible interface for developing parallel applications for platforms ranging from the standard desktop computer to the supercomputer. OpenMP 2.5 was used for the parallel
 implementation of the algorithms.
 
@@ -375,6 +374,14 @@ Galois LC\_CSR\_Graph and the other being the C++ STL vector. The performance ob
 
 \section{TAO Analysis}
 \subsection{Parallel Stochastic Gradient Descent}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{chunked_fifo.png}
+\caption{Using ChunkedFifo as worklist for Galoi implementation of SGD.}
+\label{overflow}
+\end{figure}
+
 1) \bf{Topology}:\rm The graph is structured. Basically, each sample is represented by a nodes with no edges. Each node contains the
 a map which stores all non-zero values for a particular sample. The map data structure uses much lesser memory for a sparse dataset. \\
 2) \bf{Active Nodes}:\\\rm
@@ -386,6 +393,14 @@ locally computing the values.
 
 \rm
 \subsection{Parallel Stochastic Coordinate Descent}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{lc_scr_graph.png}
+\caption{Using LC\_CSR\_Graph for Galoi implementation of SCD.}
+\label{overflow}
+\end{figure}
+
 1) \bf{Topology|: \rm For the implementation with LC\_CSR\_Graph, the topology is unstructured. Each node represents a feature. Edges are present only if the corresponding entry of the H matrix is non-empty, which is computed by the product of the sample matrix with its transpose. For the other implementation with C++ STL Data Structure, the topology is structured with no edges between the nodes.\\
 2) \bf{Active Nodes}:\rm \\
 2.1) \bf{Location}: \rm Location is not data-driven as we do not alter the active nodes on the basis of the
