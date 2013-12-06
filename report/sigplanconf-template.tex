@@ -435,10 +435,10 @@ the new iteration using another feature without waiting for other threads to fin
 updated once. For the Galois system, the algorithm was implemented using two different data structures for storing the samples; one being the 
 Galois LC\_CSR\_Graph and the other being the C++ STL vector. The performance obtained using the two implementations was compared.
 
-//Add Tao analysis picture
+	
 \section{TAO Analysis}
 \subsection{Parallel Stochastic Gradient Descent}
-//Add picture
+
 1) \bf{Topology}:\rm The graph is structured. Basically, each sample is represented by a nodes with no edges. Each node contains the
 a map which stores all non-zero values for a particular sample. The map data structure uses much lesser memory for a sparse dataset. \\
 2) \bf{Active Nodes}:\\\rm
@@ -448,9 +448,16 @@ processing of current active nodes.
 3) \bf{Operator}: \rm As we only modify the weight vector and do not alter any other node values :after each operation, we are just
 locally computing the values.
 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{lc_scr_graph.png}
+\caption{Tao analysis for Parallel Stochastic Coordinate Descent }
+\label{overflow}
+\end{figure}
+
+
 \rm
 \subsection{Parallel Stochastic Coordinate Descent}
-//Add picture
 1) \bf{Topology|: \rm For the implementation with LC\_CSR\_Graph, the topology is unstructured. Each node represents a feature. Edges are present only if the corresponding entry of the H matrix is non-empty, which is computed by the product of the sample matrix with its transpose. For the other implementation with C++ STL Data Structure, the topology is structured with no edges between the nodes.\\
 2) \bf{Active Nodes}:\rm \\
 2.1) \bf{Location}: \rm Location is not data-driven as we do not alter the active nodes on the basis of the
@@ -483,6 +490,15 @@ OPENMP Chunked. & 15.55 & 6.83 & 3.49 & 2.12 & 1.13 \\ \hline
 	The chunked implementations scales better compared to un-chunked version for both Galois and OpenMP. This is expected as the chunked
     	implementation distributes the samples among different threads and has less contention. For the same reason,
     	the Chunked and DChunked-FIFO Scheduling have better scalability than the FIFO scheduling. Also, OpenMP
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{chunked_fifo.png}
+\caption{Chunked FIFO }
+\label{overflow}
+\end{figure}
+
+
     	scales better than Galois for both chunked and unchunked version.
      
     	\subsubsection{Different Regression Models vs Accuracy}
