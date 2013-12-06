@@ -188,7 +188,7 @@ Elastic net is a linear model that allows for learning a sparse model where few 
 like Lasso, while still maintaining the regularization properties of Ridge. The Error function is given by
 \begin{equation}E(w,b) =\frac{1}{2} \sum_{i=1}^{n} (y-Ax)^2 + \sum_{i=1}^{n} w_i^2 + \sum_{i=1}^{n} w_i \end{equation} \\
 The Regularization function is
-\begin{equation}R(w) = \gamma \frac{1}{2} \sum_{i=1}^{n} w_i^2 + (1-\gamma)\sum_{i=1}^{n} |w_i|\end{equation}.
+\begin{equation}R(w) = \frac{1}{2} \sum_{i=1}^{n} w_i^2 + \sum_{i=1}^{n} |w_i|\end{equation}.
 
 \section{Solvers for Regression}
 \subsection{Exact Solvers}
@@ -607,14 +607,15 @@ Richtarik P., and Takac M., Parallel Coordinate Descent methods for Big Data Opt
 J. Friedman, T. Hastie, H. Hoeing, and R. Tibshirani, Pathwise coordinate optimization.
 \bibitem[Fu et~al.(1998) Fu, W.]{fu1}
 T. Wu and K. Lange, Coordinate descent algorithms for lasso penalized regression.
-\bibitem[Tewari et~al.(2008) Wu, T.]{tewari}
-Stochastic methods for l1 regularized loss minimization
-\bibitem[Tewari et~al.(2008)]{shotgun}
-Ambuj Tewari., Parallelized Coordinate Descent for L-1 regularized loss minimization!
-\bibitem[Pingali et~al. () ] {galois1} Keshav Pingali , Donald Nguyen , Milind Kulkarni , Martin Burtscher , M. Amber Hassaan , Rashid Kaleem , Tsung-Hsien Lee , Andrew Lenharth , Roman Manevich , Mario Méndez-Lojo , Dimitrios
+\bibitem[Tewari et~al.(2008) ]{tewari}
+Ambuj Tewari., Stochastic methods for l1 regularized loss minimization
+\bibitem[Joseph K. Bradley (2012)]{shotgun}
+ Joseph K. Bradley, Aapo Kyrola, Parallelized Coordinate Descent for L-1 regularized loss minimization
+\bibitem[ Pingali et~al. () ] {galois1} Keshav Pingali , Donald Nguyen , Milind Kulkarni , Martin Burtscher , M. Amber Hassaan , Rashid Kaleem , Tsung-Hsien Lee , Andrew Lenharth , Roman Manevich , Mario Méndez-Lojo , Dimitrios
 Prountzos , Xin Sui, The tao of parallelism in algorithms, Proceedings of the 32nd ACM SIGPLAN
 conference on Programming language design and implementation, June 04-08, 2011, San Jose,
 California, USA
+
 \bibitem[Blas library () ] {blas}
 Basic Linear Algebra Subprograms for Fortran Usage.
 \bibitem[OpenMP ()] {openmp}
