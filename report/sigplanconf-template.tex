@@ -273,13 +273,6 @@ single training sample. The training samples are given one at a time. The algori
 current datapoint, and then updates the weight vector accordingly. Thus, it is different from Gradient Descent where the weight
 vector is updated with the mean of all samples.
 
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=80mm]{scd_scale_dense.png}
-\caption{Speedup for Coordinate Gradient descent on sparse dataset MNIST. }
-\label{overflow}
-\end{figure}
-
 
 
 
@@ -342,6 +335,38 @@ If the number of features and data sets is large, going over all dimensions in e
 expensive approach. In Stochastic Coordinate Descent, only one feature is updated at each iteration. The 
 features to be updated can be choosen randomly or in a cyclic manner. The algorithm used for SCD is 
 described below.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{scd_scale_dense.png}
+\caption{Scalability for Coordinate Gradient descent on dense dataset Madelon }
+\label{overflow}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{scd_speed_dense.png}
+\caption{Speedup for Stochastic Coordinate Gradient descent on dense dataset Madelon }
+\label{overflow}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{scd_scale_sparse.png}
+\caption{Scalability for Stochastic Coordinate Gradient descent on sparse dataset MNIST }
+\label{overflow}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{scd_speed_sparse.png}
+\caption{Speedup for Stochastic Coordinate Gradient descent on sparse dataset MNIST }
+\label{overflow}
+\end{figure}
+
+
+
+
 
 \begin{algorithm}
 \caption{Stochastic coordinate descent}
@@ -410,7 +435,7 @@ the new iteration using another feature without waiting for other threads to fin
 updated once. For the Galois system, the algorithm was implemented using two different data structures for storing the samples; one being the 
 Galois LC\_CSR\_Graph and the other being the C++ STL vector. The performance obtained using the two implementations was compared.
 
-\\Add Tao analysis picture
+//Add Tao analysis picture
 \section{TAO Analysis}
 \subsection{Parallel Stochastic Gradient Descent}
 //Add picture
@@ -525,7 +550,7 @@ OPENMP & 124.04 & 79.97 & 53.85 & 32.29 & 19.69 \\ \hline
 \end{table}
 
 \subsubsection{Different Galois Schedules vs OpenMP}
-Tables X & X show that the OpenMP implementation has lesser runtime than Galois. This is in accordance with the results seen for the Gradient
+Tables X \& X show that the OpenMP implementation has lesser runtime than Galois. This is in accordance with the results seen for the Gradient
 algorithms. Also the LC\_CSR\_Graph implementation is slower than the STL::Vector implementation. 
 
 \section{Conclusion}
