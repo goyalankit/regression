@@ -24,14 +24,17 @@ public:
 };
 
 int main(int argc, char **argv) {
-
+	
 	string examples_filename, labels_filename;
 	int loss_type, num_iters, threads;	
 	double lambda;
 
-        examples_filename = "madelon_columnwise";
-        labels_filename = "madelon_columnwise_Y";
+        //examples_filename = "/scratch/02683/prat0318/mnist_columnwise";
+        //labels_filename = "/scratch/02683/prat0318/mnist_columnwise_Y";
         
+        examples_filename = "/scratch/02683/prat0318/Day1_columnwise";
+        labels_filename = "/scratch/02683/prat0318/Day1_columnwise_Y";
+
         if(argc >= 3) {
             lambda = atof(argv[1]);
             loss_type = 2;
@@ -102,6 +105,7 @@ int main(int argc, char **argv) {
 	for (int i=0; i<num_examples; i++)
 		omp_init_lock(&(lock[i]));
 
+	std::cout << "Running for " << num_features << " features and  " << num_examples << " examples" << std::endl;
 
         //time_t start1, end;
         //time (&start1);
@@ -126,7 +130,7 @@ int main(int argc, char **argv) {
 		}
 
 		g = sum / num_examples;
-		std::cout << "lambda " << lambda << endl;
+//		std::cout << "lambda " << lambda << endl;
 		if (w[i] - g > lambda) 
 			eta = -g - lambda;
 		else {
