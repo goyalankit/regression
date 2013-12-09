@@ -35,6 +35,8 @@ int main(int argc, char* argv[]) {
     int threads = thread_default;
     int iter = iter_default;
     char* filename = "madelon"; // "inputfile"; //"madelon";
+    double lambda1 = 0.0;
+    double lambda2 = 0.0;
     int show_errors = 1;
         
         if(argc > 3) {
@@ -43,6 +45,7 @@ int main(int argc, char* argv[]) {
             threads = atoi(argv[3]);
             if(argc > 4) show_errors = atoi(argv[4]);
             if(argc > 5) filename = argv[5];
+            if(argc > 6) {lambda1 = atof(argv[6]);lambda2 = atof(argv[7]);}
         }
     inFile.open(filename, ifstream::in);
 
@@ -122,7 +125,7 @@ int main(int argc, char* argv[]) {
                 val += (w[it->first] * it->second);
             }
             for (map<int, float>::iterator it=X[j].begin(); it!=X[j].end(); ++it) {
-                w[it->first] -= (float)neta * it->second * val;
+                w[it->first] = w[it->first]*(1+ lambda1) - (float)neta * it->second * val + lambda2;
             }
     if(show_errors > 0) {
         float error = 0.0;
