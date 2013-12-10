@@ -99,13 +99,22 @@ struct Process {
 
 
 int main(int argc, char **argv) {
-
+	Galois::StatManager statManager;
 	string examples_filename, labels_filename;
 	int loss_type, num_iters, threads;	
 
+
+
         examples_filename = "madelon_columnwise";
         labels_filename = "madelon_columnwise_Y";
-        
+
+//        examples_filename = "/scratch/02683/prat0318/mnist_columnwise";
+ //       labels_filename = "/scratch/02683/prat0318/mnist_columnwise_Y";
+//        examples_filename = "/scratch/02683/prat0318/Day1_columnwise";
+ //       labels_filename = "/scratch/02683/prat0318/Day1_columnwise_Y";
+
+        //examples_filename = "/scratch/02683/prat0318/Day5_columnwise";
+        //labels_filename = "/scratch/02683/prat0318/Day5_columnwise_Y";
         if(argc >= 3) {
             lambda = atof(argv[1]);
             loss_type = 2;
@@ -114,7 +123,7 @@ int main(int argc, char **argv) {
         }
 
 	std::ifstream examples_file(examples_filename.c_str());
-
+	Galois::setActiveThreads(threads);
 
 	// read the examples file
 	std::string buffer;
@@ -166,8 +175,11 @@ int main(int argc, char **argv) {
 	}
 	labels_file.close();
 
+ std::cout << "Running for " << num_features << " features and  " << num_examples << " examples" << std::endl;
 gettimeofday(&start, NULL);
 	int num_actual_iters = num_iters / num_features;
+	//int num_actual_iters = num_iters;
+std::cout << "Number of iterations " << num_actual_iters << std::endl;
 	for (int iter=0; iter < num_actual_iters; ++iter) {
 		
 		Galois::for_each<WL>(Graph.begin(), Graph.end(), Process(iter, iter));
