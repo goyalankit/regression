@@ -558,22 +558,51 @@ OPENMP & 6.97 & 3.38 & 1.83 & 1.04 & 0.63 \\ \hline
 \hline
  & 1 & 2 & 4 & 8 & 16 \\ \hline
 Galois - LC\_CSR & 349.69 & 204.94 & 123.65 & 84.76 & 261.08 \\ \hline
-Galois - STL::Vector  & 35.80 & 32.06 & 32.06 & 31.95 & 36.24 \\ \hline
+Galois - STL::Vector  & 32.23 & 18.42 & 10.47 & 6.28 & 6.15 \\ \hline
 OPENMP & 22.14 & 37.08 & 17.44 & 9.02 & 5.66 \\ \hline
 \end{tabular}
 \label{tb:scd_madelon}
 \end{table}
+
 
 \begin{table}[htbp]
 \caption{Runtime for SCD on MNIST dataset}
 \begin{tabular}{|p{7em}|p{2.5em}|p{2.5em}|p{2.5em}|p{2em}|p{2.5em}|}
 \hline
  & 1 & 2 & 4 & 8 & 16 \\ \hline
-Galois STL::Vector & 206.14 & 205.62 & 206.20 & 205.67 & 205.42 \\ \hline
+Galois STL::Vector & 205.71 & 128.66 & 104.41 & 93.21 & 58.54 \\ \hline
 OPENMP & 124.04 & 79.97 & 53.85 & 32.29 & 19.69 \\ \hline
 \end{tabular}
 \label{tb:scd_mnist}
 \end{table}
+		
+\begin{table}[htbp]
+\caption{Runtime for SCD on URL dataset}
+\begin{tabular}{|p{7em}|p{2.5em}|p{2.5em}|p{2.5em}|p{2em}|p{2.5em}|}
+\hline
+ & 1 & 2 & 4 & 8 & 16 \\ \hline
+OPENMP & 18.92 & 15.72 & 14.81 & 14.81 & 14.09 \\ \hline
+Galoi stl::vector & 48.11 & 31.97 & 20.61 & 16.82 & 15.64 \\ \hline
+\end{tabular}
+\label{}
+\end{table}
+
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{scd_day5_scale.png}
+\caption{Scalability for Stochastic Coordinate descent on sparse dataset URL }
+\label{fig:sc_scd_url}
+\end{figure}
+
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=80mm]{scd_day5_speed.png}
+\caption{Speedup for Stochastic Coordinate descent on sparse dataset URL }
+\label{fig:sp_scd_url}
+\end{figure}
+
 
 
 \subsubsection{Different Galois Schedules vs OpenMP}
